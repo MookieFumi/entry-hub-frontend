@@ -1,0 +1,50 @@
+name: Release
+
+# Se lanza al crear un tag vX.Y.Z. Construye el frontal, lo adjunta a una release de GitHub y, si está
+# activado, lo publica en Cloudflare Pages.
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run api:check
+      - run: npm test
+      - name: Build
+        run: npm run build
+        env:
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
+      - name: Empaquetar
+        run: |
+          cd dist
+          zip -r "../entry-hub-frontend-${GITHUB_REF_NAME}.zip" .
+      - name: Release de GitHub
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" "entry-hub-frontend-${GITHUB_REF_NAME}.zip" \
+            --title "$GITHUB_REF_NAME" --generate-notes
+      # Despliegue opcional: se activa creando la variable de repositorio CLOUDFLARE_DEPLOY=true y los
+      # secretos CLOUDFLARE_API_TOKEN y CLOUDFLARE_ACCOUNT_ID. Hasta entonces solo se genera la release.
+      - name: Desplegar en Cloudflare Pages
+        if: ${{ vars.CLOUDFLARE_DEPLOY == 'true' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx --yes wrangler@4 pages deploy dist --project-name "${{ vars.CLOUDFLARE_PROJECT || 'entry-hub-frontend' }}" --branch main

@@ -24,6 +24,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Says who is calling: user, role and tenant. */
+        get: operations["GetMe"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Gets the booking rules that apply to the caller. */
+        get: operations["GetBookingRules"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/rooms": {
         parameters: {
             query?: never;
@@ -56,6 +90,41 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
+        /** Edits a room or deactivates it. Facilities only. */
+        patch: operations["UpdateRoom"];
+        trace?: never;
+    };
+    "/api/v1/rooms/availability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists the rooms that are free for a time slot. */
+        get: operations["SearchRoomAvailability"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/rooms/{id}/schedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Gets the busy ranges of a room in a time window. */
+        get: operations["GetRoomSchedule"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
         patch?: never;
         trace?: never;
     };
@@ -83,7 +152,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Lists the bookings of every person, filtered, with paging. Facilities only. */
+        get: operations["ListBookings"];
         put?: never;
         /** Books a room, enforcing the booking rules. */
         post: operations["CreateBooking"];
@@ -223,6 +293,8 @@ export interface components {
             capacity: number | string;
             equipment: null | string[];
         };
+        /** @enum {unknown} */
+        DayOfWeek: "Sunday" | "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday";
         GetHealthResponse: {
             status: string;
             database: string;
@@ -237,6 +309,19 @@ export interface components {
             errors?: {
                 [key: string]: string[];
             };
+        };
+        MeResponse: {
+            /** @description The `sub` claim of the token; the same value as `organizerId` on the bookings of this person. */
+            userId: string;
+            /** @description `Employee` or `Facilities`. */
+            role: string;
+            /**
+             * Format: uuid
+             * @description The customer this person belongs to, from the token.
+             */
+            tenantId: string;
+            /** @description The display name of that customer. */
+            tenantName: string;
         };
         PagedResponseOfBookingResponse: {
             items: components["schemas"]["BookingResponse"][];
@@ -296,6 +381,30 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
         };
+        /** @description One busy range of a room. Everyone sees when it is taken; only Facilities and the organizer see what it is. */
+        RoomScheduleEntry: {
+            /**
+             * Format: uuid
+             * @description The booking; `null` when the caller may not see it.
+             */
+            bookingId: null | string;
+            /**
+             * Format: date-time
+             * @description Start of the booking.
+             */
+            startAt: string;
+            /**
+             * Format: date-time
+             * @description End of the booking.
+             */
+            endAt: string;
+            /** @description The caller organized this booking. */
+            isMine: boolean;
+            /** @description Title of the booking; `null` when the caller may not see it. */
+            title: null | string;
+            /** @description Organizer of the booking; `null` when the caller may not see it. */
+            organizerId: null | string;
+        };
         /** @enum {unknown} */
         RoomStatus: "Free" | "Occupied";
         /** @description A booking that breaks one or more booking rules. */
@@ -314,6 +423,55 @@ export interface components {
             /** @description Every rule the booking breaks, with a stable code. */
             violations: components["schemas"]["RuleViolation"][];
         };
+        /**
+         * @description The booking rules a client can show or check before it sends a booking. The server still decides: a booking that
+         *     breaks a rule gets a 422 with the code of the rule.
+         */
+        RulesResponse: {
+            /**
+             * Format: int32
+             * @description Shortest booking.
+             */
+            minDurationMinutes: number | string;
+            /**
+             * Format: int32
+             * @description Longest booking.
+             */
+            maxDurationMinutes: number | string;
+            /**
+             * Format: int32
+             * @description Starts and ends fall on multiples of this length.
+             */
+            slotMinutes: number | string;
+            /** @description First start time of the day, `HH:mm`, in TimeZone. */
+            officeOpens: string;
+            /** @description Last end time of the day, `HH:mm`, in TimeZone. */
+            officeCloses: string;
+            /** @description Days of the week rooms can be booked. */
+            officeDays: components["schemas"]["DayOfWeek"][];
+            /** @description IANA time zone of the office: the one the hours and the days refer to. */
+            timeZone: string;
+            /**
+             * Format: int32
+             * @description A booking starts at least this many minutes from now.
+             */
+            minLeadTimeMinutes: number | string;
+            /**
+             * Format: int32
+             * @description A booking starts at most this many days from now.
+             */
+            maxAdvanceDays: number | string;
+            /**
+             * Format: int32
+             * @description An Employee can cancel until this many minutes before the start.
+             */
+            cancellationNoticeMinutes: number | string;
+            /**
+             * Format: int32
+             * @description Active bookings the caller can hold; `null` when there is no limit.
+             */
+            maxActiveBookings: null | number | string;
+        };
         RuleViolation: {
             /** @description Stable identifier that clients can switch on. */
             code: string;
@@ -325,6 +483,25 @@ export interface components {
             eventType?: null | string;
             eventId?: null | string;
             reconnectionInterval?: null | string;
+        };
+        /** @description Fields left out are not changed. Equipment replaces the whole list when it is sent. */
+        UpdateRoomRequest: {
+            /** @description New name; unique among the rooms of the tenant. */
+            name: null | string;
+            /**
+             * Format: int32
+             * @description New floor.
+             */
+            floor: null | number | string;
+            /**
+             * Format: int32
+             * @description New capacity.
+             */
+            capacity: null | number | string;
+            /** @description New equipment list. */
+            equipment: null | string[];
+            /** @description `false` takes the room out of the listings and out of new bookings; the bookings it already has stay. */
+            isActive: null | boolean;
         };
     };
     responses: never;
@@ -355,6 +532,53 @@ export interface operations {
             };
         };
     };
+    GetMe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    GetBookingRules: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RulesResponse"];
+                };
+            };
+        };
+    };
     ListRooms: {
         parameters: {
             query?: {
@@ -362,6 +586,8 @@ export interface operations {
                 Floor?: number | string;
                 /** @description Only rooms that fit at least this many people. */
                 MinCapacity?: number | string;
+                /** @description Also return deactivated rooms. Only Facilities get them; for anyone else it is ignored. */
+                IncludeInactive?: boolean;
                 /** @description One-based page number; defaults to 1. */
                 Page?: number | string;
                 /** @description Items per page; defaults to 20 and is capped at 100. */
@@ -455,6 +681,144 @@ export interface operations {
             };
         };
     };
+    UpdateRoom: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateRoomRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoomResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    SearchRoomAvailability: {
+        parameters: {
+            query?: {
+                /** @description Start of the slot to book. */
+                From?: string;
+                /** @description End of the slot to book. */
+                To?: string;
+                /** @description People that must fit; the room needs at least this capacity. */
+                Attendees?: number | string;
+                /** @description Only rooms that fit at least this many people. */
+                MinCapacity?: number | string;
+                /** @description Only rooms on this floor. */
+                Floor?: number | string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoomResponse"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+        };
+    };
+    GetRoomSchedule: {
+        parameters: {
+            query?: {
+                /** @description Start of the window. */
+                From?: string;
+                /** @description End of the window; at most 31 days after From. */
+                To?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoomScheduleEntry"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
     StreamRoomOccupancy: {
         parameters: {
             query?: never;
@@ -481,6 +845,39 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    ListBookings: {
+        parameters: {
+            query?: {
+                /** @description Only bookings of this room. */
+                RoomId?: string;
+                /** @description Only bookings that end after this moment. */
+                From?: string;
+                /** @description Only bookings that start before this moment. */
+                To?: string;
+                /** @description Only bookings in this status; every status when omitted. */
+                Status?: components["schemas"]["BookingStatus"];
+                /** @description One-based page number; defaults to 1. */
+                Page?: number | string;
+                /** @description Items per page; defaults to 20 and is capped at 100. */
+                PageSize?: number | string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedResponseOfBookingResponse"];
+                };
             };
         };
     };

@@ -9,6 +9,7 @@ export default defineConfig({
   // Sin sourcemaps públicos en producción.
   build: { sourcemap: false },
   test: {
+    env: { VITE_API_URL: 'http://api.test' },
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],

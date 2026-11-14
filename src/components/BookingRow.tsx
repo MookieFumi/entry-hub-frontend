@@ -1,0 +1,38 @@
+import { Link } from 'react-router'
+import type { Booking } from '@/api/queries'
+import { Badge } from '@/components/ui/Badge'
+import { formatOfficeDateTime, formatOfficeTime } from '@/lib/dates'
+
+export function BookingRow({
+  booking,
+  roomName,
+  actions,
+}: {
+  booking: Booking
+  roomName?: string
+  actions?: React.ReactNode
+}) {
+  return (
+    <li className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-xs">
+      <div className="min-w-0">
+        <Link
+          to={`/bookings/${booking.id}`}
+          className="font-semibold text-gray-900 hover:text-brand-700"
+        >
+          {booking.title}
+        </Link>
+        <p className="text-sm text-gray-600">
+          {formatOfficeDateTime(booking.startAt)} – {formatOfficeTime(booking.endAt)} ·{' '}
+          {booking.attendees} personas
+          {roomName ? ` · ${roomName}` : ''}
+        </p>
+      </div>
+      <div className="flex items-center gap-3">
+        <Badge tone={booking.status === 'Confirmed' ? 'success' : 'gray'}>
+          {booking.status === 'Confirmed' ? 'Confirmada' : 'Cancelada'}
+        </Badge>
+        {actions}
+      </div>
+    </li>
+  )
+}

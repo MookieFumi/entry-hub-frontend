@@ -12,6 +12,11 @@ export function setTokenProvider(provider: TokenProvider) {
   getToken = provider
 }
 
+/** Token vigente (para flujos que no pasan por openapi-fetch, como el SSE). */
+export async function getAccessToken(): Promise<string | null> {
+  return await getToken()
+}
+
 const authMiddleware: Middleware = {
   async onRequest({ request }) {
     const token = await getToken()
@@ -21,7 +26,7 @@ const authMiddleware: Middleware = {
 }
 
 export function createApiClient(baseUrl = config.apiUrl) {
-  const client = createClient<paths>({ baseUrl })
+  const client = createClient<paths>({ baseUrl, fetch: (request) => globalThis.fetch(request) })
   client.use(authMiddleware)
   return client
 }

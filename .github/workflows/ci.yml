@@ -23,17 +23,17 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Formato
+      - name: Format
         run: npm run format
       - name: Lint
         run: npm run lint
-      - name: Tipos
+      - name: Types
         run: npm run typecheck
-      - name: Los tipos de la API coinciden con el contrato
+      - name: API types match the contract
         run: npm run api:check
-      - name: Pruebas
+      - name: Tests
         run: npm test
       - name: Build
         run: npm run build
-      - name: Vulnerabilidades (dependencias de producción)
+      - name: Vulnerabilities (production dependencies)
         run: npm audit --omit=dev --audit-level=high

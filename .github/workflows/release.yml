@@ -1,7 +1,7 @@
 name: Release
 
-# Se lanza al crear un tag vX.Y.Z. Construye el frontal, lo adjunta a una release de GitHub y, si está
-# activado, lo publica en Cloudflare Pages.
+# Runs when a vX.Y.Z tag is created. Builds the frontend, attaches it to a GitHub release and, if
+# enabled, publishes it to Cloudflare Pages.
 on:
   push:
     tags: ['v*.*.*']
@@ -30,11 +30,11 @@ jobs:
           VITE_API_URL: ${{ vars.VITE_API_URL }}
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
-      - name: Empaquetar
+      - name: Package
         run: |
           cd dist
           zip -r "../entry-hub-frontend-${GITHUB_REF_NAME}.zip" .
-      - name: Release de GitHub
+      - name: GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

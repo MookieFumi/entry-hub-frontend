@@ -24,14 +24,14 @@ const entry = (start: string, end: string, title: string | null, isMine = false)
   organizerId: null,
 })
 
-describe('semana', () => {
-  it('calcula el lunes de cualquier día', () => {
+describe('week', () => {
+  it('computes the Monday of any day', () => {
     expect(mondayOf('2030-01-16')).toBe('2030-01-14')
     expect(mondayOf('2030-01-14')).toBe('2030-01-14')
     expect(mondayOf('2030-01-20')).toBe('2030-01-14')
   })
 
-  it('muestra solo los días laborables y reparte las reservas por día', async () => {
+  it('shows only office days and spreads bookings by day', async () => {
     const { calls } = mockApi({
       ...base,
       [`GET ${roomPath}`]: () => json(room),
@@ -52,7 +52,7 @@ describe('semana', () => {
     expect(decodeURIComponent(req.search)).toContain('To=2030-01-20T23:00:00.000Z')
   })
 
-  it('navega a la semana siguiente', async () => {
+  it('goes to the next week', async () => {
     mockApi({
       ...base,
       [`GET ${roomPath}`]: () => json(room),
@@ -64,8 +64,8 @@ describe('semana', () => {
   })
 })
 
-describe('ficha de sala', () => {
-  it('dibuja la línea de tiempo y la lista equivalente', async () => {
+describe('room page', () => {
+  it('draws the timeline and the equivalent list', async () => {
     mockApi({
       ...base,
       [`GET ${roomPath}`]: () => json(room),
@@ -83,8 +83,8 @@ describe('ficha de sala', () => {
   })
 })
 
-describe('búsqueda de disponibilidad', () => {
-  it('envía planta y capacidad mínima y ofrece reservar la franja', async () => {
+describe('availability search', () => {
+  it('sends floor and minimum capacity and offers to book the slot', async () => {
     const { calls } = mockApi({
       ...base,
       'GET /api/v1/rooms/availability': () => json([room]),
@@ -99,15 +99,15 @@ describe('búsqueda de disponibilidad', () => {
     expect(req.search).toContain('MinCapacity=6')
   })
 
-  it('sin resultados sugiere otra planta u hora', async () => {
+  it('with no results it suggests another floor or time', async () => {
     mockApi({ ...base, 'GET /api/v1/rooms/availability': () => json([]) })
     renderApp('/search?date=2030-01-14&start=10:00&end=11:00')
     expect(await screen.findByText('Ninguna sala libre en esa franja')).toBeInTheDocument()
   })
 })
 
-describe('zona horaria de las reglas', () => {
-  it('usa la zona que publica /rules, no una fija', async () => {
+describe('time zone from the rules', () => {
+  it('uses the zone /rules publishes, not a fixed one', async () => {
     mockApi({
       ...base,
       'GET /api/v1/rules': () => json({ ...rules, timeZone: 'America/New_York' }),

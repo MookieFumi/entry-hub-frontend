@@ -14,10 +14,10 @@ type Status = 'loading' | 'signed-out' | 'signed-in'
 
 type AuthContextValue = {
   status: Status
-  /** Email o identificador a mostrar. */
+  /** Email or identifier to display. */
   label: string | null
   signIn: (email: string, password: string) => Promise<void>
-  /** Solo para desarrollo, sin Supabase: pega un token de `dotnet user-jwts`. */
+  /** Development only, without Supabase: paste a `dotnet user-jwts` token. */
   signInWithToken: (token: string) => void
   signOut: () => Promise<void>
 }
@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [sbLabel, setSbLabel] = useState<string | null>(null)
   const [devToken, setDevToken] = useState<string | null>(() => (supabase ? null : readDevToken()))
 
-  // Sin Supabase el estado se deriva del token de desarrollo; con Supabase, de su sesión.
+  // Without Supabase the state comes from the development token; with Supabase, from its session.
   const status: Status = supabase ? sbStatus : devToken ? 'signed-in' : 'signed-out'
   const label = supabase ? sbLabel : devToken ? 'Token de desarrollo' : null
 

@@ -23,27 +23,27 @@ const baseRoutes = (me = meEmployee) => ({
   'GET /api/v1/rules': () => json(rules),
 })
 
-describe('acceso y guardas', () => {
-  it('sin sesión lleva al login', async () => {
+describe('access and guards', () => {
+  it('without a session it goes to login', async () => {
     mockApi({})
     renderApp('/rooms', { signedIn: false })
     expect(await screen.findByRole('heading', { name: 'Iniciar sesión' })).toBeInTheDocument()
   })
 
-  it('un 403 de /me explica que la cuenta no tiene cliente', async () => {
+  it('a 403 from /me explains the account has no customer', async () => {
     mockApi({ 'GET /api/v1/me': () => json({ title: 'Forbidden' }, 403) })
     renderApp('/')
     expect(await screen.findByText(/no está asignada a ningún cliente/i)).toBeInTheDocument()
   })
 
-  it('un Employee no ve la administración', async () => {
+  it('an Employee does not see administration', async () => {
     mockApi({ ...baseRoutes() })
     renderApp('/admin/rooms')
     expect(await screen.findByText('Sin permiso')).toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Reservas' })).not.toBeInTheDocument()
   })
 
-  it('Facilities ve el menú de administración', async () => {
+  it('Facilities sees the administration menu', async () => {
     mockApi({ ...baseRoutes(meFacilities), 'GET /api/v1/rooms': () => json(page([room])) })
     renderApp('/admin/rooms')
     expect(
@@ -53,26 +53,26 @@ describe('acceso y guardas', () => {
   })
 })
 
-describe('catálogo de salas', () => {
-  it('lista las salas', async () => {
+describe('room catalog', () => {
+  it('lists the rooms', async () => {
     mockApi({ ...baseRoutes(), 'GET /api/v1/rooms': () => json(page([room])) })
     renderApp('/rooms')
     expect(await screen.findByRole('link', { name: 'Sala Gaudí' })).toBeInTheDocument()
   })
 
-  it('muestra el estado vacío', async () => {
+  it('shows the empty state', async () => {
     mockApi({ ...baseRoutes(), 'GET /api/v1/rooms': () => json(page([])) })
     renderApp('/rooms')
     expect(await screen.findByText('No hay salas con esos filtros')).toBeInTheDocument()
   })
 
-  it('muestra el error con reintento', async () => {
+  it('shows the error with retry', async () => {
     mockApi({ ...baseRoutes(), 'GET /api/v1/rooms': () => json({ detail: 'Fallo' }, 500) })
     renderApp('/rooms')
     expect(await screen.findByRole('button', { name: 'Reintentar' })).toBeInTheDocument()
   })
 
-  it('una sala de otro cliente se ve como no encontrada', async () => {
+  it('a room of another customer looks like not found', async () => {
     mockApi({
       ...baseRoutes(),
       'GET /api/v1/rooms/11111111-1111-1111-1111-111111111111': () => json({}, 404),
@@ -82,7 +82,7 @@ describe('catálogo de salas', () => {
   })
 })
 
-describe('reservar', () => {
+describe('booking', () => {
   const roomPath = `/api/v1/rooms/${room.id}`
   const routes = (post: () => Response) => ({
     ...baseRoutes(),
@@ -92,7 +92,7 @@ describe('reservar', () => {
   })
 
   async function fill() {
-    // Lunes lejano para no depender de la fecha actual.
+    // A far-away Monday so the test does not depend on the current date.
     renderApp(`/rooms/${room.id}?date=2030-01-14`)
     await screen.findByRole('heading', { name: 'Sala Gaudí' })
     await waitFor(() => expect(screen.getByLabelText('Hora de inicio')).toBeEnabled())
@@ -101,7 +101,7 @@ describe('reservar', () => {
     await userEvent.type(screen.getByLabelText('Título'), 'Planificación')
   }
 
-  it('envía la reserva con horas en UTC y navega al detalle', async () => {
+  it('sends the booking with UTC times and navigates to the detail', async () => {
     const { calls } = mockApi({
       ...routes(() =>
         json(
@@ -145,7 +145,7 @@ describe('reservar', () => {
     })
   })
 
-  it('marca el campo de asistentes cuando la sala no tiene capacidad (422)', async () => {
+  it('flags the attendees field when the room lacks capacity (422)', async () => {
     mockApi(
       routes(() =>
         json({ status: 422, violations: [{ code: 'ExceedsCapacity', message: 'too many' }] }, 422),
@@ -158,14 +158,14 @@ describe('reservar', () => {
     expect(screen.getByLabelText('Asistentes')).toHaveAttribute('aria-invalid', 'true')
   })
 
-  it('avisa cuando la franja se ocupa a la vez (409)', async () => {
+  it('warns when the slot is taken at the same time (409)', async () => {
     mockApi(routes(() => json({ title: 'Conflict' }, 409)))
     await fill()
     await userEvent.click(screen.getByRole('button', { name: 'Reservar' }))
     expect(await screen.findByText(/se acaba de ocupar/i)).toBeInTheDocument()
   })
 
-  it('valida en el cliente antes de enviar', async () => {
+  it('validates on the client before sending', async () => {
     const { calls } = mockApi(routes(() => json({}, 201)))
     renderApp(`/rooms/${room.id}?date=2030-01-14`)
     await screen.findByRole('heading', { name: 'Sala Gaudí' })
@@ -175,14 +175,14 @@ describe('reservar', () => {
     expect(calls.some((c) => c.key === 'POST /api/v1/bookings')).toBe(false)
   })
 
-  it('no permite reservar en fin de semana', async () => {
+  it('does not allow booking on weekends', async () => {
     mockApi(routes(() => json({}, 201)))
     renderApp(`/rooms/${room.id}?date=2030-01-12`)
     expect(await screen.findByText(/Ese día no se puede reservar/)).toBeInTheDocument()
   })
 })
 
-describe('mis reservas', () => {
+describe('my bookings', () => {
   const future = new Date(Date.now() + 7 * 864e5).toISOString()
   const futureEnd = new Date(Date.now() + 7 * 864e5 + 36e5).toISOString()
   const booking = {
@@ -198,7 +198,7 @@ describe('mis reservas', () => {
     cancelledAt: null,
   }
 
-  it('cancela una reserva con confirmación', async () => {
+  it('cancels a booking after confirmation', async () => {
     const { calls } = mockApi({
       ...baseRoutes(),
       'GET /api/v1/bookings/mine': () => json(page([booking])),
@@ -213,7 +213,7 @@ describe('mis reservas', () => {
     )
   })
 
-  it('explica TooLateToCancel', async () => {
+  it('explains TooLateToCancel', async () => {
     mockApi({
       ...baseRoutes(),
       'GET /api/v1/bookings/mine': () => json(page([booking])),
@@ -228,20 +228,20 @@ describe('mis reservas', () => {
     expect(await screen.findByText(/Ya no se puede cancelar/)).toBeInTheDocument()
   })
 
-  it('un 403 en el detalle explica que no se puede ver', async () => {
+  it('a 403 on the detail explains it cannot be seen', async () => {
     mockApi({ ...baseRoutes(), 'GET /api/v1/bookings/zz': () => json({}, 403) })
     renderApp('/bookings/zz')
     expect(await screen.findByText('No puedes ver esta reserva')).toBeInTheDocument()
   })
 })
 
-describe('administración de salas', () => {
+describe('room administration', () => {
   const routes = () => ({
     ...baseRoutes(meFacilities),
     'GET /api/v1/rooms': () => json(page([room])),
   })
 
-  it('muestra el conflicto de nombre al crear (409)', async () => {
+  it('shows the name conflict on create (409)', async () => {
     mockApi({ ...routes(), 'POST /api/v1/rooms': () => json({ title: 'Conflict' }, 409) })
     renderApp('/admin/rooms')
     await userEvent.click(await screen.findByRole('button', { name: 'Nueva sala' }))
@@ -250,7 +250,7 @@ describe('administración de salas', () => {
     expect(await screen.findByText('Ya existe una sala con ese nombre.')).toBeInTheDocument()
   })
 
-  it('valida los límites antes de enviar', async () => {
+  it('validates the limits before sending', async () => {
     const { calls } = mockApi(routes())
     renderApp('/admin/rooms')
     await userEvent.click(await screen.findByRole('button', { name: 'Nueva sala' }))
@@ -259,7 +259,7 @@ describe('administración de salas', () => {
     expect(calls.some((c) => c.key === 'POST /api/v1/rooms')).toBe(false)
   })
 
-  it('desactiva una sala tras confirmar', async () => {
+  it('deactivates a room after confirmation', async () => {
     const { calls } = mockApi({
       ...routes(),
       'PATCH /api/v1/rooms/11111111-1111-1111-1111-111111111111': () =>
@@ -276,8 +276,8 @@ describe('administración de salas', () => {
   })
 })
 
-describe('estado de la demo', () => {
-  it('muestra la API en marcha', async () => {
+describe('demo status', () => {
+  it('shows the API running', async () => {
     mockApi({
       ...baseRoutes(),
       'GET /api/v1/health': () => json({ status: 'Healthy', database: 'Healthy' }),

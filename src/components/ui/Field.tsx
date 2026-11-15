@@ -12,7 +12,7 @@ type FieldShellProps = {
   children: (ids: { id: string; describedBy?: string; invalid: boolean }) => ReactNode
 }
 
-/** Etiqueta, ayuda y error asociados al control por `aria-describedby`. */
+/** Label, hint and error tied to the control through `aria-describedby`. */
 function FieldShell({ label, hint, error, children }: FieldShellProps) {
   const id = useId()
   const hintId = `${id}-hint`

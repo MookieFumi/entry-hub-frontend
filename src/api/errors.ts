@@ -2,7 +2,7 @@ import type { components } from './schema'
 
 type RuleViolation = components['schemas']['RuleViolation']
 
-/** Mensajes en español para cada código de regla de reserva que devuelve la API (422). */
+/** Spanish user-facing messages for each booking-rule code the API returns (422). */
 const RULE_MESSAGES: Record<string, string> = {
   DurationTooShort: 'La reserva es demasiado corta.',
   DurationTooLong: 'La reserva es demasiado larga.',
@@ -16,7 +16,7 @@ const RULE_MESSAGES: Record<string, string> = {
   TooLateToCancel: 'Ya no se puede cancelar: queda muy poco para el inicio.',
 }
 
-/** Mensaje para un código; si no lo conocemos, usamos el texto que envía la API. */
+/** Message for a code; if it is unknown, use the text the API sends. */
 export function ruleMessage(violation: RuleViolation): string {
   return RULE_MESSAGES[violation.code] ?? violation.message
 }
@@ -31,7 +31,7 @@ export type ApiErrorKind =
   | 'unavailable'
   | 'unknown'
 
-/** Error de la API con la información ya interpretada para la interfaz. */
+/** API error with the information already interpreted for the UI. */
 export class ApiError extends Error {
   readonly kind: ApiErrorKind
   readonly status: number
@@ -77,7 +77,7 @@ function kindFor(status: number): ApiErrorKind {
   }
 }
 
-/** Convierte una respuesta no satisfactoria (application/problem+json o vacía) en un ApiError. */
+/** Turns an unsuccessful response (application/problem+json or empty) into an ApiError. */
 export function toApiError(status: number, body: unknown): ApiError {
   const problem = (body && typeof body === 'object' ? body : {}) as {
     detail?: string | null

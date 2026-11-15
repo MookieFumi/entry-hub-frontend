@@ -7,12 +7,12 @@ type TokenProvider = () => Promise<string | null> | string | null
 
 let getToken: TokenProvider = () => null
 
-/** La capa de autenticación (Supabase) registra aquí cómo obtener el token de acceso vigente. */
+/** The authentication layer (Supabase) registers here how to get the current access token. */
 export function setTokenProvider(provider: TokenProvider) {
   getToken = provider
 }
 
-/** Token vigente (para flujos que no pasan por openapi-fetch, como el SSE). */
+/** Current token (for flows that do not go through openapi-fetch, such as SSE). */
 export async function getAccessToken(): Promise<string | null> {
   return await getToken()
 }
@@ -34,8 +34,8 @@ export function createApiClient(baseUrl = config.apiUrl) {
 export const api = createApiClient()
 
 /**
- * Desenvuelve una respuesta de openapi-fetch: devuelve `data` o lanza un ApiError ya interpretado.
- * Uso: `const rooms = await unwrap(api.GET('/api/v1/rooms'))`.
+ * Unwraps an openapi-fetch response: returns `data` or throws an already interpreted ApiError.
+ * Usage: `const rooms = await unwrap(api.GET('/api/v1/rooms'))`.
  */
 export async function unwrap<T>(
   request: Promise<{ data?: T; error?: unknown; response: Response }>,
@@ -44,7 +44,7 @@ export async function unwrap<T>(
   try {
     result = await request
   } catch {
-    // Fallo de red, CORS o API dormida (arranque en frío): para la interfaz es "no disponible".
+    // Network failure, CORS or a sleeping API (cold start): for the UI it is "unavailable".
     throw toApiError(503, { detail: 'No se pudo contactar con el servidor.' })
   }
   if (result.error !== undefined || !result.response.ok) {

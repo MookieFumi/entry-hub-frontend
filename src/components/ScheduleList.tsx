@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/Badge'
 import { formatOfficeTime } from '@/lib/dates'
 import type { ScheduleEntry } from '@/lib/slots'
 
-/** Lista de reservas del día en texto: equivale a la línea de tiempo para teclado y lectores de pantalla. */
+/** The day's bookings as text: equivalent to the timeline for keyboard and screen-reader users. */
 export function ScheduleList({
   entries,
   timeZone,

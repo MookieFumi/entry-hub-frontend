@@ -1,5 +1,6 @@
 import createClient, { type Middleware } from 'openapi-fetch'
 import { config } from '@/lib/config'
+import { t } from '@/i18n'
 import { toApiError } from './errors'
 import type { paths } from './schema'
 
@@ -45,7 +46,7 @@ export async function unwrap<T>(
     result = await request
   } catch {
     // Network failure, CORS or a sleeping API (cold start): for the UI it is "unavailable".
-    throw toApiError(503, { detail: 'No se pudo contactar con el servidor.' })
+    throw toApiError(503, { detail: t('error.unreachable') })
   }
   if (result.error !== undefined || !result.response.ok) {
     throw toApiError(result.response.status, result.error)

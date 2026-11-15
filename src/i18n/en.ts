@@ -252,4 +252,7 @@ export const en: Catalog = {
   'error.generic': 'Error {status}',
   'app.title': 'EntryHub · Room booking',
   'rule.SiteClosed': 'The site is closed that day.',
+  'error.unreachable': 'Could not reach the server.',
+    'Days when a site does not accept bookings. Existing bookings are not affected.',
+    'The site will accept bookings that day again. Existing bookings do not change.',
 }

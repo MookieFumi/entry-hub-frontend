@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router'
-import { useRoom, useRules, useSchedule } from '@/api/queries'
+import { useOfficeZone, useRoom, useRules, useSchedule } from '@/api/queries'
 import { ApiError } from '@/api/errors'
 import { BookingForm } from '@/components/BookingForm'
+import { DayTimeline } from '@/components/DayTimeline'
+import { ScheduleList } from '@/components/ScheduleList'
 import { Badge } from '@/components/ui/Badge'
 import { Alert, Card, EmptyState, ErrorState, PageHeader, Skeleton } from '@/components/ui/Feedback'
 import { useRoomOccupancy } from '@/hooks/useRoomOccupancy'
@@ -10,9 +12,12 @@ import { formatOfficeTime } from '@/lib/dates'
 import { addDays, dateInZone, zonedToUtc } from '@/lib/tz'
 
 function Occupancy({ roomId }: { roomId: string }) {
+  const tz = useOfficeZone()
   const { occupancy, connected } = useRoomOccupancy(roomId)
   if (!occupancy) return <Badge>{connected ? 'Sin datos' : 'Conectando…'}</Badge>
-  const until = occupancy.nextChange ? ` hasta las ${formatOfficeTime(occupancy.nextChange)}` : ''
+  const until = occupancy.nextChange
+    ? ` hasta las ${formatOfficeTime(occupancy.nextChange, tz)}`
+    : ''
   return occupancy.status === 'Free' ? (
     <Badge tone="success">Libre ahora{until}</Badge>
   ) : (
@@ -25,7 +30,7 @@ export function RoomDetail() {
   const [params] = useSearchParams()
   const room = useRoom(id)
   const rules = useRules()
-  const tz = rules.data?.timeZone ?? 'Europe/Madrid'
+  const tz = useOfficeZone()
   const [date, setDate] = useState(params.get('date') ?? dateInZone(new Date(), tz))
   const from = zonedToUtc(date, '00:00', tz).toISOString()
   const to = zonedToUtc(addDays(date, 1), '00:00', tz).toISOString()
@@ -85,25 +90,18 @@ export function RoomDetail() {
           {schedule.error && (
             <ErrorState message={schedule.error.message} onRetry={() => void schedule.refetch()} />
           )}
-          {schedule.data && schedule.data.length === 0 && (
-            <p className="text-sm text-gray-600">Sin reservas este día.</p>
+          {schedule.data && rules.data && (
+            <div className="mb-8">
+              <DayTimeline entries={schedule.data} rules={rules.data} label="Ocupación del día" />
+            </div>
           )}
-          {schedule.data && schedule.data.length > 0 && (
-            <ul className="flex flex-col gap-2">
-              {schedule.data.map((s, i) => (
-                <li
-                  key={s.bookingId ?? i}
-                  className="flex items-center justify-between gap-2 rounded-lg bg-gray-50 px-3 py-2 text-sm"
-                >
-                  <span>
-                    {formatOfficeTime(s.startAt)} – {formatOfficeTime(s.endAt)}
-                    {s.title ? ` · ${s.title}` : ''}
-                  </span>
-                  {s.isMine && <Badge tone="brand">Tuya</Badge>}
-                </li>
-              ))}
-            </ul>
-          )}
+          {schedule.data && <ScheduleList entries={schedule.data} timeZone={tz} />}
+          <Link
+            className="mt-4 inline-block text-sm font-medium text-brand-700 underline"
+            to={`/rooms/${id}/week?date=${date}`}
+          >
+            Ver la semana
+          </Link>
         </Card>
       </div>
     </>

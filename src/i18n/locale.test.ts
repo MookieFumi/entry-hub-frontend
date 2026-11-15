@@ -13,6 +13,7 @@ describe('language choice', () => {
     setLocale('en')
     expect(localStorage.getItem('entryhub.locale')).toBe('en')
     expect(document.documentElement.lang).toBe('en')
+    expect(document.title).toBe('EntryHub · Room booking')
   })
 
   it('starts from the saved choice', () => {

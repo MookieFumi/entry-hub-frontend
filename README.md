@@ -63,3 +63,15 @@ Full plan and backlog: the project plan (`frontal-react-plan.md`) and the GitHub
 Type checking and the build use TypeScript 7 (native compiler) through the `typescript7` alias in `package.json`.
 `typescript` stays on 5.x because `typescript-eslint` and `openapi-typescript` still need the JavaScript compiler API.
 When both support TypeScript 7, remove the alias and move `typescript` to 7.
+
+## Languages
+
+The UI is available in Spanish (default) and English. The language is chosen with the selector in the header; the choice is saved in `localStorage` (`entryhub.locale`), the first visit follows the browser language, and `<html lang>` and the page title follow it. Dates use the language's format but always show the office time zone.
+
+Messages live in `src/i18n/es.ts` (the source of truth for the keys) and `src/i18n/en.ts`. Use `useT()` in components and `t()` elsewhere; placeholders look like `{name}`. A test fails when the catalogs have different keys or placeholders.
+
+To add a language (for example `fr`):
+
+1. Add `'fr'` to the `Locale` type and the `LOCALES` list in `src/i18n/index.ts`, with its format tag in `FORMAT_LOCALES` (for example `fr-FR`).
+2. Create `src/i18n/fr.ts` typed as `Catalog` and register it in `catalogs`.
+3. Add its name to the `language.*` keys in every catalog and run `npm test`; the parity test lists what is missing.

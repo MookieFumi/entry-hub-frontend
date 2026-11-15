@@ -252,4 +252,5 @@ export const es = {
   'search.noneHint': 'Prueba con otra hora, otra planta o con menos asistentes.',
   'search.bookSlot': 'Reservar esta franja',
   'error.generic': 'Error {status}',
+  'app.title': 'EntryHub · Reserva de salas',
 } as const

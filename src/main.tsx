@@ -6,7 +6,10 @@ import { AuthProvider } from './auth/AuthProvider'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { ToastProvider } from './components/ui/Toasts'
 import { ApiError } from './api/errors'
+import { initLocale } from './i18n'
 import './styles/index.css'
+
+initLocale()
 
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -4,6 +4,8 @@ import { useCreateBooking, useRules, type Room } from '@/api/queries'
 import { ApiError } from '@/api/errors'
 import { describeRules, dayName } from '@/lib/rules-text'
 import { buildSlots, endOptions, isBookableDay, toIso, type ScheduleEntry } from '@/lib/slots'
+import { ClosedDaysNotice } from '@/components/ClosedDaysNotice'
+import { useClosedDays } from '@/hooks/useClosedDays'
 import { Button } from '@/components/ui/Button'
 import { SelectField, TextField } from '@/components/ui/Field'
 import { Alert } from '@/components/ui/Feedback'
@@ -31,6 +33,7 @@ export function BookingForm({
 }: Props) {
   const t = useT()
   const rules = useRules()
+  const closedDays = useClosedDays(room.siteId)
   const create = useCreateBooking()
   const navigate = useNavigate()
   const { notify } = useToast()
@@ -57,7 +60,9 @@ export function BookingForm({
   if (rules.isPending) return <p className="text-sm text-gray-500">{t('common.rulesLoading')}</p>
   if (rules.error || !rules.data) return <Alert tone="error">{t('common.rulesFailed')}</Alert>
   const r = rules.data
-  const bookableDay = isBookableDay(date, r)
+  const openWeekday = isBookableDay(date, r)
+  const closedToday = closedDays.data?.some((h) => h.date === date) ?? false
+  const bookableDay = openWeekday && !closedToday
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
@@ -121,11 +126,12 @@ export function BookingForm({
         value={date}
         onChange={(e) => e.target.value && onDateChange(e.target.value)}
       />
-      {!bookableDay && (
+      {!openWeekday && (
         <Alert tone="warning">
           {t('common.closedDay', { days: r.officeDays.map(dayName).join(', ') })}
         </Alert>
       )}
+      <ClosedDaysNotice holidays={closedDays.data ?? []} date={date} />
       <div className="grid gap-4 sm:grid-cols-2">
         <SelectField
           label={t('form.start')}

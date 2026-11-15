@@ -279,4 +279,7 @@ export const en: Catalog = {
   'closed.reopenBody':
     'The site will accept bookings that day again. Existing bookings do not change.',
   'closed.unnamed': '(no name)',
+  'closed.dayClosed': 'The site is closed that day: it cannot be booked.',
+  'closed.dayClosedNamed': 'The site is closed that day ({name}): it cannot be booked.',
+  'closed.upcoming': 'Next closed days: {days}.',
 }

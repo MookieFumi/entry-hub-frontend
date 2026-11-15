@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router'
 import {
   useOfficeZone,
   useRescheduleBooking,
+  useRoom,
   useRules,
   useSchedule,
   type Booking,
@@ -11,6 +12,8 @@ import { ApiError } from '@/api/errors'
 import { buildSlots, endOptions, isBookableDay, toIso } from '@/lib/slots'
 import { addDays, dateInZone, zonedToUtc } from '@/lib/tz'
 import { dayName } from '@/lib/rules-text'
+import { ClosedDaysNotice } from '@/components/ClosedDaysNotice'
+import { useClosedDays } from '@/hooks/useClosedDays'
 import { Button } from '@/components/ui/Button'
 import { SelectField, TextField } from '@/components/ui/Field'
 import { Alert } from '@/components/ui/Feedback'
@@ -21,6 +24,8 @@ import { useT } from '@/i18n'
 export function RescheduleForm({ booking }: { booking: Booking }) {
   const t = useT()
   const rules = useRules()
+  const room = useRoom(booking.roomId)
+  const closedDays = useClosedDays(room.data?.siteId)
   const tz = useOfficeZone()
   const reschedule = useRescheduleBooking()
   const navigate = useNavigate()
@@ -54,7 +59,9 @@ export function RescheduleForm({ booking }: { booking: Booking }) {
   if (rules.isPending) return <p className="text-sm text-gray-500">{t('common.rulesLoading')}</p>
   if (rules.error || !rules.data) return <Alert tone="error">{t('common.rulesFailed')}</Alert>
   const r = rules.data
-  const bookableDay = isBookableDay(date, r)
+  const openWeekday = isBookableDay(date, r)
+  const closedToday = closedDays.data?.some((h) => h.date === date) ?? false
+  const bookableDay = openWeekday && !closedToday
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
@@ -120,11 +127,12 @@ export function RescheduleForm({ booking }: { booking: Booking }) {
           setEnd('')
         }}
       />
-      {!bookableDay && (
+      {!openWeekday && (
         <Alert tone="warning">
           {t('common.closedDay', { days: r.officeDays.map(dayName).join(', ') })}
         </Alert>
       )}
+      <ClosedDaysNotice holidays={closedDays.data ?? []} date={date} />
       <div className="grid gap-4 sm:grid-cols-2">
         <SelectField
           label={t('form.newStart')}

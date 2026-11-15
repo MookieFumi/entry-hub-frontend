@@ -1,4 +1,7 @@
+import { setLocale } from '@/i18n'
 import { ruleMessage, toApiError } from './errors'
+
+afterEach(() => setLocale('es'))
 
 describe('toApiError', () => {
   it('turns the broken rules of a 422 into Spanish messages', () => {
@@ -13,6 +16,12 @@ describe('toApiError', () => {
     expect(error.violations).toHaveLength(2)
     expect(error.message).toContain('capacidad de la sala')
     expect(error.message).toContain('demasiado pronto')
+  })
+
+  it('uses the current language for the rule messages', () => {
+    setLocale('en')
+    const error = toApiError(422, { violations: [{ code: 'TooSoon', message: 'x' }] })
+    expect(error.message).toBe('The booking starts too soon.')
   })
 
   it('uses the API text when the code is unknown', () => {

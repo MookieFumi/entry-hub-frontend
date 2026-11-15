@@ -1,26 +1,12 @@
+import { hasMessage, t } from '@/i18n'
 import type { components } from './schema'
 
 type RuleViolation = components['schemas']['RuleViolation']
 
-/** Spanish user-facing messages for each booking-rule code the API returns (422). */
-const RULE_MESSAGES: Record<string, string> = {
-  DurationTooShort: 'La reserva es demasiado corta.',
-  DurationTooLong: 'La reserva es demasiado larga.',
-  NotOnSlotBoundary: 'El inicio y el fin deben ir en tramos de 15 minutos.',
-  OutsideOfficeHours: 'Fuera del horario de la oficina (de lunes a viernes, en un solo día).',
-  TooSoon: 'La reserva empieza demasiado pronto.',
-  TooFarAhead: 'La reserva está demasiado lejos en el tiempo.',
-  ExceedsCapacity: 'Hay más asistentes que la capacidad de la sala.',
-  RoomUnavailable: 'La sala no está disponible en esa franja.',
-  TooManyActiveBookings: 'Has alcanzado el máximo de reservas activas.',
-  TooLateToReschedule: 'Ya no se puede reprogramar: queda muy poco para el inicio.',
-  NotActive: 'La sala no está activa.',
-  TooLateToCancel: 'Ya no se puede cancelar: queda muy poco para el inicio.',
-}
-
-/** Message for a code; if it is unknown, use the text the API sends. */
+/** Message for a code in the current language; unknown codes use the text the API sends. */
 export function ruleMessage(violation: RuleViolation): string {
-  return RULE_MESSAGES[violation.code] ?? violation.message
+  const key = `rule.${violation.code}`
+  return hasMessage(key) ? t(key) : violation.message
 }
 
 export type ApiErrorKind =

@@ -32,7 +32,7 @@ The app uses password sign-in only, so no redirect happens in the normal flow; t
 
 The API needs two claims in the access token: `tenant_id` (a GUID) and `user_role` (`Employee` or `Facilities`). Supabase adds them through a _Custom Access Token Hook_. The role claim is called `user_role` and not `role` because in Supabase `role` is `authenticated` (the PostgreSQL role). The API must run with `Authentication__RoleClaim=user_role`.
 
-> The hook is not stored in any repository: the SQL below is the only copy. Run it once per Supabase project.
+> The same SQL is in `docs/supabase-setup.md` of the [entry-hub](https://github.com/mookie-studio/entry-hub) repository. Run it once per Supabase project.
 
 1. **Signing keys.** _Project Settings → JWT Keys / Signing Keys_: the project must use an asymmetric key (the API validates tokens through the public JWKS at `https://<project-ref>.supabase.co/auth/v1/.well-known/jwks.json`).
 2. **Sign-ups off.** _Authentication → Sign In / Providers_, untick "Allow new users to sign up". This is a demo: an administrator creates the accounts.
@@ -74,6 +74,13 @@ The API needs two claims in the access token: `tenant_id` (a GUID) and `user_rol
    grant execute on function private.custom_access_token_hook to supabase_auth_admin;
    revoke execute on function private.custom_access_token_hook from authenticated, anon, public;
    ```
+
+   > **The editor warning.** The SQL Editor warns that the query "creates a table without enabling Row Level Security". Choose **Run without RLS**. It is fine here: the `private` schema is not exposed by the Data API and only `supabase_auth_admin` has a grant on the table. If you enable RLS anyway (`alter table private.user_tenants enable row level security;`), also create this policy, or the hook stops seeing rows and the tokens come out **without `tenant_id`** and `user_role`:
+   >
+   > ```sql
+   > create policy "auth hook read" on private.user_tenants
+   >   for select to supabase_auth_admin using (true);
+   > ```
 
 4. **Enable the hook.** _Authentication → Hooks_ → _Custom Access Token_ → Postgres function → `private.custom_access_token_hook`.
 5. **Create the users.** _Authentication → Users → Add user → Create new user_, with **Auto Confirm User** ticked (the default Supabase mailer has a very low sending limit). The API seeds two demo tenants when it starts with `Demo__Seed=true`:

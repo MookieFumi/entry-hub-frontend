@@ -4,6 +4,7 @@ import { useAuth } from '@/auth/AuthProvider'
 import { useMe } from '@/api/queries'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
+import { LanguageSwitcher } from './LanguageSwitcher'
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
   `block rounded-lg px-3 py-2 text-sm font-medium ${isActive ? 'bg-brand-50 text-brand-700' : 'text-gray-700 hover:bg-gray-50'}`
@@ -72,6 +73,7 @@ export function AppLayout() {
           </div>
           <div className="flex items-center gap-3">
             {me.data && <Badge tone={isFacilities ? 'brand' : 'gray'}>{me.data.role}</Badge>}
+            <LanguageSwitcher />
             <span className="hidden text-sm text-gray-600 sm:inline">{label}</span>
             <Button variant="secondary" onClick={() => void signOut()}>
               Cerrar sesión

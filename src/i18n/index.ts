@@ -19,10 +19,56 @@ export function getLocale(): Locale {
   return current
 }
 
+const STORAGE_KEY = 'entryhub.locale'
+
+/** BCP 47 tag used for dates and numbers in each language. */
+const FORMAT_LOCALES: Record<Locale, string> = { es: 'es-ES', en: 'en-GB' }
+
+export function formatLocale(locale: Locale = current): string {
+  return FORMAT_LOCALES[locale]
+}
+
+export function isLocale(value: unknown): value is Locale {
+  return value === 'es' || value === 'en'
+}
+
+function applyToDocument(locale: Locale): void {
+  if (typeof document !== 'undefined') document.documentElement.lang = locale
+}
+
 export function setLocale(locale: Locale): void {
   if (locale === current) return
   current = locale
+  applyToDocument(locale)
+  try {
+    localStorage.setItem(STORAGE_KEY, locale)
+  } catch {
+    // Storage can be unavailable (private mode); the choice then lasts only for this visit.
+  }
   listeners.forEach((listener) => listener())
+}
+
+/** Language to start with: the saved choice, then the browser language, then Spanish. */
+export function detectLocale(): Locale {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    if (isLocale(saved)) return saved
+  } catch {
+    // Ignore unavailable storage.
+  }
+  const preferred = typeof navigator === 'undefined' ? [] : (navigator.languages ?? [])
+  for (const tag of preferred) {
+    const base = tag.toLowerCase().split('-')[0]
+    if (isLocale(base)) return base
+  }
+  return DEFAULT_LOCALE
+}
+
+/** Call once at startup (not at import time, so tests keep the default language). */
+export function initLocale(): void {
+  const detected = detectLocale()
+  applyToDocument(detected)
+  current = detected
 }
 
 function subscribe(listener: () => void): () => void {

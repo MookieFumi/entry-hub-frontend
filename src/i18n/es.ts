@@ -17,5 +17,8 @@ export const es = {
   'rule.TooLateToReschedule': 'Ya no se puede reprogramar: queda muy poco para el inicio.',
   'rule.NotActive': 'La sala no está activa.',
   'rule.TooLateToCancel': 'Ya no se puede cancelar: queda muy poco para el inicio.',
+  'language.label': 'Idioma',
+  'language.es': 'Español',
+  'language.en': 'English',
   'common.loading': 'Cargando…',
 } as const

@@ -15,5 +15,8 @@ export const en: Catalog = {
   'rule.TooLateToReschedule': 'It can no longer be rescheduled: the start is too close.',
   'rule.NotActive': 'The room is not active.',
   'rule.TooLateToCancel': 'It can no longer be cancelled: the start is too close.',
+  'language.label': 'Language',
+  'language.es': 'Español',
+  'language.en': 'English',
   'common.loading': 'Loading…',
 }

@@ -10,6 +10,7 @@ export default defineConfig({
   build: { sourcemap: false },
   test: {
     env: { VITE_API_URL: 'http://api.test' },
+    include: ['src/**/*.test.{ts,tsx}'],
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],

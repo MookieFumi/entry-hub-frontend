@@ -2,7 +2,7 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
+  useLayoutEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -42,7 +42,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const status: Status = supabase ? sbStatus : devToken ? 'signed-in' : 'signed-out'
   const label = supabase ? sbLabel : devToken ? 'Token de desarrollo' : null
 
-  useEffect(() => {
+  // A layout effect, so the token provider is registered before the children's first requests
+  // (children's passive effects, such as query fetches, run after it).
+  useLayoutEffect(() => {
     if (!supabase) {
       setTokenProvider(() => devToken)
       return

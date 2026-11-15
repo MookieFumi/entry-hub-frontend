@@ -35,5 +35,9 @@ jobs:
         run: npm test
       - name: Build
         run: npm run build
+      - name: Install the browser for the end-to-end tests
+        run: npx playwright install --with-deps chromium
+      - name: End-to-end tests and accessibility
+        run: npm run e2e
       - name: Vulnerabilities (production dependencies)
         run: npm audit --omit=dev --audit-level=high

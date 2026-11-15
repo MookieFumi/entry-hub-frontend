@@ -27,8 +27,13 @@ Without the Supabase variables, the login screen accepts a token pasted from `do
 | `npm run dev` / `build` / `preview`     | Development server, production build and preview                     |
 | `npm run lint` · `format` · `typecheck` | ESLint, Prettier (check only) and TypeScript                         |
 | `npm test`                              | Tests with Vitest                                                    |
+| `npm run e2e`                           | Playwright end-to-end tests and axe accessibility checks             |
 | `npm run api:types`                     | Regenerates `src/api/schema.d.ts` from `contracts/EntryHub.Api.json` |
 | `npm run api:check`                     | Fails if the committed types do not match the contract               |
+
+## End-to-end tests
+
+`npm run e2e` starts the app with the API simulated in the browser (`e2e/fake-api.ts`), so no backend is needed. It covers sign-in, booking, cancellation, room creation and axe accessibility checks (no serious violations) on the key screens. Locally, install the browser once with `npx playwright install chromium`, or point `PW_CHROMIUM_PATH` to an existing Chromium. `@axe-core/playwright` is MPL-2.0 and is a development dependency only; it is not shipped in the app.
 
 ## API contract
 

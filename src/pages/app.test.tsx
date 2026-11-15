@@ -36,6 +36,13 @@ describe('access and guards', () => {
     expect(await screen.findByText(/no está asignada a ningún cliente/i)).toBeInTheDocument()
   })
 
+  it('the very first request already carries the token', async () => {
+    const { calls } = mockApi({ ...baseRoutes() })
+    renderApp('/')
+    await screen.findByText('Acme')
+    expect(calls[0]?.auth).toBe('Bearer test-token')
+  })
+
   it('an Employee does not see administration', async () => {
     mockApi({ ...baseRoutes() })
     renderApp('/admin/rooms')

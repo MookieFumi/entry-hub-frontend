@@ -1,17 +1,19 @@
 import { Link } from 'react-router'
 import { EmptyState } from '@/components/ui/Feedback'
+import { useT } from '@/i18n'
 
 export function NotFound() {
+  const t = useT()
   return (
     <EmptyState
-      title="Página no encontrada"
+      title={t('notFound.title')}
       action={
         <Link className="text-brand-700 underline" to="/">
-          Volver al inicio
+          {t('notFound.home')}
         </Link>
       }
     >
-      La dirección no existe o ha cambiado.
+      {t('notFound.body')}
     </EmptyState>
   )
 }

@@ -1,8 +1,9 @@
 import { useFeatures, type Feature } from '@/api/queries'
+import { useT, type MessageKey } from '@/i18n'
 
-const KINDS: { kind: Feature['kind']; legend: string }[] = [
-  { kind: 'Equipment', legend: 'Equipamiento' },
-  { kind: 'Accessibility', legend: 'Accesibilidad' },
+const KINDS: { kind: Feature['kind']; legend: MessageKey }[] = [
+  { kind: 'Equipment', legend: 'features.Equipment' },
+  { kind: 'Accessibility', legend: 'features.Accessibility' },
 ]
 
 /**
@@ -20,10 +21,10 @@ export function FeatureChecklist({
   valueOf: (feature: Feature) => string
   includeInactive?: boolean
 }) {
+  const t = useT()
   const catalog = useFeatures(includeInactive)
-  if (catalog.isPending) return <p className="text-sm text-gray-500">Cargando catálogo…</p>
-  if (catalog.error)
-    return <p className="text-sm text-error-700">No se pudo cargar el catálogo de equipamiento.</p>
+  if (catalog.isPending) return <p className="text-sm text-gray-500">{t('features.loading')}</p>
+  if (catalog.error) return <p className="text-sm text-error-700">{t('features.failed')}</p>
 
   const toggle = (value: string, checked: boolean) =>
     onChange(checked ? [...selected, value] : selected.filter((v) => v !== value))
@@ -35,7 +36,7 @@ export function FeatureChecklist({
         if (entries.length === 0) return null
         return (
           <fieldset key={kind} className="min-w-0">
-            <legend className="mb-1.5 text-sm font-medium text-gray-700">{legend}</legend>
+            <legend className="mb-1.5 text-sm font-medium text-gray-700">{t(legend)}</legend>
             <div className="flex flex-wrap gap-x-4 gap-y-1.5">
               {entries.map((f) => {
                 const value = valueOf(f)
@@ -50,7 +51,9 @@ export function FeatureChecklist({
                       onChange={(e) => toggle(value, e.target.checked)}
                     />
                     {f.name}
-                    {!f.isActive && <span className="text-xs text-gray-500">(inactivo)</span>}
+                    {!f.isActive && (
+                      <span className="text-xs text-gray-500">{t('features.inactive')}</span>
+                    )}
                   </label>
                 )
               })}

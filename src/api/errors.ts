@@ -77,7 +77,7 @@ export function toApiError(status: number, body: unknown): ApiError {
   const message =
     violations.length > 0
       ? violations.map(ruleMessage).join(' ')
-      : (problem.detail ?? problem.title ?? `Error ${status}`)
+      : (problem.detail ?? problem.title ?? t('error.generic', { status }))
 
   return new ApiError({
     kind: kindFor(status),

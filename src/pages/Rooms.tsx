@@ -5,11 +5,13 @@ import { RoomCard } from '@/components/RoomCard'
 import { TextField } from '@/components/ui/Field'
 import { EmptyState, ErrorState, PageHeader, Skeleton } from '@/components/ui/Feedback'
 import { Pagination } from '@/components/ui/Pagination'
+import { useT } from '@/i18n'
 
 const PAGE_SIZE = 12
 const num = (v: string | null) => (v && /^-?\d+$/.test(v) ? Number(v) : undefined)
 
 export function Rooms() {
+  const t = useT()
   const [params, setParams] = useSearchParams()
   const floor = num(params.get('floor'))
   const minCapacity = num(params.get('minCapacity'))
@@ -27,14 +29,14 @@ export function Rooms() {
 
   return (
     <>
-      <PageHeader title="Salas" description="Encuentra una sala y reserva una franja." />
+      <PageHeader title={t('rooms.title')} description={t('rooms.description')} />
       <form
         className="mb-6 grid gap-4 sm:grid-cols-2"
         role="search"
         onSubmit={(e) => e.preventDefault()}
       >
         <TextField
-          label="Planta"
+          label={t('rooms.floor')}
           type="number"
           min={-5}
           max={100}
@@ -42,7 +44,7 @@ export function Rooms() {
           onChange={(e) => update('floor', e.target.value)}
         />
         <TextField
-          label="Capacidad mínima"
+          label={t('rooms.minCapacity')}
           type="number"
           min={1}
           max={500}
@@ -68,9 +70,7 @@ export function Rooms() {
         <ErrorState message={rooms.error.message} onRetry={() => void rooms.refetch()} />
       )}
       {rooms.data && rooms.data.items.length === 0 && (
-        <EmptyState title="No hay salas con esos filtros">
-          Prueba con otra planta, una capacidad menor o menos requisitos.
-        </EmptyState>
+        <EmptyState title={t('rooms.noneTitle')}>{t('rooms.noneHint')}</EmptyState>
       )}
       {rooms.data && rooms.data.items.length > 0 && (
         <>

@@ -1,5 +1,6 @@
 import { type Rules, type ScheduleEntry } from '@/lib/slots'
 import { timeInZone } from '@/lib/tz'
+import { useT } from '@/i18n'
 
 const minutes = (hhmm: string) => {
   const [h, m] = hhmm.split(':').map(Number) as [number, number]
@@ -19,6 +20,7 @@ export function DayTimeline({
   rules: Rules
   label: string
 }) {
+  const t = useT()
   const open = minutes(rules.officeOpens)
   const close = minutes(rules.officeCloses)
   const span = close - open
@@ -29,7 +31,7 @@ export function DayTimeline({
   return (
     <div
       role="img"
-      aria-label={`${label}: ${entries.length === 0 ? 'sin reservas' : `${entries.length} reservas`}`}
+      aria-label={`${label}: ${entries.length === 0 ? t('timeline.none') : t('timeline.count', { count: entries.length })}`}
       className="relative h-10 rounded-lg bg-gray-100"
     >
       {entries.map((e, i) => {

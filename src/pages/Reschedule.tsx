@@ -4,8 +4,10 @@ import { ApiError } from '@/api/errors'
 import { RescheduleForm } from '@/components/RescheduleForm'
 import { Card, EmptyState, ErrorState, PageHeader, Skeleton } from '@/components/ui/Feedback'
 import { formatOfficeDateTime, formatOfficeTime } from '@/lib/dates'
+import { useT } from '@/i18n'
 
 export function Reschedule() {
+  const t = useT()
   const { id = '' } = useParams()
   const tz = useOfficeZone()
   const booking = useBooking(id)
@@ -15,14 +17,14 @@ export function Reschedule() {
   if (booking.error instanceof ApiError && ['forbidden', 'not-found'].includes(booking.error.kind))
     return (
       <EmptyState
-        title="No se puede reprogramar esta reserva"
+        title={t('reschedule.cannotTitle')}
         action={
           <Link className="text-brand-700 underline" to="/bookings">
-            Mis reservas
+            {t('nav.myBookings')}
           </Link>
         }
       >
-        No existe o no tienes permiso para modificarla.
+        {t('reschedule.cannotHint')}
       </EmptyState>
     )
   if (booking.error)
@@ -33,24 +35,26 @@ export function Reschedule() {
   return (
     <>
       <PageHeader
-        title="Reprogramar reserva"
+        title={t('reschedule.title')}
         description={`${b.title} · ${room.data?.name ?? ''}`.replace(/ · $/, '')}
       />
       {!editable ? (
         <EmptyState
-          title="Esta reserva ya no se puede reprogramar"
+          title={t('reschedule.notEditableTitle')}
           action={
             <Link className="text-brand-700 underline" to={`/bookings/${b.id}`}>
-              Volver a la reserva
+              {t('reschedule.backToBooking')}
             </Link>
           }
         >
-          Solo se pueden reprogramar reservas confirmadas que aún no han empezado.
+          {t('reschedule.notEditableHint')}
         </EmptyState>
       ) : (
         <Card className="flex max-w-xl flex-col gap-4">
           <p className="text-sm text-gray-600">
-            Ahora: {formatOfficeDateTime(b.startAt, tz)} – {formatOfficeTime(b.endAt, tz)}
+            {t('reschedule.current', {
+              range: `${formatOfficeDateTime(b.startAt, tz)} – ${formatOfficeTime(b.endAt, tz)}`,
+            })}
           </p>
           <RescheduleForm booking={b} />
         </Card>

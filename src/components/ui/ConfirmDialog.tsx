@@ -1,5 +1,6 @@
 import { Dialog } from '@base-ui/react/dialog'
 import type { ReactNode } from 'react'
+import { useT } from '@/i18n'
 import { Button } from './Button'
 
 export function ConfirmDialog({
@@ -21,6 +22,7 @@ export function ConfirmDialog({
   busy?: boolean
   onConfirm: () => void
 }) {
+  const t = useT()
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
@@ -31,13 +33,13 @@ export function ConfirmDialog({
             {children}
           </Dialog.Description>
           <div className="mt-6 flex justify-end gap-3">
-            <Dialog.Close render={<Button variant="secondary" />}>Volver</Dialog.Close>
+            <Dialog.Close render={<Button variant="secondary" />}>{t('common.back')}</Dialog.Close>
             <Button
               variant={destructive ? 'destructive' : 'primary'}
               disabled={busy}
               onClick={onConfirm}
             >
-              {busy ? 'Procesando…' : confirmLabel}
+              {busy ? t('common.processing') : confirmLabel}
             </Button>
           </div>
         </Dialog.Popup>

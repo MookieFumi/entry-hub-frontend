@@ -2,12 +2,13 @@ import { useMemo, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router'
 import { useCreateBooking, useRules, type Room } from '@/api/queries'
 import { ApiError } from '@/api/errors'
-import { describeRules, dayEs } from '@/lib/rules-text'
+import { describeRules, dayName } from '@/lib/rules-text'
 import { buildSlots, endOptions, isBookableDay, toIso, type ScheduleEntry } from '@/lib/slots'
 import { Button } from '@/components/ui/Button'
 import { SelectField, TextField } from '@/components/ui/Field'
 import { Alert } from '@/components/ui/Feedback'
 import { useToast } from '@/components/ui/Toasts'
+import { useT } from '@/i18n'
 
 type Props = {
   room: Room
@@ -28,6 +29,7 @@ export function BookingForm({
   initialEnd = '',
   onConflict,
 }: Props) {
+  const t = useT()
   const rules = useRules()
   const create = useCreateBooking()
   const navigate = useNavigate()
@@ -52,9 +54,8 @@ export function BookingForm({
   )
   const endValue = ends.includes(end) ? end : ''
 
-  if (rules.isPending) return <p className="text-sm text-gray-500">Cargando reglas…</p>
-  if (rules.error || !rules.data)
-    return <Alert tone="error">No se pudieron cargar las reglas de reserva.</Alert>
+  if (rules.isPending) return <p className="text-sm text-gray-500">{t('common.rulesLoading')}</p>
+  if (rules.error || !rules.data) return <Alert tone="error">{t('common.rulesFailed')}</Alert>
   const r = rules.data
   const bookableDay = isBookableDay(date, r)
 
@@ -64,11 +65,11 @@ export function BookingForm({
     setFormError(null)
     const errors: Record<string, string> = {}
     const n = Number(attendees)
-    if (!startValue) errors.start = 'Elige la hora de inicio.'
-    if (!endValue) errors.end = 'Elige la hora de fin.'
-    if (!title.trim()) errors.title = 'Escribe un título.'
-    if (title.length > 120) errors.title = 'Como máximo 120 caracteres.'
-    if (!Number.isInteger(n) || n < 1 || n > 500) errors.attendees = 'Entre 1 y 500 personas.'
+    if (!startValue) errors.start = t('common.chooseStart')
+    if (!endValue) errors.end = t('common.chooseEnd')
+    if (!title.trim()) errors.title = t('form.titleRequired')
+    if (title.length > 120) errors.title = t('form.titleTooLong')
+    if (!Number.isInteger(n) || n < 1 || n > 500) errors.attendees = t('form.attendeesRange')
     if (Object.keys(errors).length > 0) return setFieldErrors(errors)
 
     try {
@@ -79,10 +80,10 @@ export function BookingForm({
         endAt: toIso(date, endValue, r),
         attendees: n,
       })
-      notify('success', 'Reserva confirmada.')
+      notify('success', t('form.bookedToast'))
       void navigate(`/bookings/${booking.id}`)
     } catch (err) {
-      if (!(err instanceof ApiError)) return setFormError('Ha ocurrido un error inesperado.')
+      if (!(err instanceof ApiError)) return setFormError(t('common.unexpected'))
       if (err.kind === 'rules-broken') {
         const next: Record<string, string> = {}
         for (const v of err.violations) {
@@ -98,7 +99,7 @@ export function BookingForm({
         setFormError(err.message)
       } else if (err.kind === 'conflict') {
         onConflict?.()
-        setFormError('Esa franja se acaba de ocupar. He actualizado la agenda: elige otra.')
+        setFormError(t('common.slotTaken'))
       } else if (err.kind === 'validation') {
         const first = Object.values(err.fieldErrors).flat()[0]
         setFormError(first ?? err.message)
@@ -109,19 +110,19 @@ export function BookingForm({
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
       <TextField
-        label="Día"
+        label={t('form.date')}
         type="date"
         value={date}
         onChange={(e) => e.target.value && onDateChange(e.target.value)}
       />
       {!bookableDay && (
         <Alert tone="warning">
-          Ese día no se puede reservar: la oficina abre de {r.officeDays.map(dayEs).join(', ')}.
+          {t('common.closedDay', { days: r.officeDays.map(dayName).join(', ') })}
         </Alert>
       )}
       <div className="grid gap-4 sm:grid-cols-2">
         <SelectField
-          label="Hora de inicio"
+          label={t('form.start')}
           value={startValue}
           error={fieldErrors.start}
           disabled={!bookableDay}
@@ -130,7 +131,7 @@ export function BookingForm({
             setEnd('')
           }}
         >
-          <option value="">Elige…</option>
+          <option value="">{t('common.choose')}</option>
           {startOptions.map((s) => (
             <option key={s.time} value={s.time}>
               {s.time}
@@ -138,13 +139,13 @@ export function BookingForm({
           ))}
         </SelectField>
         <SelectField
-          label="Hora de fin"
+          label={t('form.end')}
           value={endValue}
           error={fieldErrors.end}
           disabled={!startValue}
           onChange={(e) => setEnd(e.target.value)}
         >
-          <option value="">Elige…</option>
+          <option value="">{t('common.choose')}</option>
           {ends.map((t) => (
             <option key={t} value={t}>
               {t}
@@ -153,24 +154,26 @@ export function BookingForm({
         </SelectField>
       </div>
       <TextField
-        label="Título"
+        label={t('form.title')}
         value={title}
         maxLength={120}
         error={fieldErrors.title}
         onChange={(e) => setTitle(e.target.value)}
       />
       <TextField
-        label="Asistentes"
+        label={t('form.attendees')}
         type="number"
         min={1}
         max={Math.min(500, Number(room.capacity))}
         value={attendees}
-        hint={`Capacidad de la sala: ${room.capacity}`}
+        hint={t('form.roomCapacity', { capacity: room.capacity })}
         error={fieldErrors.attendees}
         onChange={(e) => setAttendees(e.target.value)}
       />
       <details className="rounded-lg bg-gray-50 p-3 text-xs text-gray-600">
-        <summary className="cursor-pointer font-medium text-gray-700">Reglas de reserva</summary>
+        <summary className="cursor-pointer font-medium text-gray-700">
+          {t('form.rulesSummary')}
+        </summary>
         <ul className="mt-2 list-disc space-y-1 pl-4">
           {describeRules(r).map((line) => (
             <li key={line}>{line}</li>
@@ -179,7 +182,7 @@ export function BookingForm({
       </details>
       {formError && <Alert tone="error">{formError}</Alert>}
       <Button type="submit" disabled={create.isPending || !bookableDay}>
-        {create.isPending ? 'Reservando…' : 'Reservar'}
+        {create.isPending ? t('form.booking') : t('room.book')}
       </Button>
     </form>
   )

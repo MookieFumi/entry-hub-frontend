@@ -3,17 +3,9 @@ import { useOfficeZone, useRoom, useRules, useSchedule } from '@/api/queries'
 import { DayTimeline } from '@/components/DayTimeline'
 import { ScheduleList } from '@/components/ScheduleList'
 import { Card, ErrorState, PageHeader, Skeleton } from '@/components/ui/Feedback'
+import { dayName } from '@/lib/rules-text'
 import { addDays, dateInZone, dayOfWeek, zonedToUtc } from '@/lib/tz'
-
-const DAYS_ES: Record<string, string> = {
-  Monday: 'Lunes',
-  Tuesday: 'Martes',
-  Wednesday: 'Miércoles',
-  Thursday: 'Jueves',
-  Friday: 'Viernes',
-  Saturday: 'Sábado',
-  Sunday: 'Domingo',
-}
+import { useT } from '@/i18n'
 
 /** Monday of the week of a date. It works on calendar dates, so clock changes do not affect it. */
 export function mondayOf(date: string): string {
@@ -23,6 +15,7 @@ export function mondayOf(date: string): string {
 }
 
 export function RoomWeek() {
+  const t = useT()
   const { id = '' } = useParams()
   const [params] = useSearchParams()
   const tz = useOfficeZone()
@@ -44,12 +37,12 @@ export function RoomWeek() {
   return (
     <>
       <PageHeader
-        title={`Semana de ${room.data?.name ?? 'la sala'}`}
-        description={`Del ${monday} al ${addDays(monday, 6)}`}
+        title={t('week.title', { room: room.data?.name ?? t('week.theRoom') })}
+        description={t('week.range', { from: monday, to: addDays(monday, 6) })}
         actions={
-          <nav aria-label="Semana" className="flex gap-3 text-sm font-medium text-brand-700">
-            <Link to={`/rooms/${id}/week?date=${addDays(monday, -7)}`}>← Semana anterior</Link>
-            <Link to={`/rooms/${id}/week?date=${nextMonday}`}>Semana siguiente →</Link>
+          <nav aria-label={t('week.nav')} className="flex gap-3 text-sm font-medium text-brand-700">
+            <Link to={`/rooms/${id}/week?date=${addDays(monday, -7)}`}>{t('week.previous')}</Link>
+            <Link to={`/rooms/${id}/week?date=${nextMonday}`}>{t('week.next')}</Link>
           </nav>
         }
       />
@@ -61,7 +54,8 @@ export function RoomWeek() {
         <div className="flex flex-col gap-6">
           {days.map((day) => {
             const entries = schedule.data.filter((e) => dateInZone(new Date(e.startAt), tz) === day)
-            const name = `${DAYS_ES[dayOfWeek(day)]} ${day}`
+            const weekday = dayName(dayOfWeek(day))
+            const name = `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)} ${day}`
             return (
               <Card key={day}>
                 <h2 className="mb-3 font-semibold text-gray-900">

@@ -42,6 +42,9 @@ export function AppLayout() {
           <NavLink to="/admin/bookings" className={linkClass} onClick={() => setOpen(false)}>
             {t('nav.adminBookings')}
           </NavLink>
+          <NavLink to="/admin/closed-days" className={linkClass} onClick={() => setOpen(false)}>
+            {t('nav.closedDays')}
+          </NavLink>
         </>
       )}
       <NavLink to="/status" className={linkClass} onClick={() => setOpen(false)}>

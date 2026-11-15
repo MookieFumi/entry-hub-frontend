@@ -251,4 +251,5 @@ export const en: Catalog = {
   'search.bookSlot': 'Book this slot',
   'error.generic': 'Error {status}',
   'app.title': 'EntryHub · Room booking',
+  'rule.SiteClosed': 'The site is closed that day.',
 }

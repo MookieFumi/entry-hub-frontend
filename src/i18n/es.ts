@@ -253,4 +253,5 @@ export const es = {
   'search.bookSlot': 'Reservar esta franja',
   'error.generic': 'Error {status}',
   'app.title': 'EntryHub · Reserva de salas',
+  'rule.SiteClosed': 'La sede está cerrada ese día.',
 } as const

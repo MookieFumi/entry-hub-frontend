@@ -90,7 +90,13 @@ export function BookingForm({
           if (v.code === 'ExceedsCapacity') next.attendees = err.message
           else if (v.code === 'RoomUnavailable') onConflict?.()
           else if (
-            ['TooSoon', 'TooFarAhead', 'OutsideOfficeHours', 'NotOnSlotBoundary'].includes(v.code)
+            [
+              'TooSoon',
+              'TooFarAhead',
+              'OutsideOfficeHours',
+              'NotOnSlotBoundary',
+              'SiteClosed',
+            ].includes(v.code)
           )
             next.start = err.message
           else if (['DurationTooShort', 'DurationTooLong'].includes(v.code)) next.end = err.message

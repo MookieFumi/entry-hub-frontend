@@ -89,6 +89,7 @@ export function RescheduleForm({ booking }: { booking: Booking }) {
               'OutsideOfficeHours',
               'NotOnSlotBoundary',
               'TooLateToReschedule',
+              'SiteClosed',
             ].includes(v.code)
           )
             next.start = err.message

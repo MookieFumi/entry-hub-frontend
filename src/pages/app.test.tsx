@@ -165,6 +165,18 @@ describe('booking', () => {
     expect(screen.getByLabelText('Asistentes')).toHaveAttribute('aria-invalid', 'true')
   })
 
+  it('flags the start field when the site is closed that day (422 SiteClosed)', async () => {
+    mockApi(
+      routes(() =>
+        json({ status: 422, violations: [{ code: 'SiteClosed', message: 'closed' }] }, 422),
+      ),
+    )
+    await fill()
+    await userEvent.click(screen.getByRole('button', { name: 'Reservar' }))
+    expect((await screen.findAllByText('La sede está cerrada ese día.')).length).toBeGreaterThan(0)
+    expect(screen.getByLabelText('Hora de inicio')).toHaveAttribute('aria-invalid', 'true')
+  })
+
   it('warns when the slot is taken at the same time (409)', async () => {
     mockApi(routes(() => json({ title: 'Conflict' }, 409)))
     await fill()

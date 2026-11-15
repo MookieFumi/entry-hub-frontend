@@ -50,3 +50,9 @@ src/
 ```
 
 Plan completo y backlog: ver el plan del proyecto (`frontal-react-plan.md`).
+
+## TypeScript 7
+
+Type checking and the build use TypeScript 7 (native compiler) through the `typescript7` alias in `package.json`.
+`typescript` stays on 5.x because `typescript-eslint` and `openapi-typescript` still need the JavaScript compiler API.
+When both support TypeScript 7, remove the alias and move `typescript` to 7.

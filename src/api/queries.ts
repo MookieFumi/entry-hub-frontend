@@ -9,12 +9,14 @@ export type CreateBookingRequest = components['schemas']['CreateBookingRequest']
 export type CreateRoomRequest = components['schemas']['CreateRoomRequest']
 export type UpdateRoomRequest = components['schemas']['UpdateRoomRequest']
 export type BookingStatus = components['schemas']['BookingStatus']
+export type Feature = components['schemas']['FeatureResponse']
 
 export const keys = {
   me: ['me'] as const,
   rules: ['rules'] as const,
   rooms: (params: object) => ['rooms', params] as const,
   room: (id: string) => ['room', id] as const,
+  features: (includeInactive: boolean) => ['features', includeInactive] as const,
   availability: (params: object) => ['availability', params] as const,
   schedule: (id: string, from: string, to: string) => ['schedule', id, from, to] as const,
   myBookings: (params: object) => ['bookings', 'mine', params] as const,
@@ -45,6 +47,8 @@ export type RoomsParams = {
   floor?: number
   minCapacity?: number
   includeInactive?: boolean
+  /** Codes from the catalog; only rooms that have all of them. */
+  features?: string[]
   page?: number
   pageSize?: number
 }
@@ -60,6 +64,7 @@ export const useRooms = (p: RoomsParams) =>
               Floor: p.floor,
               MinCapacity: p.minCapacity,
               IncludeInactive: p.includeInactive,
+              Features: p.features?.length ? p.features.join(',') : undefined,
               Page: p.page,
               PageSize: p.pageSize,
             },
@@ -67,6 +72,17 @@ export const useRooms = (p: RoomsParams) =>
         }),
       ),
     placeholderData: keepPreviousData,
+  })
+
+/** Equipment and accessibility catalog of the tenant. Inactive entries are only returned to Facilities. */
+export const useFeatures = (includeInactive = false) =>
+  useQuery({
+    queryKey: keys.features(includeInactive),
+    queryFn: () =>
+      unwrap(
+        api.GET('/api/v1/features', { params: { query: { IncludeInactive: includeInactive } } }),
+      ),
+    staleTime: 10 * 60_000,
   })
 
 export const useRoom = (id: string) =>
@@ -92,6 +108,7 @@ export type AvailabilityParams = {
   attendees?: number
   minCapacity?: number
   floor?: number
+  features?: string[]
 }
 
 export const useAvailability = (p: AvailabilityParams | null) =>
@@ -108,6 +125,7 @@ export const useAvailability = (p: AvailabilityParams | null) =>
               Attendees: p!.attendees,
               MinCapacity: p!.minCapacity,
               Floor: p!.floor,
+              Features: p!.features?.length ? p!.features.join(',') : undefined,
             },
           },
         }),

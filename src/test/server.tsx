@@ -29,12 +29,31 @@ export const rules = {
   maxActiveBookings: 5,
 }
 
+export const features = [
+  { id: 'f1', code: 'tv', name: 'TV', kind: 'Equipment', isActive: true },
+  {
+    id: 'f2',
+    code: 'video-conferencing',
+    name: 'Videoconferencia',
+    kind: 'Equipment',
+    isActive: true,
+  },
+  {
+    id: 'f3',
+    code: 'step-free',
+    name: 'Acceso sin escalones',
+    kind: 'Accessibility',
+    isActive: true,
+  },
+]
+
 export const room = {
   id: '11111111-1111-1111-1111-111111111111',
   name: 'Sala Gaudí',
   floor: 2,
   capacity: 8,
   equipment: ['TV'],
+  features: [features[0]],
   isActive: true,
   createdAt: '2026-01-01T00:00:00Z',
 }

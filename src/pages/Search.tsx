@@ -1,18 +1,19 @@
 import { Link, useSearchParams } from 'react-router'
-import { useAvailability, useRules } from '@/api/queries'
+import { useAvailability, useOfficeZone } from '@/api/queries'
 import { RoomCard } from '@/components/RoomCard'
 import { TextField } from '@/components/ui/Field'
 import { Alert, EmptyState, ErrorState, PageHeader, Spinner } from '@/components/ui/Feedback'
 import { dateInZone, zonedToUtc } from '@/lib/tz'
 
 export function Search() {
-  const rules = useRules()
-  const tz = rules.data?.timeZone ?? 'Europe/Madrid'
+  const tz = useOfficeZone()
   const [params, setParams] = useSearchParams()
   const date = params.get('date') ?? dateInZone(new Date(), tz)
   const start = params.get('start') ?? ''
   const end = params.get('end') ?? ''
   const attendees = params.get('attendees') ?? ''
+  const floor = params.get('floor') ?? ''
+  const minCapacity = params.get('minCapacity') ?? ''
   const valid = Boolean(date && start && end && end > start)
 
   const result = useAvailability(
@@ -21,6 +22,8 @@ export function Search() {
           from: zonedToUtc(date, start, tz).toISOString(),
           to: zonedToUtc(date, end, tz).toISOString(),
           attendees: attendees ? Number(attendees) : undefined,
+          floor: floor ? Number(floor) : undefined,
+          minCapacity: minCapacity ? Number(minCapacity) : undefined,
         }
       : null,
   )
@@ -39,7 +42,7 @@ export function Search() {
         description="Salas libres en una franja concreta."
       />
       <form
-        className="mb-6 grid gap-4 sm:grid-cols-4"
+        className="mb-6 grid gap-4 sm:grid-cols-3 lg:grid-cols-5"
         onSubmit={(e) => e.preventDefault()}
         role="search"
       >
@@ -71,6 +74,19 @@ export function Search() {
           value={attendees}
           onChange={(e) => set('attendees', e.target.value)}
         />
+        <TextField
+          label="Planta"
+          type="number"
+          value={floor}
+          onChange={(e) => set('floor', e.target.value)}
+        />
+        <TextField
+          label="Capacidad mínima"
+          type="number"
+          min={1}
+          value={minCapacity}
+          onChange={(e) => set('minCapacity', e.target.value)}
+        />
       </form>
       {!valid && <Alert>Elige día, hora de inicio y hora de fin para ver las salas libres.</Alert>}
       {valid && result.isPending && <Spinner label="Buscando salas" />}
@@ -79,7 +95,7 @@ export function Search() {
       )}
       {result.data && result.data.length === 0 && (
         <EmptyState title="Ninguna sala libre en esa franja">
-          Prueba con otra hora o con menos asistentes.
+          Prueba con otra hora, otra planta o con menos asistentes.
         </EmptyState>
       )}
       {result.data && result.data.length > 0 && (

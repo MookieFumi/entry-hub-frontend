@@ -1,5 +1,5 @@
 import { useSearchParams } from 'react-router'
-import { useAllBookings, useRooms, type BookingStatus } from '@/api/queries'
+import { useAllBookings, useOfficeZone, useRooms, type BookingStatus } from '@/api/queries'
 import { BookingRow } from '@/components/BookingRow'
 import { CancelBooking } from '@/components/CancelBooking'
 import { SelectField, TextField } from '@/components/ui/Field'
@@ -7,9 +7,8 @@ import { EmptyState, ErrorState, PageHeader, Skeleton } from '@/components/ui/Fe
 import { Pagination } from '@/components/ui/Pagination'
 import { dateInZone, addDays, zonedToUtc } from '@/lib/tz'
 
-const TZ = 'Europe/Madrid'
-
 export function AdminBookings() {
+  const tz = useOfficeZone()
   const [params, setParams] = useSearchParams()
   const roomId = params.get('room') ?? ''
   const status = (params.get('status') ?? '') as BookingStatus | ''
@@ -22,9 +21,9 @@ export function AdminBookings() {
     {
       roomId: roomId || undefined,
       status: status || undefined,
-      from: day ? zonedToUtc(day, '00:00', TZ).toISOString() : undefined,
+      from: day ? zonedToUtc(day, '00:00', tz).toISOString() : undefined,
       to: day
-        ? zonedToUtc(addDays(day || dateInZone(new Date(), TZ), 1), '00:00', TZ).toISOString()
+        ? zonedToUtc(addDays(day || dateInZone(new Date(), tz), 1), '00:00', tz).toISOString()
         : undefined,
       page,
       pageSize: 20,

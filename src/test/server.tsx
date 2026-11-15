@@ -43,12 +43,13 @@ export const page = <T,>(items: T[]) => ({ items, page: 1, pageSize: 20, totalCo
 
 /** Sustituye `fetch` por un servidor de pruebas con rutas "MÉTODO /ruta". Lo no registrado devuelve 404. */
 export function mockApi(routes: Routes) {
-  const calls: { key: string; body: unknown }[] = []
+  const calls: { key: string; body: unknown; search: string }[] = []
   const fetchMock = vi.fn(async (input: Request | string, init?: RequestInit) => {
     const req = input instanceof Request ? input : new Request(input, init)
     const url = new URL(req.url)
     const key = `${req.method} ${url.pathname}`
     calls.push({
+      search: url.search,
       key,
       body:
         req.method === 'GET'

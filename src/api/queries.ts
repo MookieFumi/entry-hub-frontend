@@ -1,3 +1,4 @@
+import { FALLBACK_TIME_ZONE } from '@/lib/dates'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, unwrap } from './client'
 import type { components } from './schema'
@@ -36,6 +37,9 @@ export const useRules = (enabled = true) =>
     enabled,
     staleTime: 10 * 60_000,
   })
+
+/** Zona horaria de la oficina según las reglas (con valor provisional mientras cargan). */
+export const useOfficeZone = () => useRules().data?.timeZone ?? FALLBACK_TIME_ZONE
 
 export type RoomsParams = {
   floor?: number

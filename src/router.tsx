@@ -10,6 +10,7 @@ import { MyBookings } from '@/pages/MyBookings'
 import { NotFound } from '@/pages/NotFound'
 import { RoomDetail } from '@/pages/RoomDetail'
 import { Rooms } from '@/pages/Rooms'
+import { RoomWeek } from '@/pages/RoomWeek'
 import { Search } from '@/pages/Search'
 import { Status } from '@/pages/Status'
 
@@ -24,6 +25,7 @@ export const routes: RouteObject[] = [
           { index: true, element: <Home /> },
           { path: 'rooms', element: <Rooms /> },
           { path: 'rooms/:id', element: <RoomDetail /> },
+          { path: 'rooms/:id/week', element: <RoomWeek /> },
           { path: 'search', element: <Search /> },
           { path: 'bookings', element: <MyBookings /> },
           { path: 'bookings/:id', element: <BookingDetail /> },

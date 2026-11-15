@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import type { Booking } from '@/api/queries'
+import { useOfficeZone, type Booking } from '@/api/queries'
 import { Badge } from '@/components/ui/Badge'
 import { formatOfficeDateTime, formatOfficeTime } from '@/lib/dates'
 
@@ -12,6 +12,7 @@ export function BookingRow({
   roomName?: string
   actions?: React.ReactNode
 }) {
+  const tz = useOfficeZone()
   return (
     <li className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-xs">
       <div className="min-w-0">
@@ -22,7 +23,7 @@ export function BookingRow({
           {booking.title}
         </Link>
         <p className="text-sm text-gray-600">
-          {formatOfficeDateTime(booking.startAt)} – {formatOfficeTime(booking.endAt)} ·{' '}
+          {formatOfficeDateTime(booking.startAt, tz)} – {formatOfficeTime(booking.endAt, tz)} ·{' '}
           {booking.attendees} personas
           {roomName ? ` · ${roomName}` : ''}
         </p>

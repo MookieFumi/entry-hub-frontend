@@ -1,5 +1,5 @@
 import { Link, useParams } from 'react-router'
-import { useBooking, useRoom } from '@/api/queries'
+import { useBooking, useOfficeZone, useRoom } from '@/api/queries'
 import { ApiError } from '@/api/errors'
 import { CancelBooking } from '@/components/CancelBooking'
 import { Badge } from '@/components/ui/Badge'
@@ -8,6 +8,7 @@ import { formatOfficeDateTime, formatOfficeTime } from '@/lib/dates'
 
 export function BookingDetail() {
   const { id = '' } = useParams()
+  const tz = useOfficeZone()
   const booking = useBooking(id)
   const room = useRoom(booking.data?.roomId ?? '')
 
@@ -43,8 +44,8 @@ export function BookingDetail() {
           {b.status === 'Confirmed' ? 'Confirmada' : 'Cancelada'}
         </Badge>
         <p>
-          <span className="font-medium">Cuándo:</span> {formatOfficeDateTime(b.startAt)} –{' '}
-          {formatOfficeTime(b.endAt)}
+          <span className="font-medium">Cuándo:</span> {formatOfficeDateTime(b.startAt, tz)} –{' '}
+          {formatOfficeTime(b.endAt, tz)}
         </p>
         <p>
           <span className="font-medium">Sala:</span>{' '}
@@ -57,7 +58,8 @@ export function BookingDetail() {
         </p>
         {b.cancelledAt && (
           <p>
-            <span className="font-medium">Cancelada:</span> {formatOfficeDateTime(b.cancelledAt)}
+            <span className="font-medium">Cancelada:</span>{' '}
+            {formatOfficeDateTime(b.cancelledAt, tz)}
           </p>
         )}
       </Card>

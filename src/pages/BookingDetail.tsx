@@ -5,20 +5,23 @@ import { CancelBooking } from '@/components/CancelBooking'
 import { Badge } from '@/components/ui/Badge'
 import { Card, EmptyState, ErrorState, PageHeader, Skeleton } from '@/components/ui/Feedback'
 import { formatOfficeDateTime, formatOfficeTime } from '@/lib/dates'
+import { useT } from '@/i18n'
 
 function RescheduleLink({ booking }: { booking: { id: string; status: string; startAt: string } }) {
+  const t = useT()
   if (booking.status !== 'Confirmed' || new Date(booking.startAt) <= new Date()) return null
   return (
     <Link
       to={`/bookings/${booking.id}/reschedule`}
       className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
     >
-      Reprogramar
+      {t('booking.reschedule')}
     </Link>
   )
 }
 
 export function BookingDetail() {
+  const t = useT()
   const { id = '' } = useParams()
   const tz = useOfficeZone()
   const booking = useBooking(id)
@@ -26,19 +29,15 @@ export function BookingDetail() {
 
   if (booking.isPending) return <Skeleton className="h-40" />
   if (booking.error instanceof ApiError && booking.error.kind === 'forbidden') {
-    return (
-      <EmptyState title="No puedes ver esta reserva">
-        Solo la persona que la hizo y el equipo de Facilities pueden verla.
-      </EmptyState>
-    )
+    return <EmptyState title={t('booking.forbiddenTitle')}>{t('booking.forbiddenHint')}</EmptyState>
   }
   if (booking.error instanceof ApiError && booking.error.kind === 'not-found') {
     return (
       <EmptyState
-        title="Reserva no encontrada"
+        title={t('booking.notFound')}
         action={
           <Link className="text-brand-700 underline" to="/bookings">
-            Mis reservas
+            {t('nav.myBookings')}
           </Link>
         }
       />
@@ -61,30 +60,30 @@ export function BookingDetail() {
       />
       <Card className="flex flex-col gap-3 text-sm">
         <Badge tone={b.status === 'Confirmed' ? 'success' : 'gray'}>
-          {b.status === 'Confirmed' ? 'Confirmada' : 'Cancelada'}
+          {b.status === 'Confirmed' ? t('booking.statusConfirmed') : t('booking.statusCancelled')}
         </Badge>
         <p>
-          <span className="font-medium">Cuándo:</span> {formatOfficeDateTime(b.startAt, tz)} –{' '}
-          {formatOfficeTime(b.endAt, tz)}
+          <span className="font-medium">{t('booking.when')}</span>{' '}
+          {formatOfficeDateTime(b.startAt, tz)} – {formatOfficeTime(b.endAt, tz)}
         </p>
         <p>
-          <span className="font-medium">Sala:</span>{' '}
+          <span className="font-medium">{t('booking.room')}</span>{' '}
           <Link to={`/rooms/${b.roomId}`} className="text-brand-700 underline">
-            {room.data?.name ?? 'Ver sala'}
+            {room.data?.name ?? t('booking.viewRoom')}
           </Link>
         </p>
         <p>
-          <span className="font-medium">Asistentes:</span> {b.attendees}
+          <span className="font-medium">{t('booking.attendees')}</span> {b.attendees}
         </p>
         {b.rescheduledAt && (
           <p>
-            <span className="font-medium">Reprogramada:</span>{' '}
+            <span className="font-medium">{t('booking.rescheduled')}</span>{' '}
             {formatOfficeDateTime(b.rescheduledAt, tz)}
           </p>
         )}
         {b.cancelledAt && (
           <p>
-            <span className="font-medium">Cancelada:</span>{' '}
+            <span className="font-medium">{t('booking.cancelledAt')}</span>{' '}
             {formatOfficeDateTime(b.cancelledAt, tz)}
           </p>
         )}

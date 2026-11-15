@@ -10,22 +10,26 @@ import { Alert, Card, EmptyState, ErrorState, PageHeader, Skeleton } from '@/com
 import { useRoomOccupancy } from '@/hooks/useRoomOccupancy'
 import { formatOfficeTime } from '@/lib/dates'
 import { addDays, dateInZone, zonedToUtc } from '@/lib/tz'
+import { useT } from '@/i18n'
 
 function Occupancy({ roomId }: { roomId: string }) {
+  const t = useT()
   const tz = useOfficeZone()
   const { occupancy, connected } = useRoomOccupancy(roomId)
-  if (!occupancy) return <Badge>{connected ? 'Sin datos' : 'Conectando…'}</Badge>
+  if (!occupancy)
+    return <Badge>{connected ? t('room.occupancyNoData') : t('room.occupancyConnecting')}</Badge>
   const until = occupancy.nextChange
-    ? ` hasta las ${formatOfficeTime(occupancy.nextChange, tz)}`
+    ? t('room.until', { time: formatOfficeTime(occupancy.nextChange, tz) })
     : ''
   return occupancy.status === 'Free' ? (
-    <Badge tone="success">Libre ahora{until}</Badge>
+    <Badge tone="success">{t('room.freeNow', { until })}</Badge>
   ) : (
-    <Badge tone="error">Ocupada ahora{until}</Badge>
+    <Badge tone="error">{t('room.busyNow', { until })}</Badge>
   )
 }
 
 export function RoomDetail() {
+  const t = useT()
   const { id = '' } = useParams()
   const [params] = useSearchParams()
   const room = useRoom(id)
@@ -40,14 +44,14 @@ export function RoomDetail() {
   if (room.error instanceof ApiError && room.error.kind === 'not-found') {
     return (
       <EmptyState
-        title="Sala no encontrada"
+        title={t('room.notFound')}
         action={
           <Link className="text-brand-700 underline" to="/rooms">
-            Volver a las salas
+            {t('room.backToRooms')}
           </Link>
         }
       >
-        Puede que no exista o que no tengas acceso a ella.
+        {t('room.notFoundHint')}
       </EmptyState>
     )
   }
@@ -59,17 +63,17 @@ export function RoomDetail() {
     <>
       <PageHeader
         title={r.name}
-        description={`Planta ${r.floor} · hasta ${r.capacity} personas`}
+        description={t('room.summary', { floor: r.floor, capacity: r.capacity })}
         actions={<Occupancy roomId={id} />}
       />
       {!r.isActive && (
         <div className="mb-4">
-          <Alert tone="warning">Esta sala está desactivada y no admite reservas nuevas.</Alert>
+          <Alert tone="warning">{t('room.inactive')}</Alert>
         </div>
       )}
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
-          <h2 className="mb-3 font-semibold text-gray-900">Reservar</h2>
+          <h2 className="mb-3 font-semibold text-gray-900">{t('room.book')}</h2>
           {r.isActive ? (
             <BookingForm
               room={r}
@@ -81,18 +85,22 @@ export function RoomDetail() {
               onConflict={() => void schedule.refetch()}
             />
           ) : (
-            <p className="text-sm text-gray-500">No disponible.</p>
+            <p className="text-sm text-gray-500">{t('room.unavailable')}</p>
           )}
         </Card>
         <Card>
-          <h2 className="mb-3 font-semibold text-gray-900">Ocupación del día</h2>
+          <h2 className="mb-3 font-semibold text-gray-900">{t('room.daySchedule')}</h2>
           {schedule.isPending && <Skeleton className="h-24" />}
           {schedule.error && (
             <ErrorState message={schedule.error.message} onRetry={() => void schedule.refetch()} />
           )}
           {schedule.data && rules.data && (
             <div className="mb-8">
-              <DayTimeline entries={schedule.data} rules={rules.data} label="Ocupación del día" />
+              <DayTimeline
+                entries={schedule.data}
+                rules={rules.data}
+                label={t('room.daySchedule')}
+              />
             </div>
           )}
           {schedule.data && <ScheduleList entries={schedule.data} timeZone={tz} />}
@@ -100,7 +108,7 @@ export function RoomDetail() {
             className="mt-4 inline-block text-sm font-medium text-brand-700 underline"
             to={`/rooms/${id}/week?date=${date}`}
           >
-            Ver la semana
+            {t('room.viewWeek')}
           </Link>
         </Card>
       </div>

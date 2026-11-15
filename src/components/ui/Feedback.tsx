@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { useT } from '@/i18n'
 import { Button } from './Button'
 
 type AlertTone = 'info' | 'error' | 'warning' | 'success'
@@ -29,14 +30,15 @@ export function Alert({
   )
 }
 
-export function Spinner({ label = 'Cargando' }: { label?: string }) {
+export function Spinner({ label }: { label?: string }) {
+  const t = useT()
   return (
     <div role="status" className="flex items-center gap-2 text-sm text-gray-500">
       <span
         className="size-4 animate-spin rounded-full border-2 border-gray-300 border-t-brand-600"
         aria-hidden
       />
-      {label}…
+      {label ?? t('common.loadingLabel')}…
     </div>
   )
 }
@@ -64,13 +66,14 @@ export function EmptyState({
 }
 
 export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
+  const t = useT()
   return (
-    <Alert tone="error" title="No se pudo cargar">
+    <Alert tone="error" title={t('common.loadFailed')}>
       <p>{message}</p>
       {onRetry && (
         <div className="mt-3">
           <Button variant="secondary" onClick={onRetry}>
-            Reintentar
+            {t('common.retry')}
           </Button>
         </div>
       )}

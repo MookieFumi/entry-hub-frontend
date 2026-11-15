@@ -10,6 +10,8 @@ export default defineConfig({
   reporter: process.env.CI ? [['github'], ['list']] : 'list',
   use: {
     baseURL: 'http://localhost:4173',
+    // The specs read Spanish texts; the app follows the browser language on a first visit.
+    locale: 'es-ES',
     trace: 'off',
     launchOptions: { executablePath: process.env.PW_CHROMIUM_PATH || undefined },
   },

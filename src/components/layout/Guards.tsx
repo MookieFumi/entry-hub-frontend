@@ -4,6 +4,7 @@ import { useMe } from '@/api/queries'
 import { Button } from '@/components/ui/Button'
 import { Alert, Spinner } from '@/components/ui/Feedback'
 import { ApiError } from '@/api/errors'
+import { useT } from '@/i18n'
 
 function Centered({ children }: { children: React.ReactNode }) {
   return (
@@ -15,6 +16,7 @@ function Centered({ children }: { children: React.ReactNode }) {
 
 /** Requires a session and a user with a tenant; otherwise redirects to login or explains why. */
 export function RequireAuth() {
+  const t = useT()
   const { status, signOut } = useAuth()
   const location = useLocation()
   const me = useMe(status === 'signed-in')
@@ -30,7 +32,7 @@ export function RequireAuth() {
   if (me.isPending)
     return (
       <Centered>
-        <Spinner label="Cargando tu cuenta" />
+        <Spinner label={t('auth.loadingAccount')} />
       </Centered>
     )
 
@@ -38,31 +40,31 @@ export function RequireAuth() {
     if (me.error.kind === 'unauthenticated') {
       return (
         <Centered>
-          <Alert tone="warning" title="Tu sesión ha caducado">
-            Vuelve a iniciar sesión para continuar.
+          <Alert tone="warning" title={t('auth.expiredTitle')}>
+            {t('auth.expiredBody')}
           </Alert>
-          <Button onClick={() => void signOut()}>Ir al inicio de sesión</Button>
+          <Button onClick={() => void signOut()}>{t('auth.toLogin')}</Button>
         </Centered>
       )
     }
     if (me.error.kind === 'forbidden') {
       return (
         <Centered>
-          <Alert tone="warning" title="Tu cuenta no está asignada a ningún cliente">
-            Pide a un administrador que te dé acceso.
+          <Alert tone="warning" title={t('auth.noTenantTitle')}>
+            {t('auth.noTenantBody')}
           </Alert>
           <Button variant="secondary" onClick={() => void signOut()}>
-            Cerrar sesión
+            {t('nav.signOut')}
           </Button>
         </Centered>
       )
     }
     return (
       <Centered>
-        <Alert tone="error" title="No se pudo cargar tu cuenta">
+        <Alert tone="error" title={t('auth.accountFailed')}>
           {me.error.message}
         </Alert>
-        <Button onClick={() => void me.refetch()}>Reintentar</Button>
+        <Button onClick={() => void me.refetch()}>{t('common.retry')}</Button>
       </Centered>
     )
   }
@@ -71,11 +73,12 @@ export function RequireAuth() {
 
 /** Only Facilities can pass. */
 export function RequireFacilities() {
+  const t = useT()
   const me = useMe()
   if (me.data?.role !== 'Facilities') {
     return (
-      <Alert tone="warning" title="Sin permiso">
-        Esta sección es solo para el equipo de Facilities.
+      <Alert tone="warning" title={t('auth.noPermissionTitle')}>
+        {t('auth.facilitiesOnly')}
       </Alert>
     )
   }

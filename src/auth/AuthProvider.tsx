@@ -9,6 +9,7 @@ import {
 } from 'react'
 import { setTokenProvider } from '@/api/client'
 import { supabase } from './supabase'
+import { useT } from '@/i18n'
 
 type Status = 'loading' | 'signed-out' | 'signed-in'
 
@@ -34,13 +35,14 @@ function readDevToken(): string | null {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const t = useT()
   const [sbStatus, setSbStatus] = useState<Status>('loading')
   const [sbLabel, setSbLabel] = useState<string | null>(null)
   const [devToken, setDevToken] = useState<string | null>(() => (supabase ? null : readDevToken()))
 
   // Without Supabase the state comes from the development token; with Supabase, from its session.
   const status: Status = supabase ? sbStatus : devToken ? 'signed-in' : 'signed-out'
-  const label = supabase ? sbLabel : devToken ? 'Token de desarrollo' : null
+  const label = supabase ? sbLabel : devToken ? t('auth.devToken') : null
 
   // A layout effect, so the token provider is registered before the children's first requests
   // (children's passive effects, such as query fetches, run after it).
@@ -63,11 +65,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => data.subscription.unsubscribe()
   }, [devToken])
 
-  const signIn = useCallback(async (email: string, password: string) => {
-    if (!supabase) throw new Error('Supabase no está configurado.')
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) throw new Error('Correo o contraseña incorrectos.')
-  }, [])
+  const signIn = useCallback(
+    async (email: string, password: string) => {
+      if (!supabase) throw new Error(t('auth.noSupabase'))
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) throw new Error(t('auth.badCredentials'))
+    },
+    [t],
+  )
 
   const signInWithToken = useCallback((token: string) => {
     try {

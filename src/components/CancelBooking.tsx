@@ -4,8 +4,10 @@ import { ApiError } from '@/api/errors'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useToast } from '@/components/ui/Toasts'
+import { useT } from '@/i18n'
 
 export function CancelBooking({ booking }: { booking: Booking }) {
+  const t = useT()
   const [open, setOpen] = useState(false)
   const cancel = useCancelBooking()
   const { notify } = useToast()
@@ -14,10 +16,10 @@ export function CancelBooking({ booking }: { booking: Booking }) {
   async function confirm() {
     try {
       await cancel.mutateAsync(booking.id)
-      notify('success', 'Reserva cancelada.')
+      notify('success', t('cancel.done'))
       setOpen(false)
     } catch (err) {
-      notify('error', err instanceof ApiError ? err.message : 'No se pudo cancelar.')
+      notify('error', err instanceof ApiError ? err.message : t('cancel.failed'))
       setOpen(false)
     }
   }
@@ -25,18 +27,18 @@ export function CancelBooking({ booking }: { booking: Booking }) {
   return (
     <>
       <Button variant="secondary" onClick={() => setOpen(true)}>
-        Cancelar
+        {t('cancel.button')}
       </Button>
       <ConfirmDialog
         open={open}
         onOpenChange={setOpen}
-        title="¿Cancelar la reserva?"
-        confirmLabel="Cancelar reserva"
+        title={t('cancel.title')}
+        confirmLabel={t('cancel.confirm')}
         destructive
         busy={cancel.isPending}
         onConfirm={() => void confirm()}
       >
-        <p>«{booking.title}» dejará de estar reservada y la franja quedará libre.</p>
+        <p>{t('cancel.body', { title: booking.title })}</p>
       </ConfirmDialog>
     </>
   )

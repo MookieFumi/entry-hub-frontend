@@ -10,14 +10,16 @@ import {
 import { ApiError } from '@/api/errors'
 import { buildSlots, endOptions, isBookableDay, toIso } from '@/lib/slots'
 import { addDays, dateInZone, zonedToUtc } from '@/lib/tz'
-import { dayEs } from '@/lib/rules-text'
+import { dayName } from '@/lib/rules-text'
 import { Button } from '@/components/ui/Button'
 import { SelectField, TextField } from '@/components/ui/Field'
 import { Alert } from '@/components/ui/Feedback'
 import { useToast } from '@/components/ui/Toasts'
+import { useT } from '@/i18n'
 
 /** Moves a booking to another time in the same room. The same rules as a new booking apply. */
 export function RescheduleForm({ booking }: { booking: Booking }) {
+  const t = useT()
   const rules = useRules()
   const tz = useOfficeZone()
   const reschedule = useRescheduleBooking()
@@ -49,9 +51,8 @@ export function RescheduleForm({ booking }: { booking: Booking }) {
   )
   const endValue = ends.includes(end) ? end : ''
 
-  if (rules.isPending) return <p className="text-sm text-gray-500">Cargando reglas…</p>
-  if (rules.error || !rules.data)
-    return <Alert tone="error">No se pudieron cargar las reglas de reserva.</Alert>
+  if (rules.isPending) return <p className="text-sm text-gray-500">{t('common.rulesLoading')}</p>
+  if (rules.error || !rules.data) return <Alert tone="error">{t('common.rulesFailed')}</Alert>
   const r = rules.data
   const bookableDay = isBookableDay(date, r)
 
@@ -60,8 +61,8 @@ export function RescheduleForm({ booking }: { booking: Booking }) {
     setFieldErrors({})
     setFormError(null)
     const errors: Record<string, string> = {}
-    if (!startValue) errors.start = 'Elige la hora de inicio.'
-    if (!endValue) errors.end = 'Elige la hora de fin.'
+    if (!startValue) errors.start = t('common.chooseStart')
+    if (!endValue) errors.end = t('common.chooseEnd')
     if (Object.keys(errors).length > 0) return setFieldErrors(errors)
 
     try {
@@ -73,10 +74,10 @@ export function RescheduleForm({ booking }: { booking: Booking }) {
           roomId: booking.roomId,
         },
       })
-      notify('success', 'Reserva reprogramada.')
+      notify('success', t('form.rescheduledToast'))
       void navigate(`/bookings/${booking.id}`)
     } catch (err) {
-      if (!(err instanceof ApiError)) return setFormError('Ha ocurrido un error inesperado.')
+      if (!(err instanceof ApiError)) return setFormError(t('common.unexpected'))
       if (err.kind === 'rules-broken') {
         const next: Record<string, string> = {}
         for (const v of err.violations) {
@@ -97,7 +98,7 @@ export function RescheduleForm({ booking }: { booking: Booking }) {
         setFormError(err.message)
       } else if (err.kind === 'conflict') {
         void schedule.refetch()
-        setFormError('Esa franja se acaba de ocupar. He actualizado la agenda: elige otra.')
+        setFormError(t('common.slotTaken'))
       } else if (err.kind === 'validation') {
         const first = Object.values(err.fieldErrors).flat()[0]
         setFormError(first ?? err.message)
@@ -108,7 +109,7 @@ export function RescheduleForm({ booking }: { booking: Booking }) {
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
       <TextField
-        label="Nuevo día"
+        label={t('form.newDate')}
         type="date"
         value={date}
         onChange={(e) => {
@@ -120,12 +121,12 @@ export function RescheduleForm({ booking }: { booking: Booking }) {
       />
       {!bookableDay && (
         <Alert tone="warning">
-          Ese día no se puede reservar: la oficina abre de {r.officeDays.map(dayEs).join(', ')}.
+          {t('common.closedDay', { days: r.officeDays.map(dayName).join(', ') })}
         </Alert>
       )}
       <div className="grid gap-4 sm:grid-cols-2">
         <SelectField
-          label="Nueva hora de inicio"
+          label={t('form.newStart')}
           value={startValue}
           error={fieldErrors.start}
           disabled={!bookableDay}
@@ -134,7 +135,7 @@ export function RescheduleForm({ booking }: { booking: Booking }) {
             setEnd('')
           }}
         >
-          <option value="">Elige…</option>
+          <option value="">{t('common.choose')}</option>
           {startOptions.map((s) => (
             <option key={s.time} value={s.time}>
               {s.time}
@@ -142,13 +143,13 @@ export function RescheduleForm({ booking }: { booking: Booking }) {
           ))}
         </SelectField>
         <SelectField
-          label="Nueva hora de fin"
+          label={t('form.newEnd')}
           value={endValue}
           error={fieldErrors.end}
           disabled={!startValue}
           onChange={(e) => setEnd(e.target.value)}
         >
-          <option value="">Elige…</option>
+          <option value="">{t('common.choose')}</option>
           {ends.map((t) => (
             <option key={t} value={t}>
               {t}
@@ -158,7 +159,7 @@ export function RescheduleForm({ booking }: { booking: Booking }) {
       </div>
       {formError && <Alert tone="error">{formError}</Alert>}
       <Button type="submit" disabled={reschedule.isPending || !bookableDay}>
-        {reschedule.isPending ? 'Reprogramando…' : 'Reprogramar'}
+        {reschedule.isPending ? t('form.rescheduling') : t('booking.reschedule')}
       </Button>
     </form>
   )

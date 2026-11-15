@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { TextField } from '@/components/ui/Field'
 import { Alert } from '@/components/ui/Feedback'
 import { useToast } from '@/components/ui/Toasts'
+import { useT } from '@/i18n'
 
 /** Create (no `room`) or edit a room. Validation mirrors the API; the server has the last word. */
 export function RoomFormDialog({
@@ -18,6 +19,7 @@ export function RoomFormDialog({
   open: boolean
   onOpenChange: (o: boolean) => void
 }) {
+  const t = useT()
   const create = useCreateRoom()
   const update = useUpdateRoom()
   const { notify } = useToast()
@@ -36,10 +38,9 @@ export function RoomFormDialog({
     const next: Record<string, string> = {}
     const f = Number(floor)
     const c = Number(capacity)
-    if (!name.trim() || name.length > 100)
-      next.name = 'Nombre obligatorio, de hasta 100 caracteres.'
-    if (!Number.isInteger(f) || f < -5 || f > 100) next.floor = 'Planta entre -5 y 100.'
-    if (!Number.isInteger(c) || c < 1 || c > 500) next.capacity = 'Capacidad entre 1 y 500.'
+    if (!name.trim() || name.length > 100) next.name = t('roomForm.nameInvalid')
+    if (!Number.isInteger(f) || f < -5 || f > 100) next.floor = t('roomForm.floorInvalid')
+    if (!Number.isInteger(c) || c < 1 || c > 500) next.capacity = t('roomForm.capacityInvalid')
     setErrors(next)
     if (Object.keys(next).length > 0) return
 
@@ -62,18 +63,18 @@ export function RoomFormDialog({
           },
         })
       else await create.mutateAsync({ ...body, equipment: [], siteId: null, featureIds })
-      notify('success', room ? 'Sala actualizada.' : 'Sala creada.')
+      notify('success', room ? t('roomForm.updated') : t('roomForm.created'))
       onOpenChange(false)
     } catch (err) {
       if (err instanceof ApiError && err.kind === 'conflict')
-        setErrors({ name: 'Ya existe una sala con ese nombre.' })
+        setErrors({ name: t('roomForm.duplicate') })
       else if (err instanceof ApiError && err.kind === 'validation') {
         const mapped: Record<string, string> = {}
         for (const [k, v] of Object.entries(err.fieldErrors))
           mapped[k.charAt(0).toLowerCase() + k.slice(1)] = v.join(' ')
         setErrors(mapped)
         setFormError(Object.keys(mapped).length ? null : err.message)
-      } else setFormError(err instanceof Error ? err.message : 'Error inesperado.')
+      } else setFormError(err instanceof Error ? err.message : t('common.unexpected'))
     }
   }
 
@@ -83,11 +84,11 @@ export function RoomFormDialog({
         <Dialog.Backdrop className="fixed inset-0 bg-gray-900/50" />
         <Dialog.Popup className="fixed top-1/2 left-1/2 w-[min(94vw,30rem)] -translate-x-1/2 -translate-y-1/2 rounded-xl bg-white p-6 shadow-lg">
           <Dialog.Title className="text-lg font-semibold text-gray-900">
-            {room ? 'Editar sala' : 'Nueva sala'}
+            {room ? t('roomForm.edit') : t('roomForm.new')}
           </Dialog.Title>
           <form onSubmit={onSubmit} className="mt-4 flex flex-col gap-4" noValidate>
             <TextField
-              label="Nombre"
+              label={t('roomForm.name')}
               value={name}
               maxLength={100}
               error={errors.name}
@@ -95,14 +96,14 @@ export function RoomFormDialog({
             />
             <div className="grid grid-cols-2 gap-4">
               <TextField
-                label="Planta"
+                label={t('roomForm.floor')}
                 type="number"
                 value={floor}
                 error={errors.floor}
                 onChange={(e) => setFloor(e.target.value)}
               />
               <TextField
-                label="Capacidad"
+                label={t('roomForm.capacity')}
                 type="number"
                 value={capacity}
                 error={errors.capacity}
@@ -118,10 +119,10 @@ export function RoomFormDialog({
             {formError && <Alert tone="error">{formError}</Alert>}
             <div className="flex justify-end gap-3">
               <Dialog.Close render={<Button variant="secondary" type="button" />}>
-                Cancelar
+                {t('common.cancel')}
               </Dialog.Close>
               <Button type="submit" disabled={busy}>
-                {busy ? 'Guardando…' : 'Guardar'}
+                {busy ? t('common.saving') : t('common.save')}
               </Button>
             </div>
           </form>

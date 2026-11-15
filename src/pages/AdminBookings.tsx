@@ -6,8 +6,10 @@ import { SelectField, TextField } from '@/components/ui/Field'
 import { EmptyState, ErrorState, PageHeader, Skeleton } from '@/components/ui/Feedback'
 import { Pagination } from '@/components/ui/Pagination'
 import { dateInZone, addDays, zonedToUtc } from '@/lib/tz'
+import { useT } from '@/i18n'
 
 export function AdminBookings() {
+  const t = useT()
   const tz = useOfficeZone()
   const [params, setParams] = useSearchParams()
   const roomId = params.get('room') ?? ''
@@ -41,14 +43,18 @@ export function AdminBookings() {
 
   return (
     <>
-      <PageHeader title="Reservas de todos" description="Visible solo para Facilities." />
+      <PageHeader title={t('admin.bookings.title')} description={t('admin.bookings.description')} />
       <form
         className="mb-6 grid gap-4 sm:grid-cols-3"
         onSubmit={(e) => e.preventDefault()}
         role="search"
       >
-        <SelectField label="Sala" value={roomId} onChange={(e) => set('room', e.target.value)}>
-          <option value="">Todas</option>
+        <SelectField
+          label={t('admin.bookings.room')}
+          value={roomId}
+          onChange={(e) => set('room', e.target.value)}
+        >
+          <option value="">{t('admin.bookings.all')}</option>
           {rooms.data?.items.map((r) => (
             <option key={r.id} value={r.id}>
               {r.name}
@@ -56,15 +62,19 @@ export function AdminBookings() {
           ))}
         </SelectField>
         <TextField
-          label="Día"
+          label={t('common.day')}
           type="date"
           value={day}
           onChange={(e) => set('date', e.target.value)}
         />
-        <SelectField label="Estado" value={status} onChange={(e) => set('status', e.target.value)}>
-          <option value="">Todos</option>
-          <option value="Confirmed">Confirmadas</option>
-          <option value="Cancelled">Canceladas</option>
+        <SelectField
+          label={t('admin.bookings.state')}
+          value={status}
+          onChange={(e) => set('status', e.target.value)}
+        >
+          <option value="">{t('admin.bookings.allStates')}</option>
+          <option value="Confirmed">{t('admin.bookings.confirmed')}</option>
+          <option value="Cancelled">{t('admin.bookings.cancelled')}</option>
         </SelectField>
       </form>
       {bookings.isPending && <Skeleton className="h-40" />}
@@ -72,7 +82,7 @@ export function AdminBookings() {
         <ErrorState message={bookings.error.message} onRetry={() => void bookings.refetch()} />
       )}
       {bookings.data && bookings.data.items.length === 0 && (
-        <EmptyState title="No hay reservas con esos filtros" />
+        <EmptyState title={t('admin.bookings.none')} />
       )}
       {bookings.data && bookings.data.items.length > 0 && (
         <>

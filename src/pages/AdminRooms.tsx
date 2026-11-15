@@ -8,8 +8,10 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { EmptyState, ErrorState, PageHeader, Skeleton } from '@/components/ui/Feedback'
 import { Pagination } from '@/components/ui/Pagination'
 import { useToast } from '@/components/ui/Toasts'
+import { useT } from '@/i18n'
 
 export function AdminRooms() {
+  const t = useT()
   const [page, setPage] = useState(1)
   const rooms = useRooms({ includeInactive: true, page, pageSize: 20 })
   const update = useUpdateRoom()
@@ -32,9 +34,9 @@ export function AdminRooms() {
           isActive: !room.isActive,
         },
       })
-      notify('success', room.isActive ? 'Sala desactivada.' : 'Sala reactivada.')
+      notify('success', room.isActive ? t('admin.rooms.deactivated') : t('admin.rooms.reactivated'))
     } catch (err) {
-      notify('error', err instanceof ApiError ? err.message : 'No se pudo cambiar el estado.')
+      notify('error', err instanceof ApiError ? err.message : t('admin.rooms.toggleFailed'))
     }
     setToggling(null)
   }
@@ -42,17 +44,15 @@ export function AdminRooms() {
   return (
     <>
       <PageHeader
-        title="Administración de salas"
-        actions={<Button onClick={() => setCreating(true)}>Nueva sala</Button>}
+        title={t('admin.rooms.title')}
+        actions={<Button onClick={() => setCreating(true)}>{t('admin.rooms.new')}</Button>}
       />
       {rooms.isPending && <Skeleton className="h-40" />}
       {rooms.error && (
         <ErrorState message={rooms.error.message} onRetry={() => void rooms.refetch()} />
       )}
       {rooms.data && rooms.data.items.length === 0 && (
-        <EmptyState title="Todavía no hay salas">
-          Crea la primera con el botón «Nueva sala».
-        </EmptyState>
+        <EmptyState title={t('admin.rooms.noneTitle')}>{t('admin.rooms.noneHint')}</EmptyState>
       )}
       {rooms.data && rooms.data.items.length > 0 && (
         <>
@@ -61,19 +61,19 @@ export function AdminRooms() {
               <thead className="bg-gray-50 text-gray-600">
                 <tr>
                   <th scope="col" className="px-4 py-3">
-                    Nombre
+                    {t('admin.rooms.name')}
                   </th>
                   <th scope="col" className="px-4 py-3">
-                    Planta
+                    {t('admin.rooms.floor')}
                   </th>
                   <th scope="col" className="px-4 py-3">
-                    Capacidad
+                    {t('admin.rooms.capacity')}
                   </th>
                   <th scope="col" className="px-4 py-3">
-                    Estado
+                    {t('admin.rooms.state')}
                   </th>
                   <th scope="col" className="px-4 py-3">
-                    <span className="sr-only">Acciones</span>
+                    <span className="sr-only">{t('admin.rooms.actions')}</span>
                   </th>
                 </tr>
               </thead>
@@ -87,15 +87,15 @@ export function AdminRooms() {
                     <td className="px-4 py-3">{r.capacity}</td>
                     <td className="px-4 py-3">
                       <Badge tone={r.isActive ? 'success' : 'warning'}>
-                        {r.isActive ? 'Activa' : 'Inactiva'}
+                        {r.isActive ? t('admin.rooms.active') : t('admin.rooms.inactive')}
                       </Badge>
                     </td>
                     <td className="flex justify-end gap-2 px-4 py-3">
                       <Button variant="secondary" onClick={() => setEditing(r)}>
-                        Editar
+                        {t('admin.rooms.edit')}
                       </Button>
                       <Button variant="secondary" onClick={() => setToggling(r)}>
-                        {r.isActive ? 'Desactivar' : 'Reactivar'}
+                        {r.isActive ? t('admin.rooms.deactivate') : t('admin.rooms.reactivate')}
                       </Button>
                     </td>
                   </tr>
@@ -123,16 +123,18 @@ export function AdminRooms() {
       <ConfirmDialog
         open={toggling !== null}
         onOpenChange={(o) => !o && setToggling(null)}
-        title={toggling?.isActive ? '¿Desactivar la sala?' : '¿Reactivar la sala?'}
-        confirmLabel={toggling?.isActive ? 'Desactivar' : 'Reactivar'}
+        title={
+          toggling?.isActive ? t('admin.rooms.deactivateTitle') : t('admin.rooms.reactivateTitle')
+        }
+        confirmLabel={
+          toggling?.isActive ? t('admin.rooms.deactivate') : t('admin.rooms.reactivate')
+        }
         destructive={toggling?.isActive}
         busy={update.isPending}
         onConfirm={() => toggling && void toggle(toggling)}
       >
         <p>
-          {toggling?.isActive
-            ? 'La sala saldrá del catálogo y no admitirá reservas nuevas.'
-            : 'La sala volverá a aparecer en el catálogo.'}
+          {toggling?.isActive ? t('admin.rooms.deactivateBody') : t('admin.rooms.reactivateBody')}
         </p>
       </ConfirmDialog>
     </>

@@ -41,7 +41,7 @@ export const room = {
 
 export const page = <T,>(items: T[]) => ({ items, page: 1, pageSize: 20, totalCount: items.length })
 
-/** Sustituye `fetch` por un servidor de pruebas con rutas "MÉTODO /ruta". Lo no registrado devuelve 404. */
+/** Replaces `fetch` with a test server with "METHOD /path" routes. Anything not registered returns 404. */
 export function mockApi(routes: Routes) {
   const calls: { key: string; body: unknown; search: string }[] = []
   const fetchMock = vi.fn(async (input: Request | string, init?: RequestInit) => {

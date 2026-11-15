@@ -13,7 +13,7 @@ function Centered({ children }: { children: React.ReactNode }) {
   )
 }
 
-/** Exige sesión y un usuario con tenant; si no, manda al login o explica el motivo. */
+/** Requires a session and a user with a tenant; otherwise redirects to login or explains why. */
 export function RequireAuth() {
   const { status, signOut } = useAuth()
   const location = useLocation()
@@ -69,7 +69,7 @@ export function RequireAuth() {
   return <Outlet />
 }
 
-/** Solo Facilities puede pasar. */
+/** Only Facilities can pass. */
 export function RequireFacilities() {
   const me = useMe()
   if (me.data?.role !== 'Facilities') {

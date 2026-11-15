@@ -1,4 +1,4 @@
-/** Utilidades de zona horaria con Intl, sin librerías. Las fechas locales son `YYYY-MM-DD` y las horas `HH:mm`. */
+/** Time zone utilities with Intl, no libraries. Local dates are `YYYY-MM-DD` and times `HH:mm`. */
 
 function partsIn(date: Date, timeZone: string) {
   const parts = new Intl.DateTimeFormat('en-CA', {
@@ -22,30 +22,30 @@ function partsIn(date: Date, timeZone: string) {
   }
 }
 
-/** Diferencia (ms) entre la hora de pared de la zona y UTC en ese instante. */
+/** Difference (ms) between the zone's wall-clock time and UTC at that instant. */
 function offsetMs(date: Date, timeZone: string): number {
   const p = partsIn(date, timeZone)
   const asUtc = Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, p.second)
   return asUtc - Math.floor(date.getTime() / 1000) * 1000
 }
 
-/** Convierte una fecha y hora de pared de la zona (p. ej. 09:00 en Madrid) al instante UTC correcto. */
+/** Converts a wall-clock date and time of the zone (e.g. 09:00 in Madrid) to the correct UTC instant. */
 export function zonedToUtc(date: string, time: string, timeZone: string): Date {
   const [y, m, d] = date.split('-').map(Number) as [number, number, number]
   const [hh, mm] = time.split(':').map(Number) as [number, number]
   const naive = Date.UTC(y, m - 1, d, hh, mm)
-  // Dos pasadas: la primera estima el desfase; la segunda lo corrige si cruzamos un cambio de hora.
+  // Two passes: the first estimates the offset; the second fixes it if we cross a clock change.
   const first = naive - offsetMs(new Date(naive), timeZone)
   return new Date(naive - offsetMs(new Date(first), timeZone))
 }
 
-/** Fecha `YYYY-MM-DD` de un instante, vista desde la zona. */
+/** `YYYY-MM-DD` date of an instant, seen from the zone. */
 export function dateInZone(instant: Date, timeZone: string): string {
   const p = partsIn(instant, timeZone)
   return `${p.year}-${String(p.month).padStart(2, '0')}-${String(p.day).padStart(2, '0')}`
 }
 
-/** Hora `HH:mm` de un instante, vista desde la zona. */
+/** `HH:mm` time of an instant, seen from the zone. */
 export function timeInZone(instant: Date, timeZone: string): string {
   const p = partsIn(instant, timeZone)
   return `${String(p.hour).padStart(2, '0')}:${String(p.minute).padStart(2, '0')}`
@@ -62,13 +62,13 @@ const DAY_NAMES = [
 ] as const
 export type DayName = (typeof DAY_NAMES)[number]
 
-/** Día de la semana de una fecha de calendario (no depende de la zona). */
+/** Day of the week of a calendar date (does not depend on the zone). */
 export function dayOfWeek(date: string): DayName {
   const [y, m, d] = date.split('-').map(Number) as [number, number, number]
   return DAY_NAMES[new Date(Date.UTC(y, m - 1, d)).getUTCDay()]!
 }
 
-/** Suma días a una fecha `YYYY-MM-DD`. */
+/** Adds days to a `YYYY-MM-DD` date. */
 export function addDays(date: string, days: number): string {
   const [y, m, d] = date.split('-').map(Number) as [number, number, number]
   return new Date(Date.UTC(y, m - 1, d + days)).toISOString().slice(0, 10)

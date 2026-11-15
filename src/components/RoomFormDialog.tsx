@@ -7,7 +7,7 @@ import { TextField } from '@/components/ui/Field'
 import { Alert } from '@/components/ui/Feedback'
 import { useToast } from '@/components/ui/Toasts'
 
-/** Alta (sin `room`) o edición de una sala. Validación espejo de la API; el servidor decide en última instancia. */
+/** Create (no `room`) or edit a room. Validation mirrors the API; the server has the last word. */
 export function RoomFormDialog({
   room,
   open,

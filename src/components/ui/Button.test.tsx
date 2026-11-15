@@ -3,14 +3,14 @@ import userEvent from '@testing-library/user-event'
 import { Button } from './Button'
 
 describe('Button', () => {
-  it('ejecuta la acción al pulsar', async () => {
+  it('runs the action on press', async () => {
     const onClick = vi.fn()
     render(<Button onClick={onClick}>Reservar</Button>)
     await userEvent.click(screen.getByRole('button', { name: 'Reservar' }))
     expect(onClick).toHaveBeenCalledOnce()
   })
 
-  it('no ejecuta nada si está deshabilitado', async () => {
+  it('does nothing when disabled', async () => {
     const onClick = vi.fn()
     render(
       <Button disabled onClick={onClick}>

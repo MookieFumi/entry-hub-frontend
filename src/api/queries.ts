@@ -38,7 +38,7 @@ export const useRules = (enabled = true) =>
     staleTime: 10 * 60_000,
   })
 
-/** Zona horaria de la oficina según las reglas (con valor provisional mientras cargan). */
+/** Office time zone from the rules (with a provisional value while they load). */
 export const useOfficeZone = () => useRules().data?.timeZone ?? FALLBACK_TIME_ZONE
 
 export type RoomsParams = {

@@ -4,10 +4,10 @@ function fakeFetch(handler: (req: Request) => Response) {
   return vi.fn(async (input: Request) => handler(input))
 }
 
-describe('cliente de API', () => {
+describe('API client', () => {
   afterEach(() => setTokenProvider(() => null))
 
-  it('envía el token como Bearer', async () => {
+  it('sends the token as Bearer', async () => {
     setTokenProvider(() => 'token-123')
     let auth: string | null = null
     const fetchMock = fakeFetch((req) => {
@@ -22,7 +22,7 @@ describe('cliente de API', () => {
     expect(page.items).toEqual([])
   })
 
-  it('lanza un ApiError con las violaciones del 422', async () => {
+  it('throws an ApiError with the 422 violations', async () => {
     const fetchMock = fakeFetch(
       () =>
         new Response(
@@ -50,7 +50,7 @@ describe('cliente de API', () => {
     ).rejects.toMatchObject({ kind: 'rules-broken', status: 422 })
   })
 
-  it('trata un fallo de red como API no disponible', async () => {
+  it('treats a network failure as API unavailable', async () => {
     await expect(unwrap(Promise.reject(new TypeError('Failed to fetch')))).rejects.toMatchObject({
       kind: 'unavailable',
     })

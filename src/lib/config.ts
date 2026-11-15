@@ -1,4 +1,4 @@
-/** Variables públicas del frontal (Vite solo expone las que empiezan por VITE_). */
+/** Public frontend variables (Vite only exposes those starting with VITE_). */
 export const config = {
   apiUrl: (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, ''),
   supabaseUrl: import.meta.env.VITE_SUPABASE_URL ?? '',

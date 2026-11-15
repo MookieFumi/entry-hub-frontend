@@ -15,20 +15,20 @@ const rules: Rules = {
 }
 const farPast = new Date('2026-01-01T00:00:00Z')
 
-describe('franjas', () => {
-  it('no hay franjas en fin de semana', () => {
+describe('slots', () => {
+  it('there are no slots on weekends', () => {
     expect(isBookableDay('2026-11-14', rules)).toBe(false)
     expect(buildSlots('2026-11-14', rules, [], farPast)).toEqual([])
   })
 
-  it('genera tramos de 15 min entre apertura y cierre', () => {
+  it('generates 15-minute slots between opening and closing', () => {
     const slots = buildSlots('2026-12-01', rules, [], farPast)
     expect(slots).toHaveLength(48)
     expect(slots[0]?.time).toBe('08:00')
     expect(slots.at(-1)?.time).toBe('19:45')
   })
 
-  it('marca como ocupados los tramos de una reserva (10:00 a 11:00 en Madrid)', () => {
+  it('marks the slots of a booking as busy (10:00 to 11:00 in Madrid)', () => {
     const busy = [
       {
         bookingId: null,
@@ -44,14 +44,14 @@ describe('franjas', () => {
     expect(busyTimes).toEqual(['10:00', '10:15', '10:30', '10:45'])
   })
 
-  it('marca como pasados los tramos que incumplen la antelación mínima', () => {
-    const now = new Date('2026-12-01T08:00:00Z') // 09:00 en Madrid
+  it('marks as past the slots that break the minimum lead time', () => {
+    const now = new Date('2026-12-01T08:00:00Z') // 09:00 in Madrid
     const slots = buildSlots('2026-12-01', rules, [], now)
     expect(slots.find((s) => s.time === '09:00')?.past).toBe(true)
     expect(slots.find((s) => s.time === '09:15')?.past).toBe(false)
   })
 
-  it('las horas de fin respetan duración máxima y no cruzan una reserva', () => {
+  it('end times respect the maximum duration and do not cross a booking', () => {
     const busy = [
       {
         bookingId: null,

@@ -5,7 +5,7 @@ const ToastContext = createContext<{
   notify: (tone: Toast['tone'], message: string) => void
 } | null>(null)
 
-/** Avisos efímeros accesibles (región `aria-live`). Se cierran solos a los 6 s. */
+/** Accessible ephemeral notices (`aria-live` region). They close by themselves after 6 s. */
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([])
   const notify = useCallback((tone: Toast['tone'], message: string) => {

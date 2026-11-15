@@ -11,7 +11,7 @@ const toMinutes = (hhmm: string) => {
 const toHHmm = (minutes: number) =>
   `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`
 
-/** ¿Se puede reservar ese día según los días laborables de las reglas? */
+/** Can that day be booked according to the office days in the rules? */
 export function isBookableDay(date: string, rules: Rules): boolean {
   return (rules.officeDays as string[]).includes(dayOfWeek(date))
 }
@@ -19,8 +19,8 @@ export function isBookableDay(date: string, rules: Rules): boolean {
 export type Slot = { time: string; busy: boolean; past: boolean }
 
 /**
- * Tramos de inicio del día (cada `slotMinutes`) entre la apertura y el cierre, marcando los ocupados y los
- * que ya no se pueden reservar por antelación mínima. La API sigue siendo la autoridad: esto solo guía.
+ * Start slots of the day (every `slotMinutes`) between opening and closing, marking the busy ones and
+ * those that can no longer be booked because of the minimum lead time. The API remains the authority: this only guides.
  */
 export function buildSlots(
   date: string,
@@ -50,7 +50,7 @@ export function buildSlots(
   return slots
 }
 
-/** Horas de fin posibles para un inicio: respetan duración mínima y máxima, el cierre y no cruzan ocupadas. */
+/** Possible end times for a start: they respect the minimum and maximum duration and the closing time, and never cross a busy slot. */
 export function endOptions(start: string, rules: Rules, slots: Slot[]): string[] {
   const step = Number(rules.slotMinutes)
   const min = Number(rules.minDurationMinutes)
@@ -60,19 +60,19 @@ export function endOptions(start: string, rules: Rules, slots: Slot[]): string[]
   const busyAt = new Map(slots.map((s) => [s.time, s.busy]))
   const options: string[] = []
   for (let end = from + step; end <= close && end - from <= max; end += step) {
-    // El tramo [end - step, end) debe estar libre.
+    // The slot [end - step, end) must be free.
     if (busyAt.get(toHHmm(end - step))) break
     if (end - from >= min) options.push(toHHmm(end))
   }
   return options
 }
 
-/** Instante UTC (ISO) de una fecha y hora de pared de la oficina. */
+/** UTC instant (ISO) of an office wall-clock date and time. */
 export function toIso(date: string, time: string, rules: Rules): string {
   return zonedToUtc(date, time, rules.timeZone).toISOString()
 }
 
-/** Hora de pared de la oficina de un instante ISO. */
+/** Office wall-clock time of an ISO instant. */
 export function officeTime(iso: string, rules: Rules): string {
   return timeInZone(new Date(iso), rules.timeZone)
 }

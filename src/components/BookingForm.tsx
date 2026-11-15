@@ -43,7 +43,7 @@ export function BookingForm({
     [date, rules.data, busy],
   )
   const startOptions = slots.filter((s) => !s.busy && !s.past)
-  // Si el inicio o el fin elegidos dejan de ser válidos (cambio de día o de agenda), se tratan como vacíos.
+  // If the chosen start or end stops being valid (the day or the schedule changed), treat it as empty.
   const startValue = startOptions.some((s) => s.time === start) ? start : ''
   const ends = useMemo(
     () => (rules.data && startValue ? endOptions(startValue, rules.data, slots) : []),

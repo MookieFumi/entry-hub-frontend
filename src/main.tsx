@@ -12,7 +12,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 30_000,
-      // No reintentar errores que no van a cambiar solos (permisos, validación, reglas).
+      // Do not retry errors that will not change by themselves (permissions, validation, rules).
       retry: (count, error) => !(error instanceof ApiError && error.status < 500) && count < 2,
     },
   },

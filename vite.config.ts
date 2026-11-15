@@ -6,7 +6,7 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
-  // Sin sourcemaps públicos en producción.
+  // No public sourcemaps in production.
   build: { sourcemap: false },
   test: {
     env: { VITE_API_URL: 'http://api.test' },

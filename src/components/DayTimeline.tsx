@@ -7,8 +7,8 @@ const minutes = (hhmm: string) => {
 }
 
 /**
- * Línea de tiempo de un día entre apertura y cierre de la oficina. Es una ayuda visual: la lista de
- * reservas del día (con el mismo contenido en texto) acompaña siempre a la línea de tiempo.
+ * Timeline of one day between office opening and closing. It is a visual aid: the list of the day's
+ * bookings (same content as text) always goes next to it.
  */
 export function DayTimeline({
   entries,

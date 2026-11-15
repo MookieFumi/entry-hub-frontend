@@ -1,7 +1,7 @@
 /**
- * La API guarda las fechas en UTC y evalúa sus reglas en la zona de la oficina, que publica en
- * `GET /rules` (`timeZone`). La interfaz muestra siempre esa zona, no la del navegador. Este valor solo
- * se usa mientras las reglas no han cargado.
+ * The API stores dates in UTC and evaluates its rules in the office time zone, which it publishes in
+ * `GET /rules` (`timeZone`). The UI always shows that zone, not the browser's. This value is only
+ * used while the rules have not loaded.
  */
 export const FALLBACK_TIME_ZONE = 'Europe/Madrid'
 

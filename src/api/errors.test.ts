@@ -1,7 +1,7 @@
 import { ruleMessage, toApiError } from './errors'
 
 describe('toApiError', () => {
-  it('traduce las reglas rotas de un 422 a mensajes en español', () => {
+  it('turns the broken rules of a 422 into Spanish messages', () => {
     const error = toApiError(422, {
       title: 'Rules broken',
       violations: [
@@ -15,13 +15,13 @@ describe('toApiError', () => {
     expect(error.message).toContain('demasiado pronto')
   })
 
-  it('usa el texto de la API si no conoce el código', () => {
+  it('uses the API text when the code is unknown', () => {
     expect(ruleMessage({ code: 'Nueva', message: 'Mensaje del servidor' })).toBe(
       'Mensaje del servidor',
     )
   })
 
-  it('conserva los errores por campo de un 400', () => {
+  it('keeps the per-field errors of a 400', () => {
     const error = toApiError(400, { title: 'Validation', errors: { Name: ['Obligatorio'] } })
     expect(error.kind).toBe('validation')
     expect(error.fieldErrors.Name).toEqual(['Obligatorio'])

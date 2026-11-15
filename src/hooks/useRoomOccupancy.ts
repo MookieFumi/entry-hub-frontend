@@ -8,8 +8,8 @@ export type Occupancy = components['schemas']['RoomOccupancy']
 type State = { occupancy: Occupancy | null; connected: boolean }
 
 /**
- * Ocupación en directo de una sala por SSE. `EventSource` no permite la cabecera Authorization, por eso se usa
- * fetch. Se abre al montar y se cierra al salir; se reconecta sola si el servidor corta la conexión.
+ * Live occupancy of a room over SSE. `EventSource` cannot send the Authorization header, so fetch is
+ * used. It opens on mount and closes on unmount; it reconnects by itself if the server drops the connection.
  */
 export function useRoomOccupancy(roomId: string, enabled = true): State {
   const [state, setState] = useState<State>({ occupancy: null, connected: false })
@@ -37,7 +37,7 @@ export function useRoomOccupancy(roomId: string, enabled = true): State {
         },
         onerror: () => {
           setState((s) => ({ ...s, connected: false }))
-          // Devolver (sin lanzar) deja que la librería reintente con su espera por defecto.
+          // Returning (without throwing) lets the library retry with its default delay.
         },
       })
     })()

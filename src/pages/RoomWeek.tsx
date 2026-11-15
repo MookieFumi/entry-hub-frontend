@@ -15,7 +15,7 @@ const DAYS_ES: Record<string, string> = {
   Sunday: 'Domingo',
 }
 
-/** Lunes de la semana de una fecha. Opera con fechas de calendario, así que no depende del cambio de hora. */
+/** Monday of the week of a date. It works on calendar dates, so clock changes do not affect it. */
 export function mondayOf(date: string): string {
   let d = date
   while (dayOfWeek(d) !== 'Monday') d = addDays(d, -1)
@@ -30,7 +30,7 @@ export function RoomWeek() {
   const room = useRoom(id)
   const monday = mondayOf(params.get('date') ?? dateInZone(new Date(), tz))
   const nextMonday = addDays(monday, 7)
-  // Ventana de 7 días: por debajo del máximo de 31 que admite la API.
+  // 7-day window: below the 31-day maximum the API accepts.
   const schedule = useSchedule(
     id,
     zonedToUtc(monday, '00:00', tz).toISOString(),

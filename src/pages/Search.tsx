@@ -1,5 +1,6 @@
 import { Link, useSearchParams } from 'react-router'
 import { useAvailability, useOfficeZone } from '@/api/queries'
+import { FeatureChecklist } from '@/components/FeatureFilter'
 import { RoomCard } from '@/components/RoomCard'
 import { TextField } from '@/components/ui/Field'
 import { Alert, EmptyState, ErrorState, PageHeader, Spinner } from '@/components/ui/Feedback'
@@ -14,6 +15,7 @@ export function Search() {
   const attendees = params.get('attendees') ?? ''
   const floor = params.get('floor') ?? ''
   const minCapacity = params.get('minCapacity') ?? ''
+  const features = params.get('features')?.split(',').filter(Boolean) ?? []
   const valid = Boolean(date && start && end && end > start)
 
   const result = useAvailability(
@@ -24,6 +26,7 @@ export function Search() {
           attendees: attendees ? Number(attendees) : undefined,
           floor: floor ? Number(floor) : undefined,
           minCapacity: minCapacity ? Number(minCapacity) : undefined,
+          features,
         }
       : null,
   )
@@ -87,6 +90,13 @@ export function Search() {
           value={minCapacity}
           onChange={(e) => set('minCapacity', e.target.value)}
         />
+        <div className="sm:col-span-3 lg:col-span-5">
+          <FeatureChecklist
+            selected={features}
+            valueOf={(f) => f.code}
+            onChange={(next) => set('features', next.join(','))}
+          />
+        </div>
       </form>
       {!valid && <Alert>Elige día, hora de inicio y hora de fin para ver las salas libres.</Alert>}
       {valid && result.isPending && <Spinner label="Buscando salas" />}

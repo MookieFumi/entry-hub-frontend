@@ -23,6 +23,16 @@
         "description": "Readiness for clients, as JSON. Kubernetes and the Aspire AppHost do not call this one: they use /health (readiness) and /alive (liveness), described under the Probes tag, which sit outside the versioned API and answer plain text.",
         "operationId": "GetHealth",
         "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
           "200": {
             "description": "OK",
             "content": {
@@ -44,6 +54,16 @@
         "summary": "Says who is calling: user, role and tenant.",
         "operationId": "GetMe",
         "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
           "200": {
             "description": "OK",
             "content": {
@@ -70,15 +90,479 @@
         "tags": [
           "Rules"
         ],
-        "summary": "Gets the booking rules that apply to the caller.",
+        "summary": "Gets the booking rules of the caller's tenant.",
         "operationId": "GetBookingRules",
         "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
           "200": {
             "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/RulesResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Rules"
+        ],
+        "summary": "Sets the booking rules of the caller's tenant. Facilities only. Applies to new bookings.",
+        "operationId": "UpdateBookingRules",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRulesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RulesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/sites": {
+      "get": {
+        "tags": [
+          "Sites"
+        ],
+        "summary": "Lists the sites of the tenant.",
+        "operationId": "ListSites",
+        "parameters": [
+          {
+            "name": "IncludeInactive",
+            "in": "query",
+            "description": "Also return deactivated sites. Only Facilities get them; for anyone else it is ignored.",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SiteResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Sites"
+        ],
+        "summary": "Creates a site. Facilities only.",
+        "operationId": "CreateSite",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSiteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/sites/{id}": {
+      "patch": {
+        "tags": [
+          "Sites"
+        ],
+        "summary": "Edits a site or deactivates it. Facilities only.",
+        "operationId": "UpdateSite",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSiteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/features": {
+      "get": {
+        "tags": [
+          "Features"
+        ],
+        "summary": "Lists the equipment and accessibility catalog of the tenant.",
+        "operationId": "ListFeatures",
+        "parameters": [
+          {
+            "name": "IncludeInactive",
+            "in": "query",
+            "description": "Also return deactivated entries. Only Facilities get them; for anyone else it is ignored.",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FeatureResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Features"
+        ],
+        "summary": "Adds an entry to the catalog. Facilities only.",
+        "operationId": "CreateFeature",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFeatureRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeatureResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/features/{id}": {
+      "patch": {
+        "tags": [
+          "Features"
+        ],
+        "summary": "Renames a catalog entry or deactivates it. Facilities only.",
+        "operationId": "UpdateFeature",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateFeatureRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeatureResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -109,6 +593,16 @@
           "required": true
         },
         "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
           "201": {
             "description": "Created",
             "content": {
@@ -212,9 +706,36 @@
               ],
               "format": "int32"
             }
+          },
+          {
+            "name": "SiteId",
+            "in": "query",
+            "description": "Only rooms of this site.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Features",
+            "in": "query",
+            "description": "Codes from `GET /features` separated by commas; only rooms that have all of them.",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
           "200": {
             "description": "OK",
             "content": {
@@ -262,6 +783,16 @@
           "required": true
         },
         "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
           "200": {
             "description": "OK",
             "content": {
@@ -277,7 +808,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -327,6 +858,16 @@
           }
         ],
         "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
           "200": {
             "description": "OK",
             "content": {
@@ -412,9 +953,36 @@
               ],
               "format": "int32"
             }
+          },
+          {
+            "name": "SiteId",
+            "in": "query",
+            "description": "Only rooms of this site.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Features",
+            "in": "query",
+            "description": "Codes from `GET /features` separated by commas; only rooms that have all of them.",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
           "200": {
             "description": "OK",
             "content": {
@@ -483,6 +1051,16 @@
           }
         ],
         "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
           "200": {
             "description": "OK",
             "content": {
@@ -543,6 +1121,16 @@
           }
         ],
         "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
           "200": {
             "description": "OK",
             "content": {
@@ -582,6 +1170,16 @@
           "required": true
         },
         "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
           "201": {
             "description": "Created",
             "content": {
@@ -696,9 +1294,28 @@
               ],
               "format": "int32"
             }
+          },
+          {
+            "name": "SiteId",
+            "in": "query",
+            "description": "Only bookings of rooms of this site.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
         "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
           "200": {
             "description": "OK",
             "content": {
@@ -761,6 +1378,16 @@
           }
         ],
         "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
           "200": {
             "description": "OK",
             "content": {
@@ -798,6 +1425,16 @@
           }
         ],
         "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
           "200": {
             "description": "OK",
             "content": {
@@ -841,6 +1478,16 @@
           }
         ],
         "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
           "204": {
             "description": "No Content"
           },
@@ -1040,6 +1687,25 @@
         },
         "description": "The shape of the body. Rules that need data or a clock are checked later, in the handler."
       },
+      "CreateFeatureRequest": {
+        "required": [
+          "name",
+          "kind"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string",
+            "description": "Name to show; unique among the entries of the tenant, ignoring case."
+          },
+          "kind": {
+            "description": "Equipment or accessibility.",
+            "$ref": "#/components/schemas/FeatureKind"
+          }
+        }
+      },
       "CreateRoomRequest": {
         "required": [
           "name",
@@ -1052,7 +1718,8 @@
           "name": {
             "maxLength": 100,
             "minLength": 0,
-            "type": "string"
+            "type": "string",
+            "description": "Unique among the rooms of the site."
           },
           "floor": {
             "maximum": 100,
@@ -1062,6 +1729,7 @@
               "integer",
               "string"
             ],
+            "description": "Floor of the room.",
             "format": "int32"
           },
           "capacity": {
@@ -1072,6 +1740,7 @@
               "integer",
               "string"
             ],
+            "description": "People the room holds.",
             "format": "int32"
           },
           "equipment": {
@@ -1081,7 +1750,75 @@
             ],
             "items": {
               "type": "string"
-            }
+            },
+            "description": "Names of what the room has. A name that matches an entry of the catalog (ignoring case) uses it; a new name adds an equipment entry to the catalog."
+          },
+          "siteId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Site of the room; the oldest active site of the tenant when left out.",
+            "format": "uuid"
+          },
+          "featureIds": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Ids of active entries of the catalog the room has, added to the ones named in Equipment."
+          }
+        }
+      },
+      "CreateSiteRequest": {
+        "required": [
+          "name",
+          "timeZone",
+          "opens",
+          "closes",
+          "openDays"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string",
+            "description": "Unique among the sites of the tenant."
+          },
+          "timeZone": {
+            "maxLength": 64,
+            "minLength": 0,
+            "type": "string",
+            "description": "IANA time zone, such as `Europe/Madrid`."
+          },
+          "opens": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "`HH:mm`; 08:00 when left out."
+          },
+          "closes": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "`HH:mm`; 20:00 when left out."
+          },
+          "openDays": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/DayOfWeek"
+            },
+            "description": "Monday to Friday when left out."
           }
         }
       },
@@ -1095,6 +1832,46 @@
           "Friday",
           "Saturday"
         ]
+      },
+      "FeatureKind": {
+        "enum": [
+          "Equipment",
+          "Accessibility"
+        ]
+      },
+      "FeatureResponse": {
+        "required": [
+          "id",
+          "code",
+          "name",
+          "kind",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifier to give to a room.",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string",
+            "description": "Stable lowercase identifier, such as `video-conferencing`; the `features` filter uses it."
+          },
+          "name": {
+            "type": "string",
+            "description": "Name to show."
+          },
+          "kind": {
+            "description": "Equipment or accessibility.",
+            "$ref": "#/components/schemas/FeatureKind"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "A deactivated entry cannot be given to a room; the rooms that have it keep it."
+          }
+        },
+        "description": "An entry of the catalog of the tenant."
       },
       "GetHealthResponse": {
         "required": [
@@ -1342,10 +2119,12 @@
       "RoomResponse": {
         "required": [
           "id",
+          "siteId",
           "name",
           "floor",
           "capacity",
           "equipment",
+          "features",
           "isActive",
           "createdAt"
         ],
@@ -1353,10 +2132,17 @@
         "properties": {
           "id": {
             "type": "string",
+            "description": "Identifier of the room.",
+            "format": "uuid"
+          },
+          "siteId": {
+            "type": "string",
+            "description": "Site the room belongs to.",
             "format": "uuid"
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "Unique among the rooms of the site."
           },
           "floor": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
@@ -1364,6 +2150,7 @@
               "integer",
               "string"
             ],
+            "description": "Floor of the room.",
             "format": "int32"
           },
           "capacity": {
@@ -1372,19 +2159,30 @@
               "integer",
               "string"
             ],
+            "description": "People the room holds.",
             "format": "int32"
           },
           "equipment": {
             "type": "array",
             "items": {
               "type": "string"
-            }
+            },
+            "description": "Names of what the room has, the same as in Features; kept for clients that only show text."
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FeatureResponse"
+            },
+            "description": "What the room has, from the catalog of the tenant."
           },
           "isActive": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "A deactivated room is not listed and cannot be booked."
           },
           "createdAt": {
             "type": "string",
+            "description": "When the room was created.",
             "format": "date-time"
           }
         }
@@ -1531,7 +2329,7 @@
           },
           "officeOpens": {
             "type": "string",
-            "description": "First start time of the day, `HH:mm`, in TimeZone."
+            "description": "First start time of the day at the default site (the oldest active one), `HH:mm`, in TimeZone. Each site has its own: see `GET /sites`."
           },
           "officeCloses": {
             "type": "string",
@@ -1586,7 +2384,7 @@
             "format": "int32"
           }
         },
-        "description": "The booking rules a client can show or check before it sends a booking. The server still decides: a booking that\nbreaks a rule gets a 422 with the code of the rule."
+        "description": "The booking rules of the tenant of the token, the ones a client can show or check before it sends a booking. The server still decides: a booking that\nbreaks a rule gets a 422 with the code of the rule."
       },
       "RuleViolation": {
         "required": [
@@ -1604,6 +2402,59 @@
             "description": "Explanation for a person."
           }
         }
+      },
+      "SiteResponse": {
+        "required": [
+          "id",
+          "name",
+          "timeZone",
+          "opens",
+          "closes",
+          "openDays",
+          "isActive",
+          "createdAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifier of the site.",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "Unique among the sites of the tenant."
+          },
+          "timeZone": {
+            "type": "string",
+            "description": "IANA time zone, such as `Europe/Madrid`."
+          },
+          "opens": {
+            "type": "string",
+            "description": "First start time of the day, `HH:mm`."
+          },
+          "closes": {
+            "type": "string",
+            "description": "Last end time of the day, `HH:mm`."
+          },
+          "openDays": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DayOfWeek"
+            },
+            "description": "Days of the week the rooms of the site can be booked."
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "A deactivated site and its rooms are not listed and cannot be booked."
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "When the site was created.",
+            "format": "date-time"
+          }
+        },
+        "description": "A place with rooms. The hours and the days refer to TimeZone."
       },
       "SseItemOfRoomOccupancy": {
         "type": "object",
@@ -1632,6 +2483,44 @@
           }
         }
       },
+      "UpdateFeatureRequest": {
+        "required": [
+          "name",
+          "kind",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "New name; unique among the entries of the tenant, ignoring case."
+          },
+          "kind": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "New kind.",
+                "$ref": "#/components/schemas/FeatureKind"
+              }
+            ]
+          },
+          "isActive": {
+            "type": [
+              "null",
+              "boolean"
+            ],
+            "description": "`false` stops new rooms from getting it; the rooms that have it keep it."
+          }
+        },
+        "description": "Fields left out are not changed. The code never changes, and an entry is never deleted: a room may use it, so the\nonly way to retire it is IsActive = `false`."
+      },
       "UpdateRoomRequest": {
         "required": [
           "name",
@@ -1649,7 +2538,7 @@
               "null",
               "string"
             ],
-            "description": "New name; unique among the rooms of the tenant."
+            "description": "New name; unique among the rooms of the site."
           },
           "floor": {
             "maximum": 100,
@@ -1683,7 +2572,7 @@
             "items": {
               "type": "string"
             },
-            "description": "New equipment list."
+            "description": "Names of what the room has; a name that matches an entry of the catalog (ignoring case) uses it, a new name adds an equipment entry."
           },
           "isActive": {
             "type": [
@@ -1691,9 +2580,183 @@
               "boolean"
             ],
             "description": "`false` takes the room out of the listings and out of new bookings; the bookings it already has stay."
+          },
+          "siteId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Move the room to another active site of the tenant.",
+            "format": "uuid"
+          },
+          "featureIds": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Ids of active entries of the catalog the room has."
           }
         },
-        "description": "Fields left out are not changed. Equipment replaces the whole list when it is sent."
+        "description": "Fields left out are not changed. When Equipment or FeatureIds is sent, what the room has is replaced by both together."
+      },
+      "UpdateRulesRequest": {
+        "required": [
+          "minDurationMinutes",
+          "maxDurationMinutes",
+          "slotMinutes",
+          "minLeadTimeMinutes",
+          "maxAdvanceDays",
+          "cancellationNoticeMinutes",
+          "maxActiveBookings"
+        ],
+        "type": "object",
+        "properties": {
+          "minDurationMinutes": {
+            "maximum": 1440,
+            "minimum": 1,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Shortest booking.",
+            "format": "int32"
+          },
+          "maxDurationMinutes": {
+            "maximum": 1440,
+            "minimum": 1,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Longest booking, at most 24 hours.",
+            "format": "int32"
+          },
+          "slotMinutes": {
+            "maximum": 60,
+            "minimum": 1,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Starts and ends fall on multiples of this length; it must divide an hour.",
+            "format": "int32"
+          },
+          "minLeadTimeMinutes": {
+            "maximum": 10080,
+            "minimum": 0,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "A booking starts at least this many minutes from now.",
+            "format": "int32"
+          },
+          "maxAdvanceDays": {
+            "maximum": 730,
+            "minimum": 1,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "A booking starts at most this many days from now.",
+            "format": "int32"
+          },
+          "cancellationNoticeMinutes": {
+            "maximum": 10080,
+            "minimum": 0,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "An Employee can cancel until this many minutes before the start.",
+            "format": "int32"
+          },
+          "maxActiveBookings": {
+            "maximum": 1000,
+            "minimum": 1,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Active bookings an Employee can hold.",
+            "format": "int32"
+          }
+        },
+        "description": "The rules of the tenant. All fields are required: the tenant keeps exactly what is sent. Opening hours, days and\ntime zone belong to each site, see `PATCH /sites/{id}`."
+      },
+      "UpdateSiteRequest": {
+        "required": [
+          "name",
+          "timeZone",
+          "opens",
+          "closes",
+          "openDays",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "New name; unique among the sites of the tenant."
+          },
+          "timeZone": {
+            "maxLength": 64,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "New IANA time zone."
+          },
+          "opens": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "New opening time, `HH:mm`."
+          },
+          "closes": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "New closing time, `HH:mm`."
+          },
+          "openDays": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/DayOfWeek"
+            },
+            "description": "New open days."
+          },
+          "isActive": {
+            "type": [
+              "null",
+              "boolean"
+            ],
+            "description": "`false` takes the site and its rooms out of the listings and out of new bookings; the bookings they already have stay."
+          }
+        },
+        "description": "Fields left out are not changed. OpenDays replaces the whole list when it is sent."
       }
     },
     "securitySchemes": {
@@ -1714,6 +2777,12 @@
     },
     {
       "name": "Rules"
+    },
+    {
+      "name": "Sites"
+    },
+    {
+      "name": "Features"
     },
     {
       "name": "Rooms"

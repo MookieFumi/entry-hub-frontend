@@ -48,14 +48,85 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Gets the booking rules that apply to the caller. */
+        /** Gets the booking rules of the caller's tenant. */
         get: operations["GetBookingRules"];
-        put?: never;
+        /** Sets the booking rules of the caller's tenant. Facilities only. Applies to new bookings. */
+        put: operations["UpdateBookingRules"];
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/v1/sites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists the sites of the tenant. */
+        get: operations["ListSites"];
+        put?: never;
+        /** Creates a site. Facilities only. */
+        post: operations["CreateSite"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/sites/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edits a site or deactivates it. Facilities only. */
+        patch: operations["UpdateSite"];
+        trace?: never;
+    };
+    "/api/v1/features": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists the equipment and accessibility catalog of the tenant. */
+        get: operations["ListFeatures"];
+        put?: never;
+        /** Adds an entry to the catalog. Facilities only. */
+        post: operations["CreateFeature"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/features/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Renames a catalog entry or deactivates it. Facilities only. */
+        patch: operations["UpdateFeature"];
         trace?: never;
     };
     "/api/v1/rooms": {
@@ -285,16 +356,67 @@ export interface components {
             /** Format: int32 */
             attendees: number | string;
         };
-        CreateRoomRequest: {
+        CreateFeatureRequest: {
+            /** @description Name to show; unique among the entries of the tenant, ignoring case. */
             name: string;
-            /** Format: int32 */
+            /** @description Equipment or accessibility. */
+            kind: components["schemas"]["FeatureKind"];
+        };
+        CreateRoomRequest: {
+            /** @description Unique among the rooms of the site. */
+            name: string;
+            /**
+             * Format: int32
+             * @description Floor of the room.
+             */
             floor: number | string;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description People the room holds.
+             */
             capacity: number | string;
+            /** @description Names of what the room has. A name that matches an entry of the catalog (ignoring case) uses it; a new name adds an equipment entry to the catalog. */
             equipment: null | string[];
+            /**
+             * Format: uuid
+             * @description Site of the room; the oldest active site of the tenant when left out.
+             */
+            siteId?: null | string;
+            /** @description Ids of active entries of the catalog the room has, added to the ones named in Equipment. */
+            featureIds?: null | string[];
+        };
+        CreateSiteRequest: {
+            /** @description Unique among the sites of the tenant. */
+            name: string;
+            /** @description IANA time zone, such as `Europe/Madrid`. */
+            timeZone: string;
+            /** @description `HH:mm`; 08:00 when left out. */
+            opens: null | string;
+            /** @description `HH:mm`; 20:00 when left out. */
+            closes: null | string;
+            /** @description Monday to Friday when left out. */
+            openDays: null | components["schemas"]["DayOfWeek"][];
         };
         /** @enum {unknown} */
         DayOfWeek: "Sunday" | "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday";
+        /** @enum {unknown} */
+        FeatureKind: "Equipment" | "Accessibility";
+        /** @description An entry of the catalog of the tenant. */
+        FeatureResponse: {
+            /**
+             * Format: uuid
+             * @description Identifier to give to a room.
+             */
+            id: string;
+            /** @description Stable lowercase identifier, such as `video-conferencing`; the `features` filter uses it. */
+            code: string;
+            /** @description Name to show. */
+            name: string;
+            /** @description Equipment or accessibility. */
+            kind: components["schemas"]["FeatureKind"];
+            /** @description A deactivated entry cannot be given to a room; the rooms that have it keep it. */
+            isActive: boolean;
+        };
         GetHealthResponse: {
             status: string;
             database: string;
@@ -369,16 +491,38 @@ export interface components {
             nextChange: null | string;
         };
         RoomResponse: {
-            /** Format: uuid */
+            /**
+             * Format: uuid
+             * @description Identifier of the room.
+             */
             id: string;
+            /**
+             * Format: uuid
+             * @description Site the room belongs to.
+             */
+            siteId: string;
+            /** @description Unique among the rooms of the site. */
             name: string;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description Floor of the room.
+             */
             floor: number | string;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description People the room holds.
+             */
             capacity: number | string;
+            /** @description Names of what the room has, the same as in Features; kept for clients that only show text. */
             equipment: string[];
+            /** @description What the room has, from the catalog of the tenant. */
+            features: components["schemas"]["FeatureResponse"][];
+            /** @description A deactivated room is not listed and cannot be booked. */
             isActive: boolean;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description When the room was created.
+             */
             createdAt: string;
         };
         /** @description One busy range of a room. Everyone sees when it is taken; only Facilities and the organizer see what it is. */
@@ -424,7 +568,7 @@ export interface components {
             violations: components["schemas"]["RuleViolation"][];
         };
         /**
-         * @description The booking rules a client can show or check before it sends a booking. The server still decides: a booking that
+         * @description The booking rules of the tenant of the token, the ones a client can show or check before it sends a booking. The server still decides: a booking that
          *     breaks a rule gets a 422 with the code of the rule.
          */
         RulesResponse: {
@@ -443,7 +587,7 @@ export interface components {
              * @description Starts and ends fall on multiples of this length.
              */
             slotMinutes: number | string;
-            /** @description First start time of the day, `HH:mm`, in TimeZone. */
+            /** @description First start time of the day at the default site (the oldest active one), `HH:mm`, in TimeZone. Each site has its own: see `GET /sites`. */
             officeOpens: string;
             /** @description Last end time of the day, `HH:mm`, in TimeZone. */
             officeCloses: string;
@@ -478,15 +622,51 @@ export interface components {
             /** @description Explanation for a person. */
             message: string;
         };
+        /** @description A place with rooms. The hours and the days refer to TimeZone. */
+        SiteResponse: {
+            /**
+             * Format: uuid
+             * @description Identifier of the site.
+             */
+            id: string;
+            /** @description Unique among the sites of the tenant. */
+            name: string;
+            /** @description IANA time zone, such as `Europe/Madrid`. */
+            timeZone: string;
+            /** @description First start time of the day, `HH:mm`. */
+            opens: string;
+            /** @description Last end time of the day, `HH:mm`. */
+            closes: string;
+            /** @description Days of the week the rooms of the site can be booked. */
+            openDays: components["schemas"]["DayOfWeek"][];
+            /** @description A deactivated site and its rooms are not listed and cannot be booked. */
+            isActive: boolean;
+            /**
+             * Format: date-time
+             * @description When the site was created.
+             */
+            createdAt: string;
+        };
         SseItemOfRoomOccupancy: {
             data?: components["schemas"]["RoomOccupancy"];
             eventType?: null | string;
             eventId?: null | string;
             reconnectionInterval?: null | string;
         };
-        /** @description Fields left out are not changed. Equipment replaces the whole list when it is sent. */
+        /**
+         * @description Fields left out are not changed. The code never changes, and an entry is never deleted: a room may use it, so the
+         *     only way to retire it is IsActive = `false`.
+         */
+        UpdateFeatureRequest: {
+            /** @description New name; unique among the entries of the tenant, ignoring case. */
+            name: null | string;
+            kind: null | components["schemas"]["FeatureKind"];
+            /** @description `false` stops new rooms from getting it; the rooms that have it keep it. */
+            isActive: null | boolean;
+        };
+        /** @description Fields left out are not changed. When Equipment or FeatureIds is sent, what the room has is replaced by both together. */
         UpdateRoomRequest: {
-            /** @description New name; unique among the rooms of the tenant. */
+            /** @description New name; unique among the rooms of the site. */
             name: null | string;
             /**
              * Format: int32
@@ -498,9 +678,72 @@ export interface components {
              * @description New capacity.
              */
             capacity: null | number | string;
-            /** @description New equipment list. */
+            /** @description Names of what the room has; a name that matches an entry of the catalog (ignoring case) uses it, a new name adds an equipment entry. */
             equipment: null | string[];
             /** @description `false` takes the room out of the listings and out of new bookings; the bookings it already has stay. */
+            isActive: null | boolean;
+            /**
+             * Format: uuid
+             * @description Move the room to another active site of the tenant.
+             */
+            siteId?: null | string;
+            /** @description Ids of active entries of the catalog the room has. */
+            featureIds?: null | string[];
+        };
+        /**
+         * @description The rules of the tenant. All fields are required: the tenant keeps exactly what is sent. Opening hours, days and
+         *     time zone belong to each site, see `PATCH /sites/{id}`.
+         */
+        UpdateRulesRequest: {
+            /**
+             * Format: int32
+             * @description Shortest booking.
+             */
+            minDurationMinutes: number | string;
+            /**
+             * Format: int32
+             * @description Longest booking, at most 24 hours.
+             */
+            maxDurationMinutes: number | string;
+            /**
+             * Format: int32
+             * @description Starts and ends fall on multiples of this length; it must divide an hour.
+             */
+            slotMinutes: number | string;
+            /**
+             * Format: int32
+             * @description A booking starts at least this many minutes from now.
+             */
+            minLeadTimeMinutes: number | string;
+            /**
+             * Format: int32
+             * @description A booking starts at most this many days from now.
+             */
+            maxAdvanceDays: number | string;
+            /**
+             * Format: int32
+             * @description An Employee can cancel until this many minutes before the start.
+             */
+            cancellationNoticeMinutes: number | string;
+            /**
+             * Format: int32
+             * @description Active bookings an Employee can hold.
+             */
+            maxActiveBookings: number | string;
+        };
+        /** @description Fields left out are not changed. OpenDays replaces the whole list when it is sent. */
+        UpdateSiteRequest: {
+            /** @description New name; unique among the sites of the tenant. */
+            name: null | string;
+            /** @description New IANA time zone. */
+            timeZone: null | string;
+            /** @description New opening time, `HH:mm`. */
+            opens: null | string;
+            /** @description New closing time, `HH:mm`. */
+            closes: null | string;
+            /** @description New open days. */
+            openDays: null | components["schemas"]["DayOfWeek"][];
+            /** @description `false` takes the site and its rooms out of the listings and out of new bookings; the bookings they already have stay. */
             isActive: null | boolean;
         };
     };
@@ -530,6 +773,15 @@ export interface operations {
                     "application/json": components["schemas"]["GetHealthResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
         };
     };
     GetMe: {
@@ -557,6 +809,15 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
         };
     };
     GetBookingRules: {
@@ -577,6 +838,347 @@ export interface operations {
                     "application/json": components["schemas"]["RulesResponse"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    UpdateBookingRules: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateRulesRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RulesResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ListSites: {
+        parameters: {
+            query?: {
+                /** @description Also return deactivated sites. Only Facilities get them; for anyone else it is ignored. */
+                IncludeInactive?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteResponse"][];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    CreateSite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateSiteRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    UpdateSite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateSiteRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ListFeatures: {
+        parameters: {
+            query?: {
+                /** @description Also return deactivated entries. Only Facilities get them; for anyone else it is ignored. */
+                IncludeInactive?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeatureResponse"][];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    CreateFeature: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateFeatureRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeatureResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    UpdateFeature: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateFeatureRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeatureResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
         };
     };
     ListRooms: {
@@ -592,6 +1194,10 @@ export interface operations {
                 Page?: number | string;
                 /** @description Items per page; defaults to 20 and is capped at 100. */
                 PageSize?: number | string;
+                /** @description Only rooms of this site. */
+                SiteId?: string;
+                /** @description Codes from `GET /features` separated by commas; only rooms that have all of them. */
+                Features?: string;
             };
             header?: never;
             path?: never;
@@ -606,6 +1212,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PagedResponseOfRoomResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
                 };
             };
         };
@@ -650,6 +1265,15 @@ export interface operations {
                     "application/problem+json": components["schemas"]["ProblemDetails"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
         };
     };
     GetRoom: {
@@ -678,6 +1302,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
             };
         };
     };
@@ -711,7 +1344,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
                 };
             };
             /** @description Not Found */
@@ -725,6 +1358,15 @@ export interface operations {
             };
             /** @description Conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -747,6 +1389,10 @@ export interface operations {
                 MinCapacity?: number | string;
                 /** @description Only rooms on this floor. */
                 Floor?: number | string;
+                /** @description Only rooms of this site. */
+                SiteId?: string;
+                /** @description Codes from `GET /features` separated by commas; only rooms that have all of them. */
+                Features?: string;
             };
             header?: never;
             path?: never;
@@ -770,6 +1416,15 @@ export interface operations {
                 };
                 content: {
                     "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
                 };
             };
         };
@@ -817,6 +1472,15 @@ export interface operations {
                     "application/problem+json": components["schemas"]["ProblemDetails"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
         };
     };
     StreamRoomOccupancy: {
@@ -846,6 +1510,15 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
         };
     };
     ListBookings: {
@@ -863,6 +1536,8 @@ export interface operations {
                 Page?: number | string;
                 /** @description Items per page; defaults to 20 and is capped at 100. */
                 PageSize?: number | string;
+                /** @description Only bookings of rooms of this site. */
+                SiteId?: string;
             };
             header?: never;
             path?: never;
@@ -877,6 +1552,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PagedResponseOfBookingResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
                 };
             };
         };
@@ -930,6 +1614,15 @@ export interface operations {
                     "application/problem+json": components["schemas"]["RulesBrokenProblem"];
                 };
             };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
         };
     };
     ListMyBookings: {
@@ -955,6 +1648,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PagedResponseOfBookingResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
                 };
             };
         };
@@ -992,6 +1694,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
             };
         };
     };
@@ -1034,6 +1745,15 @@ export interface operations {
                 };
                 content: {
                     "application/problem+json": components["schemas"]["RulesBrokenProblem"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
                 };
             };
         };

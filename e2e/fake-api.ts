@@ -18,12 +18,24 @@ export const rules = {
 /** A Monday far in the future, so the tests do not depend on today's date. */
 export const BOOKING_DAY = '2030-01-14'
 
+const features = [
+  { id: 'f1', code: 'tv', name: 'TV', kind: 'Equipment', isActive: true },
+  {
+    id: 'f3',
+    code: 'step-free',
+    name: 'Acceso sin escalones',
+    kind: 'Accessibility',
+    isActive: true,
+  },
+]
+
 type Room = {
   id: string
   name: string
   floor: number
   capacity: number
   equipment: string[]
+  features: typeof features
   isActive: boolean
   createdAt: string
 }
@@ -66,6 +78,7 @@ export async function mockApi(page: Page) {
       floor: 2,
       capacity: 8,
       equipment: ['TV'],
+      features: [features[0]!],
       isActive: true,
       createdAt: '2026-01-01T00:00:00Z',
     },
@@ -104,12 +117,23 @@ export async function mockApi(page: Page) {
     if (method === 'GET' && path === '/health') {
       return json(route, { status: 'Healthy', database: 'Healthy' })
     }
+    if (method === 'GET' && path === '/features') return json(route, features)
     if (method === 'GET' && path === '/rooms') return json(route, paged(rooms))
     if (method === 'POST' && path === '/rooms') {
-      const body = request.postDataJSON() as Omit<Room, 'id' | 'isActive' | 'createdAt'>
+      const body = request.postDataJSON() as {
+        name: string
+        floor: number
+        capacity: number
+        equipment: string[]
+        featureIds: string[] | null
+      }
       if (rooms.some((r) => r.name === body.name)) return json(route, { title: 'Conflict' }, 409)
       const room = {
-        ...body,
+        name: body.name,
+        floor: body.floor,
+        capacity: body.capacity,
+        equipment: body.equipment,
+        features: features.filter((f) => body.featureIds?.includes(f.id)),
         id: crypto.randomUUID(),
         isActive: true,
         createdAt: new Date().toISOString(),

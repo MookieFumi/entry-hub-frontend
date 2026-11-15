@@ -23,10 +23,12 @@ export function AdminRooms() {
       await update.mutateAsync({
         id: room.id,
         body: {
-          name: room.name,
-          floor: Number(room.floor),
-          capacity: Number(room.capacity),
-          equipment: room.equipment,
+          name: null,
+          floor: null,
+          capacity: null,
+          equipment: null,
+          siteId: null,
+          featureIds: null,
           isActive: !room.isActive,
         },
       })

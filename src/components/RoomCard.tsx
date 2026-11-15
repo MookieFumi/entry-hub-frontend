@@ -17,11 +17,11 @@ export function RoomCard({ room }: { room: Room }) {
       <p className="text-sm text-gray-600">
         Planta {room.floor} · hasta {room.capacity} personas
       </p>
-      {room.equipment.length > 0 && (
-        <ul className="flex flex-wrap gap-1.5" aria-label="Equipamiento">
-          {room.equipment.map((e) => (
-            <li key={e}>
-              <Badge>{e}</Badge>
+      {room.features.length > 0 && (
+        <ul className="flex flex-wrap gap-1.5" aria-label="Equipamiento y accesibilidad">
+          {room.features.map((f) => (
+            <li key={f.id}>
+              <Badge tone={f.kind === 'Accessibility' ? 'brand' : 'gray'}>{f.name}</Badge>
             </li>
           ))}
         </ul>

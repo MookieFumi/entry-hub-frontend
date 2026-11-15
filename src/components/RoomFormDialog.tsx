@@ -2,6 +2,7 @@ import { Dialog } from '@base-ui/react/dialog'
 import { useState, type FormEvent } from 'react'
 import { ApiError } from '@/api/errors'
 import { useCreateRoom, useUpdateRoom, type Room } from '@/api/queries'
+import { FeatureChecklist } from '@/components/FeatureFilter'
 import { Button } from '@/components/ui/Button'
 import { TextField } from '@/components/ui/Field'
 import { Alert } from '@/components/ui/Feedback'
@@ -23,7 +24,8 @@ export function RoomFormDialog({
   const [name, setName] = useState(room?.name ?? '')
   const [floor, setFloor] = useState(String(room?.floor ?? 0))
   const [capacity, setCapacity] = useState(String(room?.capacity ?? 4))
-  const [equipment, setEquipment] = useState(room?.equipment.join(', ') ?? '')
+  const initialFeatureIds = room?.features.map((f) => f.id) ?? []
+  const [featureIds, setFeatureIds] = useState<string[]>(initialFeatureIds)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [formError, setFormError] = useState<string | null>(null)
   const busy = create.isPending || update.isPending
@@ -41,19 +43,25 @@ export function RoomFormDialog({
     setErrors(next)
     if (Object.keys(next).length > 0) return
 
-    const body = {
-      name: name.trim(),
-      floor: f,
-      capacity: c,
-      equipment: equipment
-        .split(',')
-        .map((x) => x.trim())
-        .filter(Boolean),
-    }
+    const body = { name: name.trim(), floor: f, capacity: c }
+    // On edit, the catalog selection is only sent when it changed, so entries the room keeps that were
+    // deactivated in the catalog are not dropped by an unrelated edit.
+    const changed =
+      featureIds.length !== initialFeatureIds.length ||
+      featureIds.some((id) => !initialFeatureIds.includes(id))
     try {
       if (room)
-        await update.mutateAsync({ id: room.id, body: { ...body, isActive: room.isActive } })
-      else await create.mutateAsync(body)
+        await update.mutateAsync({
+          id: room.id,
+          body: {
+            ...body,
+            equipment: null,
+            siteId: null,
+            isActive: null,
+            featureIds: changed ? featureIds : null,
+          },
+        })
+      else await create.mutateAsync({ ...body, equipment: [], siteId: null, featureIds })
       notify('success', room ? 'Sala actualizada.' : 'Sala creada.')
       onOpenChange(false)
     } catch (err) {
@@ -101,12 +109,11 @@ export function RoomFormDialog({
                 onChange={(e) => setCapacity(e.target.value)}
               />
             </div>
-            <TextField
-              label="Equipamiento"
-              hint="Separado por comas"
-              value={equipment}
-              error={errors.equipment}
-              onChange={(e) => setEquipment(e.target.value)}
+            <FeatureChecklist
+              includeInactive
+              selected={featureIds}
+              valueOf={(f) => f.id}
+              onChange={setFeatureIds}
             />
             {formError && <Alert tone="error">{formError}</Alert>}
             <div className="flex justify-end gap-3">

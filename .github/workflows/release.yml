@@ -40,9 +40,9 @@ jobs:
         run: |
           gh release create "$GITHUB_REF_NAME" "entry-hub-frontend-${GITHUB_REF_NAME}.zip" \
             --title "$GITHUB_REF_NAME" --generate-notes
-      # Despliegue opcional: se activa creando la variable de repositorio CLOUDFLARE_DEPLOY=true y los
-      # secretos CLOUDFLARE_API_TOKEN y CLOUDFLARE_ACCOUNT_ID. Hasta entonces solo se genera la release.
-      - name: Desplegar en Cloudflare Pages
+      # Optional deployment: enabled by creating the repository variable CLOUDFLARE_DEPLOY=true and the
+      # secrets CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID. Until then only the release is created.
+      - name: Deploy to Cloudflare Pages
         if: ${{ vars.CLOUDFLARE_DEPLOY == 'true' }}
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

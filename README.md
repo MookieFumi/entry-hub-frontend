@@ -44,7 +44,7 @@ Without the Supabase variables, the login screen accepts a token pasted from `do
 - `.github/workflows/ci.yml`: on every PR and on `main` it runs format, lint, types, contract check, tests, build and `npm audit`.
 - `.github/workflows/release.yml`: when a `vX.Y.Z` tag is created it repeats the checks, builds, creates a GitHub release with the zip and, if enabled, deploys to Cloudflare Pages.
 
-To enable deployment: repository variables `CLOUDFLARE_DEPLOY=true` and `CLOUDFLARE_PROJECT`, secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`, and variables `VITE_API_URL`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (the anon key is public by design; never use the `service_role` key).
+To enable deployment, follow [docs/deployment.md](docs/deployment.md). In short: repository variables `CLOUDFLARE_DEPLOY=true` and `CLOUDFLARE_PROJECT`, secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`, and variables `VITE_API_URL`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (the anon key is public by design; never use the `service_role` key).
 
 ## Structure
 

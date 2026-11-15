@@ -281,4 +281,7 @@ export const es = {
   'closed.reopenBody':
     'La sede volverá a admitir reservas ese día. Las reservas existentes no cambian.',
   'closed.unnamed': '(sin nombre)',
+  'closed.dayClosed': 'La sede está cerrada ese día: no se puede reservar.',
+  'closed.dayClosedNamed': 'La sede está cerrada ese día ({name}): no se puede reservar.',
+  'closed.upcoming': 'Próximos días cerrados: {days}.',
 } as const

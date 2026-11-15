@@ -24,6 +24,13 @@ describe('toApiError', () => {
     expect(error.message).toBe('The booking starts too soon.')
   })
 
+  it('has a message for SiteClosed in both languages', () => {
+    const violation = { code: 'SiteClosed', message: 'The site is closed' }
+    expect(ruleMessage(violation)).toBe('La sede está cerrada ese día.')
+    setLocale('en')
+    expect(ruleMessage(violation)).toBe('The site is closed that day.')
+  })
+
   it('uses the API text when the code is unknown', () => {
     expect(ruleMessage({ code: 'Nueva', message: 'Mensaje del servidor' })).toBe(
       'Mensaje del servidor',

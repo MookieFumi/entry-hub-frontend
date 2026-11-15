@@ -13,6 +13,8 @@ const RULE_MESSAGES: Record<string, string> = {
   ExceedsCapacity: 'Hay más asistentes que la capacidad de la sala.',
   RoomUnavailable: 'La sala no está disponible en esa franja.',
   TooManyActiveBookings: 'Has alcanzado el máximo de reservas activas.',
+  TooLateToReschedule: 'Ya no se puede reprogramar: queda muy poco para el inicio.',
+  NotActive: 'La sala no está activa.',
   TooLateToCancel: 'Ya no se puede cancelar: queda muy poco para el inicio.',
 }
 

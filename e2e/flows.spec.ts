@@ -17,6 +17,16 @@ test('sign in and book a room', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Planning' })).toBeVisible()
 })
 
+test('reschedule a booking', async ({ page }) => {
+  await signIn(page)
+  await page.goto('/bookings/b-existing/reschedule')
+  await page.getByLabel('Nuevo día').fill(BOOKING_DAY)
+  await page.getByLabel('Nueva hora de inicio').selectOption('12:00')
+  await page.getByLabel('Nueva hora de fin').selectOption('13:00')
+  await page.getByRole('button', { name: 'Reprogramar' }).click()
+  await expect(page.getByText('Reprogramada:')).toBeVisible()
+})
+
 test('cancel a booking', async ({ page }) => {
   await signIn(page)
   await page.goto('/bookings')

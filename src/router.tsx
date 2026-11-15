@@ -8,6 +8,7 @@ import { Home } from '@/pages/Home'
 import { Login } from '@/pages/Login'
 import { MyBookings } from '@/pages/MyBookings'
 import { NotFound } from '@/pages/NotFound'
+import { Reschedule } from '@/pages/Reschedule'
 import { RoomDetail } from '@/pages/RoomDetail'
 import { Rooms } from '@/pages/Rooms'
 import { RoomWeek } from '@/pages/RoomWeek'
@@ -29,6 +30,7 @@ export const routes: RouteObject[] = [
           { path: 'search', element: <Search /> },
           { path: 'bookings', element: <MyBookings /> },
           { path: 'bookings/:id', element: <BookingDetail /> },
+          { path: 'bookings/:id/reschedule', element: <Reschedule /> },
           { path: 'status', element: <Status /> },
           {
             path: 'admin',

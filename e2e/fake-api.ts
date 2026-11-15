@@ -50,6 +50,7 @@ type Booking = {
   status: 'Confirmed' | 'Cancelled'
   createdAt: string
   cancelledAt: string | null
+  rescheduledAt?: string | null
 }
 
 const json = (route: Route, body: unknown, status = 200) =>
@@ -189,10 +190,17 @@ export async function mockApi(page: Page) {
       bookings.push(booking)
       return json(route, booking, 201)
     }
-    const bookingMatch = path.match(/^\/bookings\/([^/]+)(\/cancel)?$/)
+    const bookingMatch = path.match(/^\/bookings\/([^/]+)(\/cancel|\/reschedule)?$/)
     if (bookingMatch) {
       const booking = bookings.find((b) => b.id === bookingMatch[1])
       if (!booking) return json(route, { title: 'Not found' }, 404)
+      if (method === 'POST' && bookingMatch[2] === '/reschedule') {
+        const body = request.postDataJSON() as { startAt: string; endAt: string }
+        booking.startAt = body.startAt
+        booking.endAt = body.endAt
+        booking.rescheduledAt = new Date().toISOString()
+        return json(route, booking)
+      }
       if (method === 'POST' && bookingMatch[2]) {
         booking.status = 'Cancelled'
         booking.cancelledAt = new Date().toISOString()

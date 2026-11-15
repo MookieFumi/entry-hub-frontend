@@ -6,6 +6,7 @@ import type { components } from './schema'
 export type Room = components['schemas']['RoomResponse']
 export type Booking = components['schemas']['BookingResponse']
 export type CreateBookingRequest = components['schemas']['CreateBookingRequest']
+export type RescheduleBookingRequest = components['schemas']['RescheduleBookingRequest']
 export type CreateRoomRequest = components['schemas']['CreateRoomRequest']
 export type UpdateRoomRequest = components['schemas']['UpdateRoomRequest']
 export type BookingStatus = components['schemas']['BookingStatus']
@@ -191,6 +192,25 @@ export function useCreateBooking() {
     mutationFn: (body: CreateBookingRequest) => unwrap(api.POST('/api/v1/bookings', { body })),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['bookings'] })
+      void qc.invalidateQueries({ queryKey: ['schedule'] })
+      void qc.invalidateQueries({ queryKey: ['availability'] })
+    },
+  })
+}
+
+export function useRescheduleBooking() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (args: { id: string; body: RescheduleBookingRequest }) =>
+      unwrap(
+        api.POST('/api/v1/bookings/{id}/reschedule', {
+          params: { path: { id: args.id } },
+          body: args.body,
+        }),
+      ),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['bookings'] })
+      void qc.invalidateQueries({ queryKey: ['booking'] })
       void qc.invalidateQueries({ queryKey: ['schedule'] })
       void qc.invalidateQueries({ queryKey: ['availability'] })
     },

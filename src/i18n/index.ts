@@ -43,6 +43,11 @@ export function t(key: MessageKey, params?: Params): string {
   return interpolate(catalogs[current][key], params)
 }
 
+/** True when the key exists in the catalogs (for keys built from API data). */
+export function hasMessage(key: string): key is MessageKey {
+  return key in catalogs[DEFAULT_LOCALE]
+}
+
 /** Re-renders the component when the language changes and returns the translate function. */
 export function useT(): typeof t {
   useSyncExternalStore(subscribe, getLocale)

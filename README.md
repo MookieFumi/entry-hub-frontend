@@ -18,7 +18,7 @@ npm run dev                  # http://localhost:5173
 
 The API must allow CORS for `http://localhost:5173` (`Cors:AllowedOrigins`).
 
-Without the Supabase variables, the login screen accepts a token pasted from `dotnet user-jwts` (development mode).
+Without the Supabase variables, the login screen accepts a token pasted from `dotnet user-jwts` (development mode). To sign in with Supabase Auth, see [docs/supabase-setup.md](docs/supabase-setup.md).
 
 ## Scripts
 

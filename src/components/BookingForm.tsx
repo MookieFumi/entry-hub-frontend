@@ -6,6 +6,7 @@ import { describeRules, dayName } from '@/lib/rules-text'
 import { buildSlots, endOptions, isBookableDay, toIso, type ScheduleEntry } from '@/lib/slots'
 import { ClosedDaysNotice } from '@/components/ClosedDaysNotice'
 import { useClosedDays } from '@/hooks/useClosedDays'
+import { useIdempotencyKey } from '@/hooks/useIdempotencyKey'
 import { Button } from '@/components/ui/Button'
 import { SelectField, TextField } from '@/components/ui/Field'
 import { Alert } from '@/components/ui/Feedback'
@@ -35,6 +36,7 @@ export function BookingForm({
   const rules = useRules()
   const closedDays = useClosedDays(room.siteId)
   const create = useCreateBooking()
+  const idempotencyKey = useIdempotencyKey()
   const navigate = useNavigate()
   const { notify } = useToast()
   const [start, setStart] = useState(initialStart)
@@ -78,13 +80,14 @@ export function BookingForm({
     if (Object.keys(errors).length > 0) return setFieldErrors(errors)
 
     try {
-      const booking = await create.mutateAsync({
+      const body = {
         roomId: room.id,
         title: title.trim(),
         startAt: toIso(date, startValue, r),
         endAt: toIso(date, endValue, r),
         attendees: n,
-      })
+      }
+      const booking = await create.mutateAsync({ body, idempotencyKey: idempotencyKey(body) })
       notify('success', t('form.bookedToast'))
       void navigate(`/bookings/${booking.id}`)
     } catch (err) {

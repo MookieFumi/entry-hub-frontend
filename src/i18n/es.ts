@@ -254,4 +254,5 @@ export const es = {
   'error.generic': 'Error {status}',
   'app.title': 'EntryHub · Reserva de salas',
   'rule.SiteClosed': 'La sede está cerrada ese día.',
+  'error.unreachable': 'No se pudo contactar con el servidor.',
 } as const

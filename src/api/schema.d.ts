@@ -94,6 +94,41 @@ export interface paths {
         patch: operations["UpdateSite"];
         trace?: never;
     };
+    "/api/v1/sites/{siteId}/holidays": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists the days a site is closed, optionally between two dates. */
+        get: operations["ListSiteHolidays"];
+        put?: never;
+        /** Closes a site on a day: its rooms cannot be booked that day. Facilities only. */
+        post: operations["CreateSiteHoliday"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/sites/{siteId}/holidays/{holidayId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Opens the site again on that day. Existing bookings are not affected. Facilities only. */
+        delete: operations["DeleteSiteHoliday"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/features": {
         parameters: {
             query?: never;
@@ -226,7 +261,10 @@ export interface paths {
         /** Lists the bookings of every person, filtered, with paging. Facilities only. */
         get: operations["ListBookings"];
         put?: never;
-        /** Books a room, enforcing the booking rules. */
+        /**
+         * Books a room, enforcing the booking rules.
+         * @description Send an optional Idempotency-Key header to retry safely: the same key with the same body returns the original booking (header Idempotent-Replayed: true) instead of creating another; the same key with a different body returns 422. Keys are private to each user and are remembered for 24 hours.
+         */
         post: operations["CreateBooking"];
         delete?: never;
         options?: never;
@@ -380,6 +418,15 @@ export interface components {
             name: string;
             /** @description Equipment or accessibility. */
             kind: components["schemas"]["FeatureKind"];
+        };
+        CreateHolidayRequest: {
+            /**
+             * Format: date
+             * @description The day the site is closed, in its own time zone (`yyyy-MM-dd`).
+             */
+            date: string;
+            /** @description Optional label. */
+            name: null | string;
         };
         CreateRoomRequest: {
             /** @description Unique among the rooms of the site. */
@@ -661,6 +708,26 @@ export interface components {
             code: string;
             /** @description Explanation for a person. */
             message: string;
+        };
+        /** @description A day on which a site is closed. */
+        SiteHolidayResponse: {
+            /**
+             * Format: uuid
+             * @description Identifier of the holiday.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description The site that is closed.
+             */
+            siteId: string;
+            /**
+             * Format: date
+             * @description The day, in the time zone of the site.
+             */
+            date: string;
+            /** @description What the day is, such as "New Year". */
+            name: null | string;
         };
         /** @description A place with rooms. The hours and the days refer to TimeZone. */
         SiteResponse: {
@@ -1058,6 +1125,152 @@ export interface operations {
             };
             /** @description Conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ListSiteHolidays: {
+        parameters: {
+            query?: {
+                /** @description Only holidays on or after this day. */
+                From?: string;
+                /** @description Only holidays on or before this day. */
+                To?: string;
+            };
+            header?: never;
+            path: {
+                siteId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteHolidayResponse"][];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    CreateSiteHoliday: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                siteId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateHolidayRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteHolidayResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    DeleteSiteHoliday: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                siteId: string;
+                holidayId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1608,7 +1821,9 @@ export interface operations {
     CreateBooking: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "Idempotency-Key"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -1633,7 +1848,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
                 };
             };
             /** @description Conflict */

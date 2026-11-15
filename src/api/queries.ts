@@ -11,6 +11,9 @@ export type CreateRoomRequest = components['schemas']['CreateRoomRequest']
 export type UpdateRoomRequest = components['schemas']['UpdateRoomRequest']
 export type BookingStatus = components['schemas']['BookingStatus']
 export type Feature = components['schemas']['FeatureResponse']
+export type Site = components['schemas']['SiteResponse']
+export type SiteHoliday = components['schemas']['SiteHolidayResponse']
+export type CreateHolidayRequest = components['schemas']['CreateHolidayRequest']
 
 export const keys = {
   me: ['me'] as const,
@@ -23,6 +26,9 @@ export const keys = {
   myBookings: (params: object) => ['bookings', 'mine', params] as const,
   allBookings: (params: object) => ['bookings', 'all', params] as const,
   booking: (id: string) => ['booking', id] as const,
+  sites: (includeInactive: boolean) => ['sites', includeInactive] as const,
+  holidays: (siteId: string, from?: string, to?: string) =>
+    ['holidays', siteId, from ?? '', to ?? ''] as const,
 }
 
 export const useMe = (enabled = true) =>
@@ -248,5 +254,50 @@ export function useUpdateRoom() {
       void qc.invalidateQueries({ queryKey: ['rooms'] })
       void qc.invalidateQueries({ queryKey: ['room'] })
     },
+  })
+}
+
+export const useSites = (includeInactive = false, enabled = true) =>
+  useQuery({
+    queryKey: keys.sites(includeInactive),
+    queryFn: () =>
+      unwrap(api.GET('/api/v1/sites', { params: { query: { IncludeInactive: includeInactive } } })),
+    enabled,
+    staleTime: 5 * 60_000,
+  })
+
+/** Closed days of a site, optionally between two dates (`yyyy-MM-dd`, in the site's time zone). */
+export const useSiteHolidays = (siteId: string | undefined, from?: string, to?: string) =>
+  useQuery({
+    queryKey: keys.holidays(siteId ?? '', from, to),
+    queryFn: () =>
+      unwrap(
+        api.GET('/api/v1/sites/{siteId}/holidays', {
+          params: { path: { siteId: siteId! }, query: { From: from, To: to } },
+        }),
+      ),
+    enabled: Boolean(siteId),
+    staleTime: 60_000,
+  })
+
+export function useCreateHoliday(siteId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (body: CreateHolidayRequest) =>
+      unwrap(api.POST('/api/v1/sites/{siteId}/holidays', { params: { path: { siteId } }, body })),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['holidays', siteId] }),
+  })
+}
+
+export function useDeleteHoliday(siteId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (holidayId: string) =>
+      unwrap(
+        api.DELETE('/api/v1/sites/{siteId}/holidays/{holidayId}', {
+          params: { path: { siteId, holidayId } },
+        }),
+      ),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['holidays', siteId] }),
   })
 }

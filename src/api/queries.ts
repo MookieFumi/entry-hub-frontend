@@ -195,7 +195,20 @@ export const useBooking = (id: string) =>
 export function useCreateBooking() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (body: CreateBookingRequest) => unwrap(api.POST('/api/v1/bookings', { body })),
+    mutationFn: ({
+      body,
+      idempotencyKey,
+    }: {
+      body: CreateBookingRequest
+      /** Sent as `Idempotency-Key`: a retry with the same key and body returns the first booking. */
+      idempotencyKey?: string
+    }) =>
+      unwrap(
+        api.POST('/api/v1/bookings', {
+          body,
+          params: { header: { 'Idempotency-Key': idempotencyKey } },
+        }),
+      ),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['bookings'] })
       void qc.invalidateQueries({ queryKey: ['schedule'] })

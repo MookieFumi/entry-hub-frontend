@@ -133,3 +133,18 @@ describe('time zone from the rules', () => {
     await waitFor(() => expect(screen.getByText(/10:00/)).toBeInTheDocument())
   })
 })
+
+describe('rules on the booking screen', () => {
+  it('shows the rules the API publishes', async () => {
+    mockApi({
+      ...base,
+      'GET /api/v1/rules': () =>
+        json({ ...rules, maxDurationMinutes: 120, cancellationNoticeMinutes: 60 }),
+      [`GET ${roomPath}`]: () => json(room),
+      [`GET ${roomPath}/schedule`]: () => json([]),
+    })
+    renderApp(`/rooms/${room.id}?date=2030-01-14`)
+    expect(await screen.findByText(/de 15 min a 2 h, en tramos de 15 min/)).toBeInTheDocument()
+    expect(screen.getByText(/Cancelación: hasta 1 h antes del inicio/)).toBeInTheDocument()
+  })
+})

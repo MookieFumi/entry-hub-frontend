@@ -2,6 +2,7 @@ import { useMemo, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router'
 import { useCreateBooking, useRules, type Room } from '@/api/queries'
 import { ApiError } from '@/api/errors'
+import { describeRules, dayEs } from '@/lib/rules-text'
 import { buildSlots, endOptions, isBookableDay, toIso, type ScheduleEntry } from '@/lib/slots'
 import { Button } from '@/components/ui/Button'
 import { SelectField, TextField } from '@/components/ui/Field'
@@ -168,10 +169,14 @@ export function BookingForm({
         error={fieldErrors.attendees}
         onChange={(e) => setAttendees(e.target.value)}
       />
-      <p className="text-xs text-gray-500">
-        Horas en la zona de la oficina ({r.timeZone}). De {Number(r.minDurationMinutes)} min a{' '}
-        {Number(r.maxDurationMinutes) / 60} h, en tramos de {Number(r.slotMinutes)} min.
-      </p>
+      <details className="rounded-lg bg-gray-50 p-3 text-xs text-gray-600">
+        <summary className="cursor-pointer font-medium text-gray-700">Reglas de reserva</summary>
+        <ul className="mt-2 list-disc space-y-1 pl-4">
+          {describeRules(r).map((line) => (
+            <li key={line}>{line}</li>
+          ))}
+        </ul>
+      </details>
       {formError && <Alert tone="error">{formError}</Alert>}
       <Button type="submit" disabled={create.isPending || !bookableDay}>
         {create.isPending ? 'Reservando…' : 'Reservar'}
@@ -179,14 +184,3 @@ export function BookingForm({
     </form>
   )
 }
-
-const DAYS_ES: Record<string, string> = {
-  Monday: 'lunes',
-  Tuesday: 'martes',
-  Wednesday: 'miércoles',
-  Thursday: 'jueves',
-  Friday: 'viernes',
-  Saturday: 'sábado',
-  Sunday: 'domingo',
-}
-const dayEs = (d: string) => DAYS_ES[d] ?? d

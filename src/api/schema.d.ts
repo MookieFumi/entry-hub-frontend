@@ -285,6 +285,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/bookings/{id}/reschedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Moves a booking to another time or room, keeping its id. Organizer or Facilities. */
+        post: operations["RescheduleBooking"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -341,6 +358,8 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             cancelledAt: null | string;
+            /** Format: date-time */
+            rescheduledAt?: null | string;
         };
         /** @enum {unknown} */
         BookingStatus: "Confirmed" | "Cancelled";
@@ -470,6 +489,27 @@ export interface components {
             status?: null | number | string;
             detail?: null | string;
             instance?: null | string;
+        };
+        /**
+         * @description Moves a booking to another time and, optionally, another room. The booking keeps its id, title, organizer and
+         *     attendees. The new time must pass the same rules as a new booking.
+         */
+        RescheduleBookingRequest: {
+            /**
+             * Format: date-time
+             * @description New start.
+             */
+            startAt: string;
+            /**
+             * Format: date-time
+             * @description New end.
+             */
+            endAt: string;
+            /**
+             * Format: uuid
+             * @description New room; the current one when left out.
+             */
+            roomId?: null | string;
         };
         RoomOccupancy: {
             /**
@@ -1737,6 +1777,82 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["RulesBrokenProblem"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    RescheduleBooking: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RescheduleBookingRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
             };
             /** @description Unprocessable Entity */
             422: {

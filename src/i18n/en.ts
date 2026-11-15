@@ -250,4 +250,5 @@ export const en: Catalog = {
   'search.noneHint': 'Try another time, another floor or fewer attendees.',
   'search.bookSlot': 'Book this slot',
   'error.generic': 'Error {status}',
+  'app.title': 'EntryHub · Room booking',
 }

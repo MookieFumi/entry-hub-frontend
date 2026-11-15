@@ -33,7 +33,9 @@ export function isLocale(value: unknown): value is Locale {
 }
 
 function applyToDocument(locale: Locale): void {
-  if (typeof document !== 'undefined') document.documentElement.lang = locale
+  if (typeof document === 'undefined') return
+  document.documentElement.lang = locale
+  document.title = catalogs[locale]['app.title']
 }
 
 export function setLocale(locale: Locale): void {

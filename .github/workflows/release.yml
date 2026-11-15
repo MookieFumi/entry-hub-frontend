@@ -35,11 +35,17 @@ jobs:
           cd dist
           zip -r "../entry-hub-frontend-${GITHUB_REF_NAME}.zip" .
       - name: GitHub release
+        # The release may already exist (created from the GitHub UI together with the tag): attach the zip to it
+        # when it does, and create it when the tag was pushed on its own.
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" "entry-hub-frontend-${GITHUB_REF_NAME}.zip" \
-            --title "$GITHUB_REF_NAME" --generate-notes
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "entry-hub-frontend-${GITHUB_REF_NAME}.zip" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "entry-hub-frontend-${GITHUB_REF_NAME}.zip" \
+              --title "$GITHUB_REF_NAME" --generate-notes
+          fi
       # Optional deployment: enabled by creating the repository variable CLOUDFLARE_DEPLOY=true and the
       # secrets CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID. Until then only the release is created.
       - name: Deploy to Cloudflare Pages

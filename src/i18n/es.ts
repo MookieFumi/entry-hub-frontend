@@ -338,4 +338,11 @@ export const es = {
   'series.clearFilter': 'Ver todas',
   'series.summary': 'Se han reservado {created} de {requested} repeticiones.',
   'series.skipped': 'Omitidas:',
+  'cancel.scopeLabel': '¿Qué quieres cancelar?',
+  'cancel.scopeOne': 'Solo esta reserva',
+  'cancel.scopeSeries': 'Esta y las siguientes de la serie',
+  'cancel.seriesDone': '{count} reservas canceladas.',
+  'cancel.keptTitle': 'Algunas reservas se mantienen',
+  'cancel.keptIntro': 'No se han podido cancelar estas reservas de la serie:',
+  'cancel.close': 'Cerrar',
 } as const

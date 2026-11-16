@@ -157,3 +157,65 @@ describe('series of bookings', () => {
     expect(screen.queryByText('Other thing')).not.toBeInTheDocument()
   })
 })
+
+describe('cancel a series', () => {
+  const inSeries = {
+    ...created,
+    startAt: new Date(Date.now() + 48 * 3600_000).toISOString(),
+    endAt: new Date(Date.now() + 49 * 3600_000).toISOString(),
+    seriesId: 's1',
+    seriesPosition: 1,
+  }
+  const routes = (extra = {}) => base({ 'GET /api/v1/bookings/b1': () => json(inSeries), ...extra })
+
+  it('cancels only this occurrence by default', async () => {
+    const { calls } = mockApi(
+      routes({ 'POST /api/v1/bookings/b1/cancel': () => new Response(null, { status: 204 }) }),
+    )
+    renderApp('/bookings/b1')
+    await userEvent.click(await screen.findByRole('button', { name: 'Cancelar' }))
+    await userEvent.click(await screen.findByRole('button', { name: 'Cancelar reserva' }))
+    await waitFor(() =>
+      expect(calls.some((c) => c.key === 'POST /api/v1/bookings/b1/cancel')).toBe(true),
+    )
+    expect(calls.find((c) => c.key === 'POST /api/v1/bookings/b1/cancel')?.search).toBe('')
+    expect(await screen.findByText('Reserva cancelada.')).toBeInTheDocument()
+  })
+
+  it('cancels the rest of the series and lists what was kept', async () => {
+    const { calls } = mockApi(
+      routes({
+        'POST /api/v1/bookings/b1/cancel': () =>
+          json({
+            cancelled: ['b1', 'b2'],
+            kept: [
+              {
+                bookingId: 'b3',
+                startAt: '2030-02-04T09:00:00Z',
+                violation: { code: 'TooLateToCancel', message: 'x' },
+              },
+            ],
+          }),
+      }),
+    )
+    renderApp('/bookings/b1')
+    await userEvent.click(await screen.findByRole('button', { name: 'Cancelar' }))
+    await userEvent.click(await screen.findByLabelText('Esta y las siguientes de la serie'))
+    await userEvent.click(screen.getByRole('button', { name: 'Cancelar reserva' }))
+    await waitFor(() =>
+      expect(calls.find((c) => c.key === 'POST /api/v1/bookings/b1/cancel')?.search).toBe(
+        '?scope=series',
+      ),
+    )
+    expect(await screen.findByText('Algunas reservas se mantienen')).toBeInTheDocument()
+    expect(screen.getByText(/Ya no se puede cancelar/)).toBeInTheDocument()
+  })
+
+  it('does not offer the choice for a single booking', async () => {
+    mockApi(base({ 'GET /api/v1/bookings/b1': () => json({ ...inSeries, seriesId: null }) }))
+    renderApp('/bookings/b1')
+    await userEvent.click(await screen.findByRole('button', { name: 'Cancelar' }))
+    await screen.findByRole('button', { name: 'Cancelar reserva' })
+    expect(screen.queryByLabelText('Solo esta reserva')).not.toBeInTheDocument()
+  })
+})

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router'
 import { ApiError } from '@/api/errors'
 import { useDeleteWebhook, useSetWebhookEnabled, useWebhooks, type Webhook } from '@/api/queries'
 import { Badge } from '@/components/ui/Badge'
@@ -87,6 +88,9 @@ export function AdminWebhooks() {
                     </Badge>
                   </td>
                   <td className="flex justify-end gap-2 px-4 py-3">
+                    <Link to={`/admin/webhooks/${w.id}/deliveries`}>
+                      <Button variant="secondary">{t('webhooks.deliveries')}</Button>
+                    </Link>
                     <Button
                       variant="secondary"
                       disabled={toggle.isPending}

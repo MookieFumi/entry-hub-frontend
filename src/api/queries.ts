@@ -385,6 +385,26 @@ export const useWebhooks = () =>
     queryFn: () => unwrap(api.GET('/api/v1/webhooks')),
   })
 
+export type WebhookDeliveryStatus = components['schemas']['WebhookDeliveryStatus']
+export type WebhookDelivery = components['schemas']['WebhookDeliveryResponse']
+
+export type DeliveriesParams = { status?: WebhookDeliveryStatus; page?: number; pageSize?: number }
+
+export const useWebhookDeliveries = (id: string, p: DeliveriesParams) =>
+  useQuery({
+    queryKey: ['webhooks', id, 'deliveries', p] as const,
+    queryFn: () =>
+      unwrap(
+        api.GET('/api/v1/webhooks/{id}/deliveries', {
+          params: {
+            path: { id },
+            query: { Status: p.status, Page: p.page, PageSize: p.pageSize },
+          },
+        }),
+      ),
+    placeholderData: keepPreviousData,
+  })
+
 export type CreateWebhookRequest = components['schemas']['CreateWebhookRequest']
 export type WebhookCreated = components['schemas']['WebhookCreatedResponse']
 

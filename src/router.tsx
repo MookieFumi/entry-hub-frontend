@@ -2,6 +2,7 @@ import { createBrowserRouter, createMemoryRouter, type RouteObject } from 'react
 import { AppLayout } from '@/components/layout/AppLayout'
 import { RequireAuth, RequireFacilities } from '@/components/layout/Guards'
 import { AdminBookings } from '@/pages/AdminBookings'
+import { WebhookDeliveries } from '@/pages/WebhookDeliveries'
 import { AdminWebhooks } from '@/pages/AdminWebhooks'
 import { AdminRules } from '@/pages/AdminRules'
 import { AdminClosedDays } from '@/pages/AdminClosedDays'
@@ -44,6 +45,7 @@ export const routes: RouteObject[] = [
               { path: 'closed-days', element: <AdminClosedDays /> },
               { path: 'rules', element: <AdminRules /> },
               { path: 'webhooks', element: <AdminWebhooks /> },
+              { path: 'webhooks/:id/deliveries', element: <WebhookDeliveries /> },
             ],
           },
           { path: '*', element: <NotFound /> },

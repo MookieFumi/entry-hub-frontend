@@ -308,4 +308,11 @@ export const es = {
   'decide.reasonHint': 'Máximo 500 caracteres.',
   'decide.alreadyDecided': 'Esta reserva ya no está pendiente: alguien la ha resuelto antes.',
   'decide.failed': 'No se ha podido guardar la decisión.',
+  'checkIn.button': 'Registrar llegada',
+  'checkIn.done': 'Llegada registrada.',
+  'checkIn.failed': 'No se ha podido registrar la llegada.',
+  'checkIn.at': 'Llegada registrada:',
+  'checkIn.hint': 'Puedes registrar la llegada desde 15 minutos antes del inicio.',
+  'checkIn.autoRelease':
+    'Si nadie registra la llegada en los {minutes} minutos siguientes al inicio, la reserva se libera.',
 } as const

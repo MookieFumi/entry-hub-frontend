@@ -1,5 +1,6 @@
 import { Link } from 'react-router'
 import { useMe, useMyBookings } from '@/api/queries'
+import { CheckInBooking } from '@/components/CheckInBooking'
 import { BookingRow } from '@/components/BookingRow'
 import { Button } from '@/components/ui/Button'
 import { Card, EmptyState, PageHeader, Skeleton } from '@/components/ui/Feedback'
@@ -41,7 +42,7 @@ export function Home() {
         {upcoming.length > 0 && (
           <ul className="flex flex-col gap-3">
             {upcoming.map((b) => (
-              <BookingRow key={b.id} booking={b} />
+              <BookingRow key={b.id} booking={b} actions={<CheckInBooking booking={b} />} />
             ))}
           </ul>
         )}

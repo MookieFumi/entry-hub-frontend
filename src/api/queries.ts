@@ -282,6 +282,15 @@ export function useRejectBooking() {
   })
 }
 
+export function useCheckInBooking() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) =>
+      unwrap(api.POST('/api/v1/bookings/{id}/check-in', { params: { path: { id } } })),
+    onSuccess: () => invalidateBookings(qc),
+  })
+}
+
 export function useCreateRoom() {
   const qc = useQueryClient()
   return useMutation({

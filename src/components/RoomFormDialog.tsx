@@ -26,6 +26,9 @@ export function RoomFormDialog({
   const [name, setName] = useState(room?.name ?? '')
   const [floor, setFloor] = useState(String(room?.floor ?? 0))
   const [capacity, setCapacity] = useState(String(room?.capacity ?? 4))
+  const [bufferBefore, setBufferBefore] = useState(String(room?.bufferBeforeMinutes ?? 0))
+  const [bufferAfter, setBufferAfter] = useState(String(room?.bufferAfterMinutes ?? 0))
+  const [requiresApproval, setRequiresApproval] = useState(room?.requiresApproval ?? false)
   const initialFeatureIds = room?.features.map((f) => f.id) ?? []
   const [featureIds, setFeatureIds] = useState<string[]>(initialFeatureIds)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -41,10 +44,23 @@ export function RoomFormDialog({
     if (!name.trim() || name.length > 100) next.name = t('roomForm.nameInvalid')
     if (!Number.isInteger(f) || f < -5 || f > 100) next.floor = t('roomForm.floorInvalid')
     if (!Number.isInteger(c) || c < 1 || c > 500) next.capacity = t('roomForm.capacityInvalid')
+    const bb = Number(bufferBefore)
+    const ba = Number(bufferAfter)
+    if (!Number.isInteger(bb) || bb < 0 || bb > 240)
+      next.bufferBeforeMinutes = t('roomForm.bufferInvalid')
+    if (!Number.isInteger(ba) || ba < 0 || ba > 240)
+      next.bufferAfterMinutes = t('roomForm.bufferInvalid')
     setErrors(next)
     if (Object.keys(next).length > 0) return
 
-    const body = { name: name.trim(), floor: f, capacity: c }
+    const body = {
+      name: name.trim(),
+      floor: f,
+      capacity: c,
+      bufferBeforeMinutes: bb,
+      bufferAfterMinutes: ba,
+      requiresApproval,
+    }
     // On edit, the catalog selection is only sent when it changed, so entries the room keeps that were
     // deactivated in the catalog are not dropped by an unrelated edit.
     const changed =
@@ -68,9 +84,6 @@ export function RoomFormDialog({
           equipment: [],
           siteId: null,
           featureIds,
-          bufferBeforeMinutes: 0,
-          bufferAfterMinutes: 0,
-          requiresApproval: false,
         })
       notify('success', room ? t('roomForm.updated') : t('roomForm.created'))
       onOpenChange(false)
@@ -119,6 +132,39 @@ export function RoomFormDialog({
                 onChange={(e) => setCapacity(e.target.value)}
               />
             </div>
+            <div className="grid grid-cols-2 gap-4">
+              <TextField
+                label={t('roomForm.bufferBefore')}
+                type="number"
+                min={0}
+                max={240}
+                value={bufferBefore}
+                hint={t('roomForm.bufferHint')}
+                error={errors.bufferBeforeMinutes}
+                onChange={(e) => setBufferBefore(e.target.value)}
+              />
+              <TextField
+                label={t('roomForm.bufferAfter')}
+                type="number"
+                min={0}
+                max={240}
+                value={bufferAfter}
+                error={errors.bufferAfterMinutes}
+                onChange={(e) => setBufferAfter(e.target.value)}
+              />
+            </div>
+            <label className="flex items-start gap-2 text-sm text-gray-700">
+              <input
+                type="checkbox"
+                className="mt-1"
+                checked={requiresApproval}
+                onChange={(e) => setRequiresApproval(e.target.checked)}
+              />
+              <span>
+                <span className="font-medium">{t('roomForm.requiresApproval')}</span>
+                <span className="block text-gray-500">{t('roomForm.requiresApprovalHint')}</span>
+              </span>
+            </label>
             <FeatureChecklist
               includeInactive
               selected={featureIds}

@@ -343,4 +343,21 @@ export const en: Catalog = {
   'cancel.keptTitle': 'Some bookings were kept',
   'cancel.keptIntro': 'These bookings of the series could not be cancelled:',
   'cancel.close': 'Close',
+  'roomForm.bufferBefore': 'Buffer before (minutes)',
+  'roomForm.bufferAfter': 'Buffer after (minutes)',
+  'roomForm.bufferHint':
+    'The room stays free this long before and after each booking. From 0 to 240.',
+  'roomForm.bufferInvalid': 'Must be a whole number between 0 and 240.',
+  'roomForm.requiresApproval': 'Bookings need approval',
+  'roomForm.requiresApprovalHint':
+    'Bookings by employees stay pending until Facilities approves them.',
+  'admin.rooms.approval': 'Approval',
+  'admin.rooms.buffers': 'Buffers',
+  'admin.rooms.requiresApproval': 'Needs approval',
+  'admin.rooms.noApproval': 'Automatic',
+  'admin.rooms.bufferText': '{before} min before / {after} min after',
+  'room.needsApproval':
+    'This room needs approval: your booking will stay pending until Facilities approves it.',
+  'room.buffersNotice':
+    'Between bookings the room stays free {before} min before and {after} min after.',
 }

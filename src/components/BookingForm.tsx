@@ -1,6 +1,6 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router'
-import { useCreateBooking, useRules, type Room } from '@/api/queries'
+import { useCreateBooking, useMe, useRules, type Room } from '@/api/queries'
 import { ApiError } from '@/api/errors'
 import { describeRules, dayName } from '@/lib/rules-text'
 import { buildSlots, endOptions, isBookableDay, toIso, type ScheduleEntry } from '@/lib/slots'
@@ -36,6 +36,7 @@ export function BookingForm({
 }: Props) {
   const t = useT()
   const rules = useRules()
+  const me = useMe()
   const closedDays = useClosedDays(room.siteId)
   const create = useCreateBooking()
   const idempotencyKey = useIdempotencyKey()
@@ -140,6 +141,17 @@ export function BookingForm({
         value={date}
         onChange={(e) => e.target.value && onDateChange(e.target.value)}
       />
+      {room.requiresApproval && me.data?.role !== 'Facilities' && (
+        <Alert tone="info">{t('room.needsApproval')}</Alert>
+      )}
+      {(Number(room.bufferBeforeMinutes) > 0 || Number(room.bufferAfterMinutes) > 0) && (
+        <p className="text-sm text-gray-500">
+          {t('room.buffersNotice', {
+            before: Number(room.bufferBeforeMinutes),
+            after: Number(room.bufferAfterMinutes),
+          })}
+        </p>
+      )}
       {!openWeekday && (
         <Alert tone="warning">
           {t('common.closedDay', { days: r.officeDays.map(dayName).join(', ') })}

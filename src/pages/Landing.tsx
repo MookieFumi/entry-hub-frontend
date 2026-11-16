@@ -11,7 +11,6 @@ import { describeRules } from '@/lib/rules-text'
 import type { Rules, ScheduleEntry } from '@/lib/slots'
 import { formatLocale, useLocale, useT, type MessageKey } from '@/i18n'
 
-const REPO_URL = 'https://github.com/mookie-studio/entry-hub-frontend'
 
 /** Demonstration data for the page: not real rooms, bookings or rules of any customer. */
 const DEMO_RULES = {
@@ -374,12 +373,6 @@ export function Landing() {
             <Link to="/login" className={primaryCta}>
               {t('landing.cta')}
             </Link>
-            <a
-              href={REPO_URL}
-              className="font-semibold text-white underline hover:text-mine-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mine-400"
-            >
-              {t('landing.github')}
-            </a>
           </div>
           <PlannerBoard />
         </main>
@@ -527,12 +520,6 @@ export function Landing() {
             >
               {t('landing.cta')}
             </Link>
-            <a
-              href={REPO_URL}
-              className="font-semibold underline hover:text-brand-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-950"
-            >
-              {t('landing.github')}
-            </a>
           </div>
         </div>
       </section>
@@ -557,12 +544,6 @@ export function Landing() {
         </div>
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-5 py-6 text-sm sm:px-8">
           <p>{t('landing.footer')}</p>
-          <a
-            href={REPO_URL}
-            className="font-semibold text-white underline hover:text-mine-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mine-400"
-          >
-            GitHub
-          </a>
         </div>
       </footer>
     </div>

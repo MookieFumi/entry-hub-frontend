@@ -490,4 +490,17 @@ export const es = {
   'data.exporting': 'Preparando…',
   'data.exported': 'Datos descargados.',
   'data.exportFailed': 'No se han podido descargar los datos.',
+  'data.dangerTitle': 'Zona de peligro',
+  'data.deleteTitle': 'Borrar todos los datos',
+  'data.deleteBody':
+    'Se borran de forma permanente reservas, salas, sedes, días cerrados, catálogo, bloqueos, reglas y auditoría. Se conservan el cliente y una entrada de auditoría sobre el borrado. No se puede deshacer: descarga los datos antes.',
+  'data.deleteButton': 'Borrar todos los datos…',
+  'data.deleteConfirmTitle': '¿Borrar todos los datos?',
+  'data.deleteConfirmLabel': 'Escribe «{phrase}» para confirmar',
+  'data.deleteConfirm': 'Borrar definitivamente',
+  'data.deleted': 'Datos borrados.',
+  'data.deleteFailed': 'No se han podido borrar los datos.',
+  'data.deleteResult':
+    'Se han borrado {bookings} reservas, {rooms} salas, {sites} sedes, {features} elementos del catálogo, {blocks} bloqueos, {holidays} días cerrados y {auditEntries} entradas de auditoría.',
+  'data.deleteMismatch': 'El texto no coincide.',
 } as const

@@ -465,3 +465,14 @@ export const useAudit = (p: AuditParams) =>
   })
 
 export const fetchTenantExport = () => unwrap(api.GET('/api/v1/tenant/export'))
+
+export type DeleteTenantDataResponse = components['schemas']['DeleteTenantDataResponse']
+
+export function useDeleteTenantData() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (confirmation: string) =>
+      unwrap(api.DELETE('/api/v1/tenant/data', { body: { confirmation } })),
+    onSuccess: () => void qc.invalidateQueries(),
+  })
+}

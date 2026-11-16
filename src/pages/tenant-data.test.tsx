@@ -56,3 +56,60 @@ describe('tenant data export', () => {
     expect(await screen.findByText(/permiso/i)).toBeInTheDocument()
   })
 })
+
+describe('tenant data deletion', () => {
+  const del = {
+    deletedAt: '2030-01-01T00:00:00Z',
+    bookings: 12,
+    rooms: 3,
+    sites: 1,
+    features: 4,
+    blocks: 2,
+    holidays: 5,
+    auditEntries: 40,
+  }
+
+  it('keeps the confirm button disabled until the exact phrase is typed', async () => {
+    const { calls } = mockApi(routes({ 'DELETE /api/v1/tenant/data': () => json(del) }))
+    renderApp('/admin/data')
+    await userEvent.click(await screen.findByRole('button', { name: 'Borrar todos los datos…' }))
+    const confirm = await screen.findByRole('button', { name: 'Borrar definitivamente' })
+    expect(confirm).toBeDisabled()
+    const field = screen.getByLabelText(/Escribe/)
+    await userEvent.type(field, 'DELETE acme')
+    expect(confirm).toBeDisabled()
+    expect(screen.getByText('El texto no coincide.')).toBeInTheDocument()
+    expect(calls.some((c) => c.key === 'DELETE /api/v1/tenant/data')).toBe(false)
+    await userEvent.clear(field)
+    await userEvent.type(field, 'DELETE Acme')
+    expect(confirm).toBeEnabled()
+  })
+
+  it('deletes with the confirmation and lists what was removed', async () => {
+    const { calls } = mockApi(routes({ 'DELETE /api/v1/tenant/data': () => json(del) }))
+    renderApp('/admin/data')
+    await userEvent.click(await screen.findByRole('button', { name: 'Borrar todos los datos…' }))
+    await userEvent.type(await screen.findByLabelText(/Escribe/), 'DELETE Acme')
+    await userEvent.click(screen.getByRole('button', { name: 'Borrar definitivamente' }))
+    await waitFor(() =>
+      expect(calls.find((c) => c.key === 'DELETE /api/v1/tenant/data')?.body).toEqual({
+        confirmation: 'DELETE Acme',
+      }),
+    )
+    expect(await screen.findByText(/Se han borrado 12 reservas, 3 salas/)).toBeInTheDocument()
+  })
+
+  it('shows the API error', async () => {
+    mockApi(
+      routes({
+        'DELETE /api/v1/tenant/data': () =>
+          json({ title: 'Bad', detail: 'Confirmation mismatch' }, 400),
+      }),
+    )
+    renderApp('/admin/data')
+    await userEvent.click(await screen.findByRole('button', { name: 'Borrar todos los datos…' }))
+    await userEvent.type(await screen.findByLabelText(/Escribe/), 'DELETE Acme')
+    await userEvent.click(screen.getByRole('button', { name: 'Borrar definitivamente' }))
+    expect(await screen.findByText('Confirmation mismatch')).toBeInTheDocument()
+  })
+})

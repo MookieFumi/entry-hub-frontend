@@ -11,7 +11,11 @@ export function CancelBooking({ booking }: { booking: Booking }) {
   const [open, setOpen] = useState(false)
   const cancel = useCancelBooking()
   const { notify } = useToast()
-  if (booking.status !== 'Confirmed' || new Date(booking.startAt) <= new Date()) return null
+  if (
+    (booking.status !== 'Confirmed' && booking.status !== 'Pending') ||
+    new Date(booking.startAt) <= new Date()
+  )
+    return null
 
   async function confirm() {
     try {

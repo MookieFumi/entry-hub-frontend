@@ -2,7 +2,7 @@ import { Link, useParams } from 'react-router'
 import { useBooking, useOfficeZone, useRoom } from '@/api/queries'
 import { ApiError } from '@/api/errors'
 import { CancelBooking } from '@/components/CancelBooking'
-import { Badge } from '@/components/ui/Badge'
+import { BookingStatusBadge } from '@/components/BookingStatusBadge'
 import { Card, EmptyState, ErrorState, PageHeader, Skeleton } from '@/components/ui/Feedback'
 import { formatOfficeDateTime, formatOfficeTime } from '@/lib/dates'
 import { useT } from '@/i18n'
@@ -63,9 +63,12 @@ export function BookingDetail() {
         }
       />
       <Card className="flex flex-col gap-3 text-sm">
-        <Badge tone={b.status === 'Confirmed' ? 'success' : 'gray'}>
-          {b.status === 'Confirmed' ? t('booking.statusConfirmed') : t('booking.statusCancelled')}
-        </Badge>
+        <div className="flex items-center gap-2">
+          <BookingStatusBadge status={b.status} />
+          {b.status === 'Pending' && (
+            <span className="text-gray-600">{t('booking.pendingHint')}</span>
+          )}
+        </div>
         <p>
           <span className="font-medium">{t('booking.when')}</span>{' '}
           {formatOfficeDateTime(b.startAt, tz)} – {formatOfficeTime(b.endAt, tz)}
@@ -83,6 +86,18 @@ export function BookingDetail() {
           <p>
             <span className="font-medium">{t('booking.rescheduled')}</span>{' '}
             {formatOfficeDateTime(b.rescheduledAt, tz)}
+          </p>
+        )}
+        {b.decidedAt && (
+          <p>
+            <span className="font-medium">{t('booking.decidedAt')}</span>{' '}
+            {formatOfficeDateTime(b.decidedAt, tz)}
+            {b.decidedBy ? ` · ${t('booking.decidedBy')} ${b.decidedBy}` : ''}
+          </p>
+        )}
+        {b.decisionReason && (
+          <p>
+            <span className="font-medium">{t('booking.decisionReason')}</span> {b.decisionReason}
           </p>
         )}
         {b.cancelledAt && (

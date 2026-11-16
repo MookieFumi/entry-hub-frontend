@@ -290,4 +290,11 @@ export const es = {
   'rule.RoomAlreadyBooked': 'La sala ya está reservada en esa franja.',
   'rule.InvalidRecurrence': 'La repetición no es válida: revisa la frecuencia y el final.',
   'rule.NonexistentLocalTime': 'Esa hora no existe ese día por el cambio de hora. Elige otra.',
+  'booking.statusPending': 'Pendiente de aprobación',
+  'booking.pendingHint':
+    'Facility Management tiene que aprobar esta reserva antes de que quede confirmada.',
+  'booking.decidedBy': 'Decidida por:',
+  'booking.decidedAt': 'Decisión:',
+  'booking.decisionReason': 'Motivo:',
+  'admin.bookings.pending': 'Pendientes de aprobación',
 } as const

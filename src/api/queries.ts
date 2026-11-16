@@ -463,3 +463,5 @@ export const useAudit = (p: AuditParams) =>
       ),
     placeholderData: keepPreviousData,
   })
+
+export const fetchTenantExport = () => unwrap(api.GET('/api/v1/tenant/export'))

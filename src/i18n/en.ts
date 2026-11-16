@@ -476,4 +476,14 @@ export const en: Catalog = {
   'audit.entity.Feature': 'Equipment',
   'audit.entity.SiteHoliday': 'Closed day',
   'audit.entity.RoomBlock': 'Room block',
+  'nav.data': 'Data',
+  'data.title': 'Tenant data',
+  'data.description': 'Download everything stored for your organization.',
+  'data.exportTitle': 'Download all data',
+  'data.exportBody':
+    'A single JSON file with sites, closed days, catalog, rooms, blocks, rules, bookings and the audit trail. The download is recorded in the audit trail.',
+  'data.exportButton': 'Download JSON',
+  'data.exporting': 'Preparing…',
+  'data.exported': 'Data downloaded.',
+  'data.exportFailed': 'The data could not be downloaded.',
 }

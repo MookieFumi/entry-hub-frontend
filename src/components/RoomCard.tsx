@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 import type { Room } from '@/api/queries'
 import { Badge } from '@/components/ui/Badge'
+import { featureLabel } from '@/lib/featureLabel'
 import { useT } from '@/i18n'
 
 export function RoomCard({ room, action }: { room: Room; action?: ReactNode }) {
@@ -38,7 +39,9 @@ export function RoomCard({ room, action }: { room: Room; action?: ReactNode }) {
           <ul className="mt-1 flex flex-wrap gap-1.5" aria-label={t('features.listLabel')}>
             {room.features.map((f) => (
               <li key={f.id}>
-                <Badge tone={f.kind === 'Accessibility' ? 'brand' : 'gray'}>{f.name}</Badge>
+                <Badge tone={f.kind === 'Accessibility' ? 'brand' : 'gray'}>
+                  {featureLabel(f, t)}
+                </Badge>
               </li>
             ))}
           </ul>

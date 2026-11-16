@@ -1,0 +1,808 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-15T18:17:10Z",
+  "title": "Design System: EntryHub",
+  "extensions": {
+    "colorMeta": {
+      "brand-25": {
+        "role": "primary",
+        "displayName": "Ink hover wash",
+        "canonical": "#f6f7ff",
+        "tonalRamp": [
+          "#0c1238",
+          "#121c57",
+          "#18257d",
+          "#1f2fa3",
+          "#2a3fc9",
+          "#6c7fec",
+          "#c2cbfa",
+          "#eef0fe"
+        ]
+      },
+      "brand-50": {
+        "role": "primary",
+        "displayName": "Ink tint",
+        "canonical": "#eef0fe",
+        "tonalRamp": [
+          "#0c1238",
+          "#121c57",
+          "#18257d",
+          "#1f2fa3",
+          "#2a3fc9",
+          "#6c7fec",
+          "#c2cbfa",
+          "#eef0fe"
+        ]
+      },
+      "brand-100": {
+        "role": "primary",
+        "displayName": "Text on ink",
+        "canonical": "#dfe4fd",
+        "tonalRamp": [
+          "#0c1238",
+          "#121c57",
+          "#18257d",
+          "#1f2fa3",
+          "#2a3fc9",
+          "#6c7fec",
+          "#c2cbfa",
+          "#eef0fe"
+        ]
+      },
+      "brand-200": {
+        "role": "primary",
+        "displayName": "Brand 200",
+        "canonical": "#c2cbfa",
+        "tonalRamp": [
+          "#0c1238",
+          "#121c57",
+          "#18257d",
+          "#1f2fa3",
+          "#2a3fc9",
+          "#6c7fec",
+          "#c2cbfa",
+          "#eef0fe"
+        ]
+      },
+      "brand-300": {
+        "role": "primary",
+        "displayName": "Brand 300",
+        "canonical": "#9aa8f4",
+        "tonalRamp": [
+          "#0c1238",
+          "#121c57",
+          "#18257d",
+          "#1f2fa3",
+          "#2a3fc9",
+          "#6c7fec",
+          "#c2cbfa",
+          "#eef0fe"
+        ]
+      },
+      "brand-400": {
+        "role": "primary",
+        "displayName": "Brand 400",
+        "canonical": "#6c7fec",
+        "tonalRamp": [
+          "#0c1238",
+          "#121c57",
+          "#18257d",
+          "#1f2fa3",
+          "#2a3fc9",
+          "#6c7fec",
+          "#c2cbfa",
+          "#eef0fe"
+        ]
+      },
+      "brand-500": {
+        "role": "primary",
+        "displayName": "Brand 500",
+        "canonical": "#4359df",
+        "tonalRamp": [
+          "#0c1238",
+          "#121c57",
+          "#18257d",
+          "#1f2fa3",
+          "#2a3fc9",
+          "#6c7fec",
+          "#c2cbfa",
+          "#eef0fe"
+        ]
+      },
+      "brand-600": {
+        "role": "primary",
+        "displayName": "Marker Ink, action",
+        "canonical": "#2a3fc9",
+        "tonalRamp": [
+          "#0c1238",
+          "#121c57",
+          "#18257d",
+          "#1f2fa3",
+          "#2a3fc9",
+          "#6c7fec",
+          "#c2cbfa",
+          "#eef0fe"
+        ]
+      },
+      "brand-700": {
+        "role": "primary",
+        "displayName": "Marker Ink",
+        "canonical": "#1f2fa3",
+        "tonalRamp": [
+          "#0c1238",
+          "#121c57",
+          "#18257d",
+          "#1f2fa3",
+          "#2a3fc9",
+          "#6c7fec",
+          "#c2cbfa",
+          "#eef0fe"
+        ]
+      },
+      "brand-800": {
+        "role": "primary",
+        "displayName": "Marker Ink, pressed",
+        "canonical": "#18257d",
+        "tonalRamp": [
+          "#0c1238",
+          "#121c57",
+          "#18257d",
+          "#1f2fa3",
+          "#2a3fc9",
+          "#6c7fec",
+          "#c2cbfa",
+          "#eef0fe"
+        ]
+      },
+      "brand-900": {
+        "role": "primary",
+        "displayName": "Ink text",
+        "canonical": "#121c57",
+        "tonalRamp": [
+          "#0c1238",
+          "#121c57",
+          "#18257d",
+          "#1f2fa3",
+          "#2a3fc9",
+          "#6c7fec",
+          "#c2cbfa",
+          "#eef0fe"
+        ]
+      },
+      "brand-950": {
+        "role": "primary",
+        "displayName": "Deep Ink",
+        "canonical": "#0c1238",
+        "tonalRamp": [
+          "#0c1238",
+          "#121c57",
+          "#18257d",
+          "#1f2fa3",
+          "#2a3fc9",
+          "#6c7fec",
+          "#c2cbfa",
+          "#eef0fe"
+        ]
+      },
+      "gray-25": {
+        "role": "neutral",
+        "displayName": "Laminate",
+        "canonical": "#f4f6f9",
+        "tonalRamp": [
+          "#0f1736",
+          "#1c2542",
+          "#303a57",
+          "#46516d",
+          "#5f6b88",
+          "#b8c1d3",
+          "#d3d9e5",
+          "#edf0f5"
+        ]
+      },
+      "gray-50": {
+        "role": "neutral",
+        "displayName": "Gray 50",
+        "canonical": "#edf0f5",
+        "tonalRamp": [
+          "#0f1736",
+          "#1c2542",
+          "#303a57",
+          "#46516d",
+          "#5f6b88",
+          "#b8c1d3",
+          "#d3d9e5",
+          "#edf0f5"
+        ]
+      },
+      "gray-100": {
+        "role": "neutral",
+        "displayName": "Gray 100",
+        "canonical": "#e3e7ef",
+        "tonalRamp": [
+          "#0f1736",
+          "#1c2542",
+          "#303a57",
+          "#46516d",
+          "#5f6b88",
+          "#b8c1d3",
+          "#d3d9e5",
+          "#edf0f5"
+        ]
+      },
+      "gray-200": {
+        "role": "neutral",
+        "displayName": "Grid line",
+        "canonical": "#d3d9e5",
+        "tonalRamp": [
+          "#0f1736",
+          "#1c2542",
+          "#303a57",
+          "#46516d",
+          "#5f6b88",
+          "#b8c1d3",
+          "#d3d9e5",
+          "#edf0f5"
+        ]
+      },
+      "gray-300": {
+        "role": "neutral",
+        "displayName": "Sheet outline",
+        "canonical": "#b8c1d3",
+        "tonalRamp": [
+          "#0f1736",
+          "#1c2542",
+          "#303a57",
+          "#46516d",
+          "#5f6b88",
+          "#b8c1d3",
+          "#d3d9e5",
+          "#edf0f5"
+        ]
+      },
+      "gray-400": {
+        "role": "neutral",
+        "displayName": "Gray 400",
+        "canonical": "#8e99b3",
+        "tonalRamp": [
+          "#0f1736",
+          "#1c2542",
+          "#303a57",
+          "#46516d",
+          "#5f6b88",
+          "#b8c1d3",
+          "#d3d9e5",
+          "#edf0f5"
+        ]
+      },
+      "gray-500": {
+        "role": "neutral",
+        "displayName": "Gray 500",
+        "canonical": "#5f6b88",
+        "tonalRamp": [
+          "#0f1736",
+          "#1c2542",
+          "#303a57",
+          "#46516d",
+          "#5f6b88",
+          "#b8c1d3",
+          "#d3d9e5",
+          "#edf0f5"
+        ]
+      },
+      "gray-600": {
+        "role": "neutral",
+        "displayName": "Secondary text",
+        "canonical": "#46516d",
+        "tonalRamp": [
+          "#0f1736",
+          "#1c2542",
+          "#303a57",
+          "#46516d",
+          "#5f6b88",
+          "#b8c1d3",
+          "#d3d9e5",
+          "#edf0f5"
+        ]
+      },
+      "gray-700": {
+        "role": "neutral",
+        "displayName": "Gray 700",
+        "canonical": "#303a57",
+        "tonalRamp": [
+          "#0f1736",
+          "#1c2542",
+          "#303a57",
+          "#46516d",
+          "#5f6b88",
+          "#b8c1d3",
+          "#d3d9e5",
+          "#edf0f5"
+        ]
+      },
+      "gray-800": {
+        "role": "neutral",
+        "displayName": "Gray 800",
+        "canonical": "#1c2542",
+        "tonalRamp": [
+          "#0f1736",
+          "#1c2542",
+          "#303a57",
+          "#46516d",
+          "#5f6b88",
+          "#b8c1d3",
+          "#d3d9e5",
+          "#edf0f5"
+        ]
+      },
+      "gray-900": {
+        "role": "neutral",
+        "displayName": "Text",
+        "canonical": "#0f1736",
+        "tonalRamp": [
+          "#0f1736",
+          "#1c2542",
+          "#303a57",
+          "#46516d",
+          "#5f6b88",
+          "#b8c1d3",
+          "#d3d9e5",
+          "#edf0f5"
+        ]
+      },
+      "white": {
+        "role": "neutral",
+        "displayName": "White cell",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#0f1736",
+          "#303a57",
+          "#5f6b88",
+          "#b8c1d3",
+          "#d3d9e5",
+          "#edf0f5",
+          "#f4f6f9",
+          "#ffffff"
+        ]
+      },
+      "success-50": {
+        "role": "tertiary",
+        "displayName": "Free Green label",
+        "canonical": "#ddf5e8",
+        "tonalRamp": [
+          "#063520",
+          "#08502f",
+          "#0a6a3f",
+          "#108952",
+          "#17a865",
+          "#70cba0",
+          "#ace2c7",
+          "#ddf5e8"
+        ]
+      },
+      "success-500": {
+        "role": "tertiary",
+        "displayName": "Free Green",
+        "canonical": "#17a865",
+        "tonalRamp": [
+          "#063520",
+          "#08502f",
+          "#0a6a3f",
+          "#108952",
+          "#17a865",
+          "#70cba0",
+          "#ace2c7",
+          "#ddf5e8"
+        ]
+      },
+      "success-700": {
+        "role": "tertiary",
+        "displayName": "Free Green text",
+        "canonical": "#0a6a3f",
+        "tonalRamp": [
+          "#063520",
+          "#08502f",
+          "#0a6a3f",
+          "#108952",
+          "#17a865",
+          "#70cba0",
+          "#ace2c7",
+          "#ddf5e8"
+        ]
+      },
+      "warning-50": {
+        "role": "tertiary",
+        "displayName": "Warning Amber label",
+        "canonical": "#fff0d2",
+        "tonalRamp": [
+          "#472600",
+          "#683800",
+          "#8a4a00",
+          "#be7206",
+          "#f39a0b",
+          "#f8c165",
+          "#fcdaa0",
+          "#fff0d2"
+        ]
+      },
+      "warning-500": {
+        "role": "tertiary",
+        "displayName": "Warning Amber",
+        "canonical": "#f39a0b",
+        "tonalRamp": [
+          "#472600",
+          "#683800",
+          "#8a4a00",
+          "#be7206",
+          "#f39a0b",
+          "#f8c165",
+          "#fcdaa0",
+          "#fff0d2"
+        ]
+      },
+      "warning-700": {
+        "role": "tertiary",
+        "displayName": "Warning Amber text",
+        "canonical": "#8a4a00",
+        "tonalRamp": [
+          "#472600",
+          "#683800",
+          "#8a4a00",
+          "#be7206",
+          "#f39a0b",
+          "#f8c165",
+          "#fcdaa0",
+          "#fff0d2"
+        ]
+      },
+      "error-50": {
+        "role": "tertiary",
+        "displayName": "Busy Coral label",
+        "canonical": "#fde6e1",
+        "tonalRamp": [
+          "#53150b",
+          "#7c2011",
+          "#a52a17",
+          "#cf3a23",
+          "#f0533b",
+          "#f6a495",
+          "#fac5bb",
+          "#fde6e1"
+        ]
+      },
+      "error-300": {
+        "role": "tertiary",
+        "displayName": "Busy Coral border",
+        "canonical": "#f6a495",
+        "tonalRamp": [
+          "#53150b",
+          "#7c2011",
+          "#a52a17",
+          "#cf3a23",
+          "#f0533b",
+          "#f6a495",
+          "#fac5bb",
+          "#fde6e1"
+        ]
+      },
+      "error-500": {
+        "role": "tertiary",
+        "displayName": "Busy Coral",
+        "canonical": "#f0533b",
+        "tonalRamp": [
+          "#53150b",
+          "#7c2011",
+          "#a52a17",
+          "#cf3a23",
+          "#f0533b",
+          "#f6a495",
+          "#fac5bb",
+          "#fde6e1"
+        ]
+      },
+      "error-600": {
+        "role": "tertiary",
+        "displayName": "Destructive Coral",
+        "canonical": "#cf3a23",
+        "tonalRamp": [
+          "#53150b",
+          "#7c2011",
+          "#a52a17",
+          "#cf3a23",
+          "#f0533b",
+          "#f6a495",
+          "#fac5bb",
+          "#fde6e1"
+        ]
+      },
+      "error-700": {
+        "role": "tertiary",
+        "displayName": "Busy Coral text",
+        "canonical": "#a52a17",
+        "tonalRamp": [
+          "#53150b",
+          "#7c2011",
+          "#a52a17",
+          "#cf3a23",
+          "#f0533b",
+          "#f6a495",
+          "#fac5bb",
+          "#fde6e1"
+        ]
+      },
+      "mine-200": {
+        "role": "secondary",
+        "displayName": "Highlighter wash",
+        "canonical": "#fff3a3",
+        "tonalRamp": [
+          "#3d3500",
+          "#6b5d00",
+          "#9a8700",
+          "#c9b000",
+          "#e4ca1e",
+          "#ffe53d",
+          "#fff3a3",
+          "#fff9d1"
+        ]
+      },
+      "mine-400": {
+        "role": "secondary",
+        "displayName": "Highlighter Yellow",
+        "canonical": "#ffe53d",
+        "tonalRamp": [
+          "#3d3500",
+          "#6b5d00",
+          "#9a8700",
+          "#c9b000",
+          "#e4ca1e",
+          "#ffe53d",
+          "#fff3a3",
+          "#fff9d1"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Landing headline and closing line only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "The one page title of each app screen; landing row titles."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section headings inside a page, tenant name, dialog title."
+      },
+      "numeral": {
+        "displayName": "Numeral",
+        "purpose": "Day numbers of date cells and the week row; floor tiles. Tabular."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Descriptions and form controls."
+      },
+      "body-sm": {
+        "displayName": "Body small",
+        "purpose": "Metadata lines, hints, alerts, table cells."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Buttons, field labels, navigation."
+      },
+      "sticker": {
+        "displayName": "Sticker",
+        "purpose": "Badge text."
+      },
+      "header-band": {
+        "displayName": "Header band",
+        "purpose": "Uppercase weekday bands, table column headers, navigation group label."
+      }
+    },
+    "shadows": [
+      {
+        "name": "shadow-sm",
+        "value": "0 1px 2px rgb(15 23 54 / 0.08), 0 2px 6px -2px rgb(15 23 54 / 0.08)",
+        "purpose": "Lift: filled buttons at rest; cards and rows on hover."
+      },
+      {
+        "name": "shadow-lg",
+        "value": "0 18px 32px -12px rgb(12 18 56 / 0.28), 0 4px 10px -4px rgb(12 18 56 / 0.12)",
+        "purpose": "Float: toasts and the dialog."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out-expo",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Easing of the marker draw."
+      },
+      {
+        "name": "marker-draw",
+        "value": "420ms clip-path reveal from the left, once",
+        "purpose": "Planner blocks and highlighter bands drawing in; off under reduced motion."
+      },
+      {
+        "name": "state",
+        "value": "150ms",
+        "purpose": "Colour, border, shadow and 1px press transitions."
+      },
+      {
+        "name": "dialog",
+        "value": "200ms",
+        "purpose": "Dialog and scrim fade and scale (from 95%)."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one main action of a view, in action ink.",
+      "html": "<button class=\"ds-btn ds-btn-primary\">Buscar sala libre</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 0.5rem; padding: 10px 16px; font-size: 0.875rem; line-height: 1.25rem; font-weight: 600; white-space: nowrap; border: 1px solid transparent; cursor: pointer; font-family: var(--font-sans, 'Archivo Variable', system-ui, sans-serif); transition: background-color 150ms, border-color 150ms, box-shadow 150ms, translate 150ms; } .ds-btn:active { translate: 0 1px; } .ds-btn:focus-visible { outline: 2px solid var(--color-brand-600, #2a3fc9); outline-offset: 2px; } .ds-btn-primary { background: var(--color-brand-600, #2a3fc9); color: #fff; box-shadow: 0 1px 2px rgb(15 23 54 / 0.08), 0 2px 6px -2px rgb(15 23 54 / 0.08); } .ds-btn-primary:hover { background: var(--color-brand-700, #1f2fa3); } .ds-btn-primary:active { background: var(--color-brand-800, #18257d); }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Every other action: a white cell with an outline that turns ink on hover.",
+      "html": "<button class=\"ds-btn ds-btn-secondary\">Ver salas</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 0.5rem; padding: 10px 16px; font-size: 0.875rem; line-height: 1.25rem; font-weight: 600; white-space: nowrap; border: 1px solid transparent; cursor: pointer; font-family: var(--font-sans, 'Archivo Variable', system-ui, sans-serif); transition: background-color 150ms, border-color 150ms, box-shadow 150ms, translate 150ms; } .ds-btn:active { translate: 0 1px; } .ds-btn:focus-visible { outline: 2px solid var(--color-brand-600, #2a3fc9); outline-offset: 2px; } .ds-btn-secondary { background: #fff; color: var(--color-gray-800, #1c2542); border-color: var(--color-gray-300, #b8c1d3); } .ds-btn-secondary:hover { border-color: var(--color-brand-400, #6c7fec); background: var(--color-brand-25, #f6f7ff); color: var(--color-brand-800, #18257d); }"
+    },
+    {
+      "name": "Destructive Button",
+      "kind": "button",
+      "refersTo": "button-destructive",
+      "description": "Confirms a cancellation or deletion inside the dialog.",
+      "html": "<button class=\"ds-btn ds-btn-destructive\">Cancelar reserva</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 0.5rem; padding: 10px 16px; font-size: 0.875rem; line-height: 1.25rem; font-weight: 600; white-space: nowrap; border: 1px solid transparent; cursor: pointer; font-family: var(--font-sans, 'Archivo Variable', system-ui, sans-serif); transition: background-color 150ms, border-color 150ms, box-shadow 150ms, translate 150ms; } .ds-btn:active { translate: 0 1px; } .ds-btn:focus-visible { outline: 2px solid var(--color-brand-600, #2a3fc9); outline-offset: 2px; } .ds-btn-destructive { background: var(--color-error-600, #cf3a23); color: #fff; box-shadow: 0 1px 2px rgb(15 23 54 / 0.08), 0 2px 6px -2px rgb(15 23 54 / 0.08); } .ds-btn-destructive:hover { background: var(--color-error-700, #a52a17); }"
+    },
+    {
+      "name": "Landing Action",
+      "kind": "button",
+      "refersTo": "button-landing",
+      "description": "The landing page primary action on the ink sheet: highlighter yellow, white on hover.",
+      "html": "<div class=\"ds-ink-panel\"><a href=\"#\" class=\"ds-btn-landing\">Probar la demo</a></div>",
+      "css": ".ds-ink-panel { background: var(--color-brand-700, #1f2fa3); padding: 24px; border-radius: 0.625rem; } .ds-btn-landing { display: inline-flex; align-items: center; justify-content: center; border-radius: 0.5rem; padding: 12px 20px; font-size: 1rem; line-height: 1.5rem; font-weight: 600; white-space: nowrap; text-decoration: none; background: var(--color-mine-400, #ffe53d); color: var(--color-brand-950, #0c1238); font-family: var(--font-sans, 'Archivo Variable', system-ui, sans-serif); transition: background-color 150ms, translate 150ms; } .ds-btn-landing:hover { background: #fff; } .ds-btn-landing:active { translate: 0 1px; } .ds-btn-landing:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }"
+    },
+    {
+      "name": "Sticker Badges",
+      "kind": "chip",
+      "refersTo": "badge-success",
+      "description": "State as a sticker: a dot of the 500 shade on a 50 tint. Six tones, \"mine\" in solid highlighter.",
+      "html": "<span class=\"ds-badge ds-badge-gray\">TV</span><span class=\"ds-badge ds-badge-success\">Confirmada</span><span class=\"ds-badge ds-badge-warning\">Inactiva</span><span class=\"ds-badge ds-badge-error\">Ocupada</span><span class=\"ds-badge ds-badge-brand\">Facilities</span><span class=\"ds-badge ds-badge-mine\">Tuya</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; gap: 6px; border-radius: 9999px; padding: 2px 10px 2px 8px; font-size: 0.75rem; line-height: 1rem; font-weight: 600; white-space: nowrap; margin-right: 6px; font-family: var(--font-sans, 'Archivo Variable', system-ui, sans-serif); } .ds-badge::before { content: ''; width: 6px; height: 6px; border-radius: 9999px; background: currentColor; } .ds-badge-gray { background: var(--color-gray-100, #e3e7ef); color: var(--color-gray-700, #303a57); } .ds-badge-gray::before { background: var(--color-gray-400, #8e99b3); } .ds-badge-success { background: var(--color-success-50, #ddf5e8); color: var(--color-success-700, #0a6a3f); } .ds-badge-success::before { background: var(--color-success-500, #17a865); } .ds-badge-warning { background: var(--color-warning-50, #fff0d2); color: var(--color-warning-700, #8a4a00); } .ds-badge-warning::before { background: var(--color-warning-500, #f39a0b); } .ds-badge-error { background: var(--color-error-50, #fde6e1); color: var(--color-error-700, #a52a17); } .ds-badge-error::before { background: var(--color-error-500, #f0533b); } .ds-badge-brand { background: var(--color-brand-50, #eef0fe); color: var(--color-brand-800, #18257d); } .ds-badge-brand::before { background: var(--color-brand-500, #4359df); } .ds-badge-mine { background: var(--color-mine-400, #ffe53d); color: var(--color-brand-950, #0c1238); } .ds-badge-mine::before { background: var(--color-brand-950, #0c1238); } "
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Label above, control, hint below; tabular figures inside the control.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-field-label\" for=\"ds-f1\">Asistentes</label><input id=\"ds-f1\" class=\"ds-input\" type=\"text\" placeholder=\"4\" /><p class=\"ds-field-hint\">Hasta 8 personas.</p></div>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 6px; max-width: 20rem; font-family: var(--font-sans, 'Archivo Variable', system-ui, sans-serif); } .ds-field-label { font-size: 0.875rem; font-weight: 600; color: var(--color-gray-800, #1c2542); } .ds-input { display: block; width: 100%; border-radius: 0.5rem; border: 1px solid var(--color-gray-300, #b8c1d3); background: #fff; padding: 10px 12px; font: inherit; font-size: 1rem; color: var(--color-gray-900, #0f1736); font-variant-numeric: tabular-nums; transition: border-color 150ms, box-shadow 150ms; } .ds-input::placeholder { color: var(--color-gray-500, #5f6b88); } .ds-input:hover { border-color: var(--color-gray-400, #8e99b3); } .ds-input:focus-visible { border-color: var(--color-brand-600, #2a3fc9); outline: 2px solid var(--color-brand-600, #2a3fc9); outline-offset: -1px; } .ds-field-hint { margin: 0; font-size: 0.875rem; color: var(--color-gray-600, #46516d); }"
+    },
+    {
+      "name": "Rail Navigation",
+      "kind": "nav",
+      "refersTo": "nav-item-active",
+      "description": "Ink rail; the current place is a white cell, hover a 10% white wash, focus a yellow outline.",
+      "html": "<nav class=\"ds-rail\"><a href=\"#\" class=\"ds-rail-item ds-rail-item-active\"><svg viewBox=\"0 0 20 20\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 9.2 10 3.5l7 5.7V16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Z\"/><path d=\"M8 17v-5h4v5\"/></svg> Inicio</a><a href=\"#\" class=\"ds-rail-item\"><svg viewBox=\"0 0 20 20\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"9\" cy=\"9\" r=\"5.2\"/><path d=\"m13 13 4 4\"/></svg> Buscar disponibilidad</a></nav>",
+      "css": ".ds-rail { display: flex; flex-direction: column; gap: 4px; width: 15.5rem; padding: 16px; background: var(--color-brand-700, #1f2fa3); font-family: var(--font-sans, 'Archivo Variable', system-ui, sans-serif); } .ds-rail-item { display: flex; align-items: center; gap: 12px; border-radius: 0.5rem; padding: 8px 12px; font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; color: var(--color-brand-100, #dfe4fd); text-decoration: none; transition: background-color 150ms, color 150ms; } .ds-rail-item:hover { background: rgb(255 255 255 / 0.1); color: #fff; } .ds-rail-item:focus-visible { outline: 2px solid var(--color-mine-400, #ffe53d); outline-offset: 2px; } .ds-rail-item-active, .ds-rail-item-active:hover { background: #fff; font-weight: 600; color: var(--color-brand-900, #121c57); }"
+    },
+    {
+      "name": "Booking Row with Date Cell",
+      "kind": "card",
+      "refersTo": "date-tile",
+      "description": "A booking led by its date cell: ink weekday band, condensed day number, month; state as a sticker.",
+      "html": "<div class=\"ds-row\"><div class=\"ds-tile\" aria-hidden=\"true\"><span class=\"ds-tile-band\">dom</span><span class=\"ds-tile-day\">22</span><span class=\"ds-tile-month\">nov</span></div><div class=\"ds-row-main\"><a href=\"#\" class=\"ds-row-title\">Weekly sync</a><p class=\"ds-row-meta\">22 nov 2026, 10:00 – 11:00 · 3 personas</p></div><span class=\"ds-row-badge\">Confirmada</span></div>",
+      "css": ".ds-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; border-radius: 0.625rem; border: 1px solid var(--color-gray-200, #d3d9e5); background: #fff; padding: 12px 16px 12px 12px; font-family: var(--font-sans, 'Archivo Variable', system-ui, sans-serif); transition: border-color 150ms, box-shadow 150ms; } .ds-row:hover { border-color: var(--color-brand-300, #9aa8f4); box-shadow: 0 1px 2px rgb(15 23 54 / 0.08), 0 2px 6px -2px rgb(15 23 54 / 0.08); } .ds-tile { display: flex; flex-direction: column; flex-shrink: 0; width: 56px; overflow: hidden; border-radius: 0.5rem; border: 1px solid var(--color-gray-300, #b8c1d3); background: #fff; text-align: center; color: var(--color-gray-900, #0f1736); } .ds-tile-band { padding: 2px 0; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; background: var(--color-brand-700, #1f2fa3); color: #fff; } .ds-tile-day { padding-top: 6px; font-size: 1.5rem; line-height: 1; font-stretch: 78%; font-weight: 750; letter-spacing: -0.005em; font-variant-numeric: tabular-nums; } .ds-tile-month { padding-bottom: 4px; font-size: 0.6875rem; font-weight: 500; text-transform: uppercase; color: var(--color-gray-600, #46516d); } .ds-row-main { flex: 1 1 12rem; min-width: 0; } .ds-row-title { font-weight: 600; color: var(--color-gray-900, #0f1736); text-decoration: none; } .ds-row-title:hover, .ds-row-title:focus-visible { color: var(--color-brand-700, #1f2fa3); text-decoration: underline; } .ds-row-meta { margin: 0; font-size: 0.875rem; color: var(--color-gray-600, #46516d); font-variant-numeric: tabular-nums; } .ds-row-badge { display: inline-flex; align-items: center; gap: 6px; border-radius: 9999px; padding: 2px 10px 2px 8px; font-size: 0.75rem; font-weight: 600; background: var(--color-success-50, #ddf5e8); color: var(--color-success-700, #0a6a3f); } .ds-row-badge::before { content: ''; width: 6px; height: 6px; border-radius: 9999px; background: var(--color-success-500, #17a865); }"
+    },
+    {
+      "name": "Planner Strip",
+      "kind": "custom",
+      "refersTo": "planner-strip",
+      "description": "One office day, 08 to 20: coral blocks for other people, a skewed highlighter band for yours, drawn in once from the left.",
+      "html": "<div class=\"ds-strip\" role=\"img\" aria-label=\"Ocupación de hoy: 3 reservas\"><div class=\"ds-strip-ruler\"><span style=\"left:0%\">08</span><span style=\"left:16.667%\">10</span><span style=\"left:33.333%\">12</span><span style=\"left:50%\">14</span><span style=\"left:66.667%\">16</span><span style=\"left:83.333%\">18</span></div><div class=\"ds-strip-day\"><div class=\"ds-strip-busy\" style=\"left:8.333%;width:16.667%\"></div><div class=\"ds-strip-mine\" style=\"left:41.667%;width:8.333%\"></div><div class=\"ds-strip-busy\" style=\"left:58.333%;width:16.667%\"></div></div></div>",
+      "css": ".ds-strip { overflow: hidden; border-radius: 0.5rem; border: 1px solid var(--color-gray-300, #b8c1d3); background: #fff; font-family: var(--font-sans, 'Archivo Variable', system-ui, sans-serif); } .ds-strip-ruler { position: relative; height: 24px; border-bottom: 1px solid var(--color-gray-200, #d3d9e5); background: var(--color-gray-50, #edf0f5); } .ds-strip-ruler span { position: absolute; top: 4px; padding-left: 6px; font-size: 0.6875rem; line-height: 1rem; font-weight: 600; color: var(--color-gray-600, #46516d); font-variant-numeric: tabular-nums; } .ds-strip-day { position: relative; height: 48px; background-image: repeating-linear-gradient(to right, transparent 0, transparent calc(100% / 12 - 1px), var(--color-gray-200, #d3d9e5) calc(100% / 12 - 1px), var(--color-gray-200, #d3d9e5) calc(100% / 12)); } .ds-strip-busy { position: absolute; top: 8px; bottom: 8px; border-radius: 0.25rem; background: var(--color-error-500, #f0533b); animation: ds-marker-draw 420ms cubic-bezier(0.16, 1, 0.3, 1) both; } .ds-strip-mine { position: absolute; top: 12px; bottom: 12px; transform: skewX(-12deg); border-radius: 0.25rem; border-bottom: 3px solid var(--color-brand-950, #0c1238); background: var(--color-mine-400, #ffe53d); animation: ds-marker-draw 420ms cubic-bezier(0.16, 1, 0.3, 1) both; } @keyframes ds-marker-draw { from { clip-path: inset(0 100% 0 0 round 0.25rem); } to { clip-path: inset(0 0 0 0 round 0.25rem); } } @media (prefers-reduced-motion: reduce) { .ds-strip-busy, .ds-strip-mine { animation: none; } }"
+    },
+    {
+      "name": "Text Schedule",
+      "kind": "custom",
+      "refersTo": "badge-mine",
+      "description": "The strip's text twin: the same bookings as a ruled list; your own row gets the highlighter wash and the \"yours\" sticker.",
+      "html": "<ul class=\"ds-sched\"><li><span class=\"ds-sched-time\"><i class=\"ds-sched-dot\"></i>9:00 – 11:00 · Planning</span></li><li class=\"ds-sched-mine\"><span class=\"ds-sched-time\"><i class=\"ds-sched-dot\"></i>13:00 – 14:00 · Weekly sync</span><span class=\"ds-sched-badge\">Tuya</span></li><li><span class=\"ds-sched-time\"><i class=\"ds-sched-dot\"></i>15:00 – 17:00</span></li></ul>",
+      "css": ".ds-sched { list-style: none; margin: 0; padding: 0; border-radius: 0.5rem; border: 1px solid var(--color-gray-200, #d3d9e5); overflow: hidden; font-family: var(--font-sans, 'Archivo Variable', system-ui, sans-serif); } .ds-sched li { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; font-size: 0.875rem; background: #fff; color: var(--color-gray-900, #0f1736); } .ds-sched li + li { border-top: 1px solid var(--color-gray-200, #d3d9e5); } .ds-sched-time { display: flex; align-items: center; gap: 8px; font-variant-numeric: tabular-nums; } .ds-sched-dot { width: 8px; height: 8px; border-radius: 9999px; background: var(--color-error-500, #f0533b); } .ds-sched li.ds-sched-mine { background: color-mix(in srgb, var(--color-mine-200, #fff3a3) 60%, #fff); } .ds-sched-mine .ds-sched-dot { background: var(--color-brand-950, #0c1238); } .ds-sched-badge { display: inline-flex; align-items: center; gap: 6px; border-radius: 9999px; padding: 2px 10px 2px 8px; font-size: 0.75rem; font-weight: 600; background: var(--color-mine-400, #ffe53d); color: var(--color-brand-950, #0c1238); } .ds-sched-badge::before { content: ''; width: 6px; height: 6px; border-radius: 9999px; background: var(--color-brand-950, #0c1238); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Office Wall Planner",
+    "overview": "EntryHub looks like the laminated planner on an office wall: a cool laminate ground, white cells ruled with blue-grey lines, lettering in marker-ink blue, and a handful of stickers whose colour always means the same thing. Office time is drawn before it is written. A day is a ruled strip with blocks on it, a booking is led by its date cell, and whatever belongs to the viewer is struck through with a fluorescent highlighter.\n\nThe system is dense but calm. Surfaces are flat sheets separated by hairlines; saturated colour is spent on the ink (the shell, the primary action, the header band of a date cell) and on state. The public landing page is the same planner at poster scale: an ink-blue sheet ruled with lighter lines, white rows below it, and one highlighter-yellow closing row.\n\nMotion is small and has one signature: a marker band draws in once from the left. Everything else is a 150 ms change of colour, border or shadow.",
+    "keyCharacteristics": [
+      "Time is drawn on planner strips and date cells, with the same content always available as text beside the drawing.",
+      "One variable grotesque, Archivo: condensed and heavy for titles and numerals, normal width for everything else.",
+      "Every time, date and count uses tabular figures.",
+      "Colour carries a job: green free or confirmed, coral busy or wrong, amber warning, yellow yours, ink blue the shell and the action.",
+      "Flat ruled sheets; shadow is a response to hover or a sign that something floats."
+    ],
+    "rules": [
+      {
+        "name": "The Sticker Job Rule",
+        "body": "A sticker colour has one job everywhere: green is free or confirmed, coral is busy or wrong, amber is a warning. State is carried by a dot or block of the 500 shade on a 50 tint with 700 text; never by 500-shade text on white.",
+        "section": "colors"
+      },
+      {
+        "name": "The Highlighter Rule",
+        "body": "In the app, yellow means \"yours\" (and selected text). It is never a generic accent, a hover colour or a success colour. The landing page alone spends it on the primary action and the closing row.",
+        "section": "colors"
+      },
+      {
+        "name": "The White Cell Rule",
+        "body": "The current place on the ink is a white cell with ink text, not a yellow one. Yellow on the rail is reserved for the focus outline.",
+        "section": "colors"
+      },
+      {
+        "name": "The Signature Rule",
+        "body": "The owner's mookie studio wordmark (red) appears once per surface as a signature: at the foot of the rail and in the landing footer. Its red is never an interface colour and is not a token.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Voices Rule",
+        "body": "Condensed heavy Archivo is for titles and big numerals; it never sets a paragraph, a button or a label. No second family.",
+        "section": "typography"
+      },
+      {
+        "name": "The Same Figure Width Rule",
+        "body": "Every time, date and count sits on tabular figures, including inside form controls.",
+        "section": "typography"
+      },
+      {
+        "name": "The Header Band Rule",
+        "body": "Uppercase tracked lettering belongs to the planner's own headers: weekday bands, column headers, group labels. It never sits above a heading as a caption.",
+        "section": "typography"
+      },
+      {
+        "name": "The Ruled Sheet Rule",
+        "body": "Cells are separated by lines. Shadow appears only as a response to hover or on a surface that genuinely floats above the page.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do draw a time range on a planner strip and lead a booking with its date cell, and always put the same information next to it as text.",
+      "Do use the sticker pattern for state: a dot or block in the 500 shade, a 50 tint behind, 700-shade text.",
+      "Do keep yellow for the viewer's own bookings and selected text in the app.",
+      "Do set every time, date and count in tabular figures.",
+      "Do separate cells of a sheet with 1px rules and keep surfaces flat at rest.",
+      "Do use the yellow outline for focus on ink surfaces and the ink outline on light ones.",
+      "Do let marker bands draw in once from the left, and keep other transitions at 150 ms (200 ms for the dialog)."
+    ],
+    "donts": [
+      "Don't use yellow as a generic accent, hover or success colour, or to mark the current navigation item.",
+      "Don't use coral for anything that is neither busy nor an error, or green for anything that is neither free nor confirmed.",
+      "Don't set paragraphs, buttons or labels in the condensed voice, or add a second typeface.",
+      "Don't write state in 500-shade text on white; those shades are for dots and blocks.",
+      "Don't take the mookie studio red into the interface, or show the wordmark more than once per surface.",
+      "Don't put a shadow on a resting card or stack cards inside cards; rule the sheet instead.",
+      "Don't place uppercase tracked captions above headings; that lettering is for planner header bands and column headers.",
+      "Don't replay the marker draw on hover or scroll, or animate anything when reduced motion is requested."
+    ]
+  }
+}

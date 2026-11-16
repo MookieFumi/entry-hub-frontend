@@ -24,12 +24,14 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`rounded-lg border p-3 text-sm shadow-lg ${
-              t.tone === 'success'
-                ? 'border-success-700/30 bg-success-50 text-success-700'
-                : 'border-error-300 bg-error-50 text-error-700'
-            }`}
+            className="flex items-start gap-3 rounded-lg bg-brand-950 p-3.5 text-sm font-medium text-white shadow-lg"
           >
+            <span
+              aria-hidden="true"
+              className={`mt-1 size-2.5 shrink-0 rounded-full ${
+                t.tone === 'success' ? 'bg-success-500' : 'bg-error-500'
+              }`}
+            />
             {t.message}
           </div>
         ))}

@@ -8,7 +8,7 @@ export function NotFound() {
     <EmptyState
       title={t('notFound.title')}
       action={
-        <Link className="text-brand-700 underline" to="/">
+        <Link className="font-semibold text-brand-700 underline hover:text-brand-900" to="/">
           {t('notFound.home')}
         </Link>
       }

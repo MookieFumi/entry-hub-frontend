@@ -17,6 +17,17 @@ test('login screen', async ({ page }) => {
   await expectNoSeriousViolations(page)
 })
 
+test('landing page', async ({ page }) => {
+  await mockApi(page)
+  await page.goto('/')
+  await expect(page.getByRole('heading', { name: 'Salas reservadas en un minuto.' })).toBeVisible()
+  await page.getByRole('button', { name: 'Sala Miró, 10:00, libre' }).click()
+  await expect(page.getByRole('button', { name: 'Sala Miró, 10:00, tuya' })).toBeVisible()
+  await page.getByRole('button', { name: 'Sala Gaudí, 09:00, ocupada' }).click()
+  await expect(page.getByText('La sala no está disponible en esa franja.').first()).toBeVisible()
+  await expectNoSeriousViolations(page)
+})
+
 const screens: [string, string, string, string][] = [
   ['room catalog', '/rooms', 'employee', 'link:Sala Gaudí'],
   ['room page', `${ROOM}?date=${BOOKING_DAY}`, 'employee', 'heading:Sala Gaudí'],

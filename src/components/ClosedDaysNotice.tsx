@@ -20,7 +20,7 @@ export function ClosedDaysNotice({ holidays, date }: { holidays: SiteHoliday[]; 
         </Alert>
       )}
       {upcoming.length > 0 && (
-        <p className="text-xs text-gray-500">
+        <p className="nums text-sm text-gray-600">
           {t('closed.upcoming', { days: upcoming.map(label).join(', ') })}
         </p>
       )}

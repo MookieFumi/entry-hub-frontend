@@ -46,7 +46,7 @@ export function AdminBookings() {
     <>
       <PageHeader title={t('admin.bookings.title')} description={t('admin.bookings.description')} />
       <form
-        className="mb-6 grid gap-4 sm:grid-cols-3"
+        className="mb-8 grid gap-4 rounded-xl border border-gray-200 bg-white p-4 sm:grid-cols-3 sm:p-5"
         onSubmit={(e) => e.preventDefault()}
         role="search"
       >

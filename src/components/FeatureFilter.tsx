@@ -23,7 +23,7 @@ export function FeatureChecklist({
 }) {
   const t = useT()
   const catalog = useFeatures(includeInactive)
-  if (catalog.isPending) return <p className="text-sm text-gray-500">{t('features.loading')}</p>
+  if (catalog.isPending) return <p className="text-sm text-gray-600">{t('features.loading')}</p>
   if (catalog.error) return <p className="text-sm text-error-700">{t('features.failed')}</p>
 
   const toggle = (value: string, checked: boolean) =>
@@ -36,23 +36,26 @@ export function FeatureChecklist({
         if (entries.length === 0) return null
         return (
           <fieldset key={kind} className="min-w-0">
-            <legend className="mb-1.5 text-sm font-medium text-gray-700">{t(legend)}</legend>
-            <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+            <legend className="mb-2 text-sm font-semibold text-gray-800">{t(legend)}</legend>
+            <div className="flex flex-wrap gap-2">
               {entries.map((f) => {
                 const value = valueOf(f)
                 const checked = selected.includes(value)
                 return (
-                  <label key={f.id} className="flex items-center gap-2 text-sm text-gray-700">
+                  <label
+                    key={f.id}
+                    className="flex cursor-pointer items-center gap-2 rounded-full border border-gray-300 bg-white py-1.5 pr-3.5 pl-3 text-sm font-medium text-gray-800 transition-colors duration-150 hover:border-brand-400 has-checked:border-brand-600 has-checked:bg-brand-50 has-checked:text-brand-900 has-disabled:cursor-not-allowed has-disabled:opacity-60 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-brand-600"
+                  >
                     <input
                       type="checkbox"
-                      className="size-4 rounded border-gray-300 accent-brand-600"
+                      className="size-4 accent-brand-600 focus-visible:outline-none"
                       checked={checked}
                       disabled={!f.isActive && !checked}
                       onChange={(e) => toggle(value, e.target.checked)}
                     />
                     {f.name}
                     {!f.isActive && (
-                      <span className="text-xs text-gray-500">{t('features.inactive')}</span>
+                      <span className="text-xs text-gray-600">{t('features.inactive')}</span>
                     )}
                   </label>
                 )

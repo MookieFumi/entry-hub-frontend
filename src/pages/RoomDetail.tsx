@@ -6,7 +6,15 @@ import { BookingForm } from '@/components/BookingForm'
 import { DayTimeline } from '@/components/DayTimeline'
 import { ScheduleList } from '@/components/ScheduleList'
 import { Badge } from '@/components/ui/Badge'
-import { Alert, Card, EmptyState, ErrorState, PageHeader, Skeleton } from '@/components/ui/Feedback'
+import {
+  Alert,
+  Card,
+  EmptyState,
+  ErrorState,
+  PageHeader,
+  SectionTitle,
+  Skeleton,
+} from '@/components/ui/Feedback'
 import { useRoomOccupancy } from '@/hooks/useRoomOccupancy'
 import { formatOfficeTime } from '@/lib/dates'
 import { addDays, dateInZone, zonedToUtc } from '@/lib/tz'
@@ -46,7 +54,7 @@ export function RoomDetail() {
       <EmptyState
         title={t('room.notFound')}
         action={
-          <Link className="text-brand-700 underline" to="/rooms">
+          <Link className="font-semibold text-brand-700 underline hover:text-brand-900" to="/rooms">
             {t('room.backToRooms')}
           </Link>
         }
@@ -56,7 +64,12 @@ export function RoomDetail() {
     )
   }
   if (room.error)
-    return <ErrorState message={room.error.message} onRetry={() => void room.refetch()} />
+    return (
+      <>
+        <PageHeader title={t('nav.rooms')} />
+        <ErrorState message={room.error.message} onRetry={() => void room.refetch()} />
+      </>
+    )
   const r = room.data
 
   return (
@@ -71,9 +84,9 @@ export function RoomDetail() {
           <Alert tone="warning">{t('room.inactive')}</Alert>
         </div>
       )}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
         <Card>
-          <h2 className="mb-3 font-semibold text-gray-900">{t('room.book')}</h2>
+          <SectionTitle>{t('room.book')}</SectionTitle>
           {r.isActive ? (
             <BookingForm
               room={r}
@@ -85,17 +98,17 @@ export function RoomDetail() {
               onConflict={() => void schedule.refetch()}
             />
           ) : (
-            <p className="text-sm text-gray-500">{t('room.unavailable')}</p>
+            <p className="text-sm text-gray-600">{t('room.unavailable')}</p>
           )}
         </Card>
         <Card>
-          <h2 className="mb-3 font-semibold text-gray-900">{t('room.daySchedule')}</h2>
+          <SectionTitle>{t('room.daySchedule')}</SectionTitle>
           {schedule.isPending && <Skeleton className="h-24" />}
           {schedule.error && (
             <ErrorState message={schedule.error.message} onRetry={() => void schedule.refetch()} />
           )}
           {schedule.data && rules.data && (
-            <div className="mb-8">
+            <div className="mb-4">
               <DayTimeline
                 entries={schedule.data}
                 rules={rules.data}
@@ -105,7 +118,7 @@ export function RoomDetail() {
           )}
           {schedule.data && <ScheduleList entries={schedule.data} timeZone={tz} />}
           <Link
-            className="mt-4 inline-block text-sm font-medium text-brand-700 underline"
+            className="mt-4 inline-block text-sm font-semibold text-brand-700 underline hover:text-brand-900"
             to={`/rooms/${id}/week?date=${date}`}
           >
             {t('room.viewWeek')}

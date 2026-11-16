@@ -65,7 +65,7 @@ export function BookingForm({
   )
   const endValue = ends.includes(end) ? end : ''
 
-  if (rules.isPending) return <p className="text-sm text-gray-500">{t('common.rulesLoading')}</p>
+  if (rules.isPending) return <p className="text-sm text-gray-600">{t('common.rulesLoading')}</p>
   if (rules.error || !rules.data) return <Alert tone="error">{t('common.rulesFailed')}</Alert>
   const r = rules.data
   const openWeekday = isBookableDay(date, r)
@@ -227,11 +227,11 @@ export function BookingForm({
         errors={repeatErrors}
         serverError={fieldErrors.repeat}
       />
-      <details className="rounded-lg bg-gray-50 p-3 text-xs text-gray-600">
-        <summary className="cursor-pointer font-medium text-gray-700">
+      <details className="rounded-lg border border-gray-200 bg-gray-25 p-3 text-sm text-gray-700">
+        <summary className="cursor-pointer font-semibold text-gray-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
           {t('form.rulesSummary')}
         </summary>
-        <ul className="mt-2 list-disc space-y-1 pl-4">
+        <ul className="nums mt-2 list-disc space-y-1 pl-5 marker:text-brand-500">
           {describeRules(r).map((line) => (
             <li key={line}>{line}</li>
           ))}

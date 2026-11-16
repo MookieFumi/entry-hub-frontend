@@ -2,6 +2,7 @@ import { Link, useSearchParams } from 'react-router'
 import { useAvailability, useOfficeZone } from '@/api/queries'
 import { FeatureChecklist } from '@/components/FeatureFilter'
 import { RoomCard } from '@/components/RoomCard'
+import { buttonClass } from '@/components/ui/Button'
 import { TextField } from '@/components/ui/Field'
 import { Alert, EmptyState, ErrorState, PageHeader, Spinner } from '@/components/ui/Feedback'
 import { dateInZone, zonedToUtc } from '@/lib/tz'
@@ -44,7 +45,7 @@ export function Search() {
     <>
       <PageHeader title={t('search.title')} description={t('search.description')} />
       <form
-        className="mb-6 grid gap-4 sm:grid-cols-3 lg:grid-cols-5"
+        className="mb-8 grid grid-cols-2 gap-4 rounded-xl border border-gray-200 bg-white p-4 sm:grid-cols-3 sm:p-5 lg:grid-cols-6"
         onSubmit={(e) => e.preventDefault()}
         role="search"
       >
@@ -89,7 +90,7 @@ export function Search() {
           value={minCapacity}
           onChange={(e) => set('minCapacity', e.target.value)}
         />
-        <div className="sm:col-span-3 lg:col-span-5">
+        <div className="col-span-2 sm:col-span-3 lg:col-span-6">
           <FeatureChecklist
             selected={features}
             valueOf={(f) => f.code}
@@ -108,14 +109,18 @@ export function Search() {
       {result.data && result.data.length > 0 && (
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {result.data.map((room) => (
-            <li key={room.id} className="flex flex-col gap-2">
-              <RoomCard room={room} />
-              <Link
-                className="text-sm font-medium text-brand-700 underline"
-                to={`/rooms/${room.id}?date=${date}&start=${start}&end=${end}`}
-              >
-                {t('search.bookSlot')}
-              </Link>
+            <li key={room.id}>
+              <RoomCard
+                room={room}
+                action={
+                  <Link
+                    className={buttonClass('primary')}
+                    to={`/rooms/${room.id}?date=${date}&start=${start}&end=${end}`}
+                  >
+                    {t('search.bookSlot')}
+                  </Link>
+                }
+              />
             </li>
           ))}
         </ul>

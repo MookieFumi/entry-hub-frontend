@@ -8,7 +8,7 @@ import { EmptyState, ErrorState, PageHeader, Skeleton } from '@/components/ui/Fe
 import { useT } from '@/i18n'
 
 const tabClass =
-  'px-4 py-2 text-sm font-medium text-gray-600 data-[selected]:border-b-2 data-[selected]:border-brand-600 data-[selected]:text-brand-700'
+  'nums -mb-px border-b-[3px] border-transparent px-4 py-2.5 text-sm font-semibold text-gray-600 transition-colors duration-150 hover:text-gray-900 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-600 data-[active]:border-brand-600 data-[active]:text-brand-800'
 
 export function MyBookings() {
   const t = useT()
@@ -37,7 +37,12 @@ export function MyBookings() {
 
   if (bookings.isPending) return <Skeleton className="h-40" />
   if (bookings.error)
-    return <ErrorState message={bookings.error.message} onRetry={() => void bookings.refetch()} />
+    return (
+      <>
+        <PageHeader title={t('bookings.title')} />
+        <ErrorState message={bookings.error.message} onRetry={() => void bookings.refetch()} />
+      </>
+    )
 
   const panel = (list: Booking[], empty: string, cancellable = false) =>
     list.length === 0 ? (
@@ -66,7 +71,7 @@ export function MyBookings() {
         </p>
       )}
       <Tabs.Root defaultValue="upcoming">
-        <Tabs.List className="mb-4 flex border-b border-gray-200">
+        <Tabs.List className="mb-5 flex overflow-x-auto border-b border-gray-300">
           <Tabs.Tab value="upcoming" className={tabClass}>
             {t('bookings.tabUpcoming', { count: groups.upcoming.length })}
           </Tabs.Tab>
@@ -86,7 +91,7 @@ export function MyBookings() {
         </Tabs.Panel>
       </Tabs.Root>
       {Number(bookings.data.totalCount) > 100 && (
-        <p className="mt-4 text-sm text-gray-500">
+        <p className="nums mt-4 text-sm text-gray-600">
           {t('bookings.truncated', { total: Number(bookings.data.totalCount) })}
         </p>
       )}

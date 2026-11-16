@@ -103,9 +103,9 @@ export function RoomFormDialog({
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 bg-gray-900/50" />
-        <Dialog.Popup className="fixed top-1/2 left-1/2 w-[min(94vw,30rem)] -translate-x-1/2 -translate-y-1/2 rounded-xl bg-white p-6 shadow-lg">
-          <Dialog.Title className="text-lg font-semibold text-gray-900">
+        <Dialog.Backdrop className="fixed inset-0 bg-brand-950/55 transition-opacity duration-200 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0" />
+        <Dialog.Popup className="fixed top-1/2 left-1/2 w-[min(94vw,30rem)] -translate-x-1/2 -translate-y-1/2 rounded-xl bg-white p-6 shadow-lg transition-[opacity,scale] duration-200 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0">
+          <Dialog.Title className="font-display text-xl text-gray-900">
             {room ? t('roomForm.edit') : t('roomForm.new')}
           </Dialog.Title>
           <form onSubmit={onSubmit} className="mt-4 flex flex-col gap-4" noValidate>

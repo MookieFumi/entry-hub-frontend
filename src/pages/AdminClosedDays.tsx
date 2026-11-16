@@ -10,6 +10,7 @@ import {
 import { Button } from '@/components/ui/Button'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { SelectField, TextField } from '@/components/ui/Field'
+import { DateTile } from '@/components/DateTile'
 import { Card, EmptyState, ErrorState, PageHeader, Skeleton } from '@/components/ui/Feedback'
 import { useToast } from '@/components/ui/Toasts'
 import { useT } from '@/i18n'
@@ -65,17 +66,35 @@ export function AdminClosedDays() {
     setReopening(null)
   }
 
-  if (sites.isPending) return <Skeleton className="h-40" />
+  const header = <PageHeader title={t('closed.title')} description={t('closed.description')} />
+  if (sites.isPending)
+    return (
+      <>
+        {header}
+        <Skeleton className="h-40" />
+      </>
+    )
   if (sites.error)
-    return <ErrorState message={sites.error.message} onRetry={() => void sites.refetch()} />
-  if (sites.data.length === 0) return <EmptyState title={t('closed.noSites')} />
+    return (
+      <>
+        {header}
+        <ErrorState message={sites.error.message} onRetry={() => void sites.refetch()} />
+      </>
+    )
+  if (sites.data.length === 0)
+    return (
+      <>
+        {header}
+        <EmptyState title={t('closed.noSites')} />
+      </>
+    )
 
   const sorted = [...(holidays.data ?? [])].sort((a, b) => a.date.localeCompare(b.date))
 
   return (
     <>
-      <PageHeader title={t('closed.title')} description={t('closed.description')} />
-      <div className="grid gap-6 lg:grid-cols-[20rem_1fr]">
+      {header}
+      <div className="grid items-start gap-6 lg:grid-cols-[20rem_1fr]">
         <Card>
           <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
             <SelectField
@@ -117,9 +136,9 @@ export function AdminClosedDays() {
             <EmptyState title={t('closed.noneTitle')}>{t('closed.noneHint')}</EmptyState>
           )}
           {sorted.length > 0 && (
-            <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
-              <table className="w-full text-left text-sm">
-                <thead className="bg-gray-50 text-gray-600">
+            <div className="overflow-x-auto rounded-xl border border-gray-300 bg-white">
+              <table className="nums w-full text-left text-sm">
+                <thead className="bg-brand-50 text-xs font-semibold tracking-wider text-brand-900 uppercase">
                   <tr>
                     <th scope="col" className="px-4 py-3">
                       {t('closed.colDate')}
@@ -134,9 +153,16 @@ export function AdminClosedDays() {
                 </thead>
                 <tbody>
                   {sorted.map((h) => (
-                    <tr key={h.id} className="border-t border-gray-200">
-                      <th scope="row" className="px-4 py-3 font-medium text-gray-900">
-                        {h.date}
+                    <tr
+                      key={h.id}
+                      className="border-t border-gray-200 transition-colors duration-150 hover:bg-gray-25"
+                    >
+                      <th scope="row" className="px-4 py-2.5 font-semibold text-gray-900">
+                        <DateTile
+                          date={h.date}
+                          timeZone={sites.data.find((x) => x.id === siteId)?.timeZone}
+                        />
+                        <span className="sr-only">{h.date}</span>
                       </th>
                       <td className="px-4 py-3">{h.name || t('closed.unnamed')}</td>
                       <td className="flex justify-end px-4 py-3">

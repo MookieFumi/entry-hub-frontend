@@ -4,8 +4,7 @@ import { api, unwrap } from './client'
 import type { components } from './schema'
 
 export type Room = components['schemas']['RoomResponse']
-// The contract declares BookingStatus as an extensible enum (no JSON type), which the
-// generator maps to `unknown` in responses, so the known values are listed here.
+/** Values of the `Status` filter of the bookings list (a booking's own `status` is a string). */
 export type BookingStatus = 'Confirmed' | 'Cancelled' | 'Pending'
 export type Booking = components['schemas']['BookingResponse']
 export type CreateBookingRequest = components['schemas']['CreateBookingRequest']

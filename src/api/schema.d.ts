@@ -630,7 +630,7 @@ export interface components {
             seriesPosition?: null | number | string;
             series?: null | components["schemas"]["SeriesOutcome"];
         };
-        BookingStatus: unknown;
+        BookingStatus: string;
         /** @description The result of cancelling a series from one occurrence on. */
         CancelSeriesResponse: {
             /** @description Ids of the bookings that were cancelled (already cancelled ones are not listed). */

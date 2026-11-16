@@ -1,5 +1,6 @@
 import { Tabs } from '@base-ui/react/tabs'
 import { useMemo, useState } from 'react'
+import { Link, useSearchParams } from 'react-router'
 import { useMyBookings, type Booking } from '@/api/queries'
 import { BookingRow } from '@/components/BookingRow'
 import { CancelBooking } from '@/components/CancelBooking'
@@ -13,8 +14,11 @@ export function MyBookings() {
   const t = useT()
   const bookings = useMyBookings({ includeCancelled: true, page: 1, pageSize: 100 })
   const [now] = useState(() => Date.now())
+  const [params] = useSearchParams()
+  const seriesId = params.get('series')
   const groups = useMemo(() => {
-    const items = bookings.data?.items ?? []
+    const all = bookings.data?.items ?? []
+    const items = seriesId ? all.filter((b) => b.seriesId === seriesId) : all
     const byStart = (a: Booking, b: Booking) => a.startAt.localeCompare(b.startAt)
     return {
       upcoming: items
@@ -29,7 +33,7 @@ export function MyBookings() {
         .sort((a, b) => byStart(b, a)),
       cancelled: items.filter((b) => b.status === 'Cancelled').sort((a, b) => byStart(b, a)),
     }
-  }, [bookings.data, now])
+  }, [bookings.data, now, seriesId])
 
   if (bookings.isPending) return <Skeleton className="h-40" />
   if (bookings.error)
@@ -53,6 +57,14 @@ export function MyBookings() {
   return (
     <>
       <PageHeader title={t('bookings.title')} />
+      {seriesId && (
+        <p className="mb-4 text-sm text-gray-600">
+          {t('series.filtered')}{' '}
+          <Link to="/bookings" className="text-brand-700 underline">
+            {t('series.clearFilter')}
+          </Link>
+        </p>
+      )}
       <Tabs.Root defaultValue="upcoming">
         <Tabs.List className="mb-4 flex border-b border-gray-200">
           <Tabs.Tab value="upcoming" className={tabClass}>

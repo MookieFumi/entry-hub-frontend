@@ -87,3 +87,25 @@ export function SelectField({
     </FieldShell>
   )
 }
+
+export function TextAreaField({
+  label,
+  hint,
+  error,
+  className = '',
+  ...props
+}: CommonProps & Omit<ComponentProps<'textarea'>, 'id'>) {
+  return (
+    <FieldShell label={label} hint={hint} error={error}>
+      {({ id, describedBy, invalid }) => (
+        <textarea
+          id={id}
+          aria-describedby={describedBy}
+          aria-invalid={invalid}
+          className={`${control} ${className}`}
+          {...props}
+        />
+      )}
+    </FieldShell>
+  )
+}

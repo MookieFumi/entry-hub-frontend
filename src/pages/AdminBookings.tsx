@@ -1,6 +1,7 @@
 import { useSearchParams } from 'react-router'
 import { useAllBookings, useOfficeZone, useRooms, type BookingStatus } from '@/api/queries'
 import { BookingRow } from '@/components/BookingRow'
+import { DecideBooking } from '@/components/DecideBooking'
 import { CancelBooking } from '@/components/CancelBooking'
 import { SelectField, TextField } from '@/components/ui/Field'
 import { EmptyState, ErrorState, PageHeader, Skeleton } from '@/components/ui/Feedback'
@@ -93,7 +94,12 @@ export function AdminBookings() {
                 key={b.id}
                 booking={b}
                 roomName={names.get(b.roomId)}
-                actions={<CancelBooking booking={b} />}
+                actions={
+                  <>
+                    <DecideBooking booking={b} />
+                    <CancelBooking booking={b} />
+                  </>
+                }
               />
             ))}
           </ul>

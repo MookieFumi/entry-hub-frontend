@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router'
 import { useBooking, useOfficeZone, useRoom } from '@/api/queries'
 import { ApiError } from '@/api/errors'
+import { DecideBooking } from '@/components/DecideBooking'
 import { CancelBooking } from '@/components/CancelBooking'
 import { BookingStatusBadge } from '@/components/BookingStatusBadge'
 import { Card, EmptyState, ErrorState, PageHeader, Skeleton } from '@/components/ui/Feedback'
@@ -57,6 +58,7 @@ export function BookingDetail() {
         title={b.title}
         actions={
           <div className="flex gap-2">
+            <DecideBooking booking={b} />
             <RescheduleLink booking={b} />
             <CancelBooking booking={b} />
           </div>

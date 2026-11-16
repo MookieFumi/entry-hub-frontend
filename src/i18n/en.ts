@@ -295,4 +295,15 @@ export const en: Catalog = {
   'booking.decidedAt': 'Decision:',
   'booking.decisionReason': 'Reason:',
   'admin.bookings.pending': 'Pending approval',
+  'decide.approve': 'Approve',
+  'decide.reject': 'Reject',
+  'decide.approved': 'Booking approved.',
+  'decide.rejected': 'Booking rejected.',
+  'decide.rejectTitle': 'Reject the booking',
+  'decide.rejectIntro':
+    'The booking will be cancelled and the room will be free again. The person who asked for it will see the reason.',
+  'decide.reason': 'Reason (optional)',
+  'decide.reasonHint': 'At most 500 characters.',
+  'decide.alreadyDecided': 'This booking is no longer pending: someone has already decided it.',
+  'decide.failed': 'The decision could not be saved.',
 }

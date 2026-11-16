@@ -2,6 +2,7 @@ import { createBrowserRouter, createMemoryRouter, type RouteObject } from 'react
 import { AppLayout } from '@/components/layout/AppLayout'
 import { RequireAuth, RequireFacilities } from '@/components/layout/Guards'
 import { AdminBookings } from '@/pages/AdminBookings'
+import { AdminRules } from '@/pages/AdminRules'
 import { AdminClosedDays } from '@/pages/AdminClosedDays'
 import { AdminRooms } from '@/pages/AdminRooms'
 import { BookingDetail } from '@/pages/BookingDetail'
@@ -40,6 +41,7 @@ export const routes: RouteObject[] = [
               { path: 'rooms', element: <AdminRooms /> },
               { path: 'bookings', element: <AdminBookings /> },
               { path: 'closed-days', element: <AdminClosedDays /> },
+              { path: 'rules', element: <AdminRules /> },
             ],
           },
           { path: '*', element: <NotFound /> },

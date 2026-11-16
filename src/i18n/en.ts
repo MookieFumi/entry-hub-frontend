@@ -360,4 +360,24 @@ export const en: Catalog = {
     'This room needs approval: your booking will stay pending until Facilities approves it.',
   'room.buffersNotice':
     'Between bookings the room stays free {before} min before and {after} min after.',
+  'nav.rules': 'Booking rules',
+  'adminRules.title': 'Booking rules',
+  'adminRules.description': 'Changes apply to new bookings. Existing ones are not touched.',
+  'adminRules.minDurationMinutes': 'Shortest booking (minutes)',
+  'adminRules.maxDurationMinutes': 'Longest booking (minutes)',
+  'adminRules.slotMinutes': 'Slot length (minutes)',
+  'adminRules.slotMinutesHint': 'Must divide an hour (1, 5, 10, 15, 20, 30 or 60).',
+  'adminRules.minLeadTimeMinutes': 'Minimum lead time (minutes)',
+  'adminRules.maxAdvanceDays': 'Maximum advance (days)',
+  'adminRules.cancellationNoticeMinutes': 'Cancellation notice (minutes)',
+  'adminRules.maxActiveBookings': 'Active bookings per employee',
+  'adminRules.maxActiveBookingsHint':
+    'There is no limit today when the field is empty on load; enter a value to set one.',
+  'adminRules.autoReleaseMinutes': 'Auto-release (minutes)',
+  'adminRules.autoReleaseHint':
+    'Minutes after the start after which a booking nobody checked in to is cancelled. 0 turns it off.',
+  'adminRules.range': 'Must be a whole number between {min} and {max}.',
+  'adminRules.order': 'The longest booking cannot be shorter than the shortest.',
+  'adminRules.saved': 'Rules saved.',
+  'adminRules.failed': 'The rules could not be saved.',
 }

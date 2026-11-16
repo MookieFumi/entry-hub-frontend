@@ -11,11 +11,7 @@ import { Card, EmptyState, ErrorState, PageHeader, Skeleton } from '@/components
 import { formatOfficeDateTime, formatOfficeTime } from '@/lib/dates'
 import { useT } from '@/i18n'
 
-function RescheduleLink({
-  booking,
-}: {
-  booking: { id: string; status: unknown; startAt: string }
-}) {
+function RescheduleLink({ booking }: { booking: { id: string; status: string; startAt: string } }) {
   const t = useT()
   if (booking.status !== 'Confirmed' || new Date(booking.startAt) <= new Date()) return null
   return (

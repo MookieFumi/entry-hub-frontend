@@ -7,6 +7,7 @@ import { AdminWebhooks } from '@/pages/AdminWebhooks'
 import { AdminRules } from '@/pages/AdminRules'
 import { AdminAudit } from '@/pages/AdminAudit'
 import { AdminData } from '@/pages/AdminData'
+import { AdminRoomBlocks } from '@/pages/AdminRoomBlocks'
 import { AdminClosedDays } from '@/pages/AdminClosedDays'
 import { AdminRooms } from '@/pages/AdminRooms'
 import { BookingDetail } from '@/pages/BookingDetail'
@@ -43,6 +44,7 @@ export const routes: RouteObject[] = [
             element: <RequireFacilities />,
             children: [
               { path: 'rooms', element: <AdminRooms /> },
+              { path: 'rooms/:id/blocks', element: <AdminRoomBlocks /> },
               { path: 'bookings', element: <AdminBookings /> },
               { path: 'closed-days', element: <AdminClosedDays /> },
               { path: 'rules', element: <AdminRules /> },

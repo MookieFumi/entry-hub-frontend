@@ -282,4 +282,11 @@ export const en: Catalog = {
   'closed.dayClosed': 'The site is closed that day: it cannot be booked.',
   'closed.dayClosedNamed': 'The site is closed that day ({name}): it cannot be booked.',
   'closed.upcoming': 'Next closed days: {days}.',
+  'rule.TooEarlyToCheckIn':
+    'It is too early to check in: you can do it from 15 minutes before the start.',
+  'rule.RoomBlocked': 'The room is blocked at that time (for example, for maintenance).',
+  'rule.RoomAlreadyBooked': 'The room is already booked at that time.',
+  'rule.InvalidRecurrence': 'The repetition is not valid: check the frequency and the end.',
+  'rule.NonexistentLocalTime':
+    'That time does not exist on that day because of the clock change. Pick another.',
 }

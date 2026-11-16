@@ -54,3 +54,23 @@ describe('toApiError', () => {
     expect(toApiError(status, undefined).kind).toBe(kind)
   })
 })
+
+describe('rule codes of v1.1', () => {
+  const codes = [
+    'TooEarlyToCheckIn',
+    'RoomBlocked',
+    'RoomAlreadyBooked',
+    'InvalidRecurrence',
+    'NonexistentLocalTime',
+  ]
+
+  it.each(codes)('has a message for %s in both languages', (code) => {
+    const violation = { code, message: 'API text' }
+    const es = ruleMessage(violation)
+    setLocale('en')
+    const en = ruleMessage(violation)
+    expect(es).not.toBe('API text')
+    expect(en).not.toBe('API text')
+    expect(en).not.toBe(es)
+  })
+})

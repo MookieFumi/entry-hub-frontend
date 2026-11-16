@@ -96,7 +96,7 @@ export function BookingForm({
         const next: Record<string, string> = {}
         for (const v of err.violations) {
           if (v.code === 'ExceedsCapacity') next.attendees = err.message
-          else if (v.code === 'RoomUnavailable') onConflict?.()
+          else if (v.code === 'RoomUnavailable' || v.code === 'RoomAlreadyBooked') onConflict?.()
           else if (
             [
               'TooSoon',
@@ -104,6 +104,8 @@ export function BookingForm({
               'OutsideOfficeHours',
               'NotOnSlotBoundary',
               'SiteClosed',
+              'RoomBlocked',
+              'NonexistentLocalTime',
             ].includes(v.code)
           )
             next.start = err.message

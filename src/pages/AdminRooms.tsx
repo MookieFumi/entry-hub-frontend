@@ -70,6 +70,12 @@ export function AdminRooms() {
                     {t('admin.rooms.capacity')}
                   </th>
                   <th scope="col" className="px-4 py-3">
+                    {t('admin.rooms.buffers')}
+                  </th>
+                  <th scope="col" className="px-4 py-3">
+                    {t('admin.rooms.approval')}
+                  </th>
+                  <th scope="col" className="px-4 py-3">
                     {t('admin.rooms.state')}
                   </th>
                   <th scope="col" className="px-4 py-3">
@@ -85,6 +91,19 @@ export function AdminRooms() {
                     </th>
                     <td className="px-4 py-3">{r.floor}</td>
                     <td className="px-4 py-3">{r.capacity}</td>
+                    <td className="px-4 py-3">
+                      {t('admin.rooms.bufferText', {
+                        before: Number(r.bufferBeforeMinutes),
+                        after: Number(r.bufferAfterMinutes),
+                      })}
+                    </td>
+                    <td className="px-4 py-3">
+                      <Badge tone={r.requiresApproval ? 'warning' : 'gray'}>
+                        {r.requiresApproval
+                          ? t('admin.rooms.requiresApproval')
+                          : t('admin.rooms.noApproval')}
+                      </Badge>
+                    </td>
                     <td className="px-4 py-3">
                       <Badge tone={r.isActive ? 'success' : 'warning'}>
                         {r.isActive ? t('admin.rooms.active') : t('admin.rooms.inactive')}

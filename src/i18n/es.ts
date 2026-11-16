@@ -345,4 +345,21 @@ export const es = {
   'cancel.keptTitle': 'Algunas reservas se mantienen',
   'cancel.keptIntro': 'No se han podido cancelar estas reservas de la serie:',
   'cancel.close': 'Cerrar',
+  'roomForm.bufferBefore': 'Margen antes (minutos)',
+  'roomForm.bufferAfter': 'Margen después (minutos)',
+  'roomForm.bufferHint':
+    'La sala queda libre este tiempo antes y después de cada reserva. De 0 a 240.',
+  'roomForm.bufferInvalid': 'Debe ser un número entero entre 0 y 240.',
+  'roomForm.requiresApproval': 'Las reservas necesitan aprobación',
+  'roomForm.requiresApprovalHint':
+    'Las reservas de empleados quedan pendientes hasta que Facility Management las apruebe.',
+  'admin.rooms.approval': 'Aprobación',
+  'admin.rooms.buffers': 'Márgenes',
+  'admin.rooms.requiresApproval': 'Requiere aprobación',
+  'admin.rooms.noApproval': 'Automática',
+  'admin.rooms.bufferText': '{before} min antes / {after} min después',
+  'room.needsApproval':
+    'Esta sala requiere aprobación: tu reserva quedará pendiente hasta que Facility Management la apruebe.',
+  'room.buffersNotice':
+    'Entre reservas la sala queda libre {before} min antes y {after} min después.',
 } as const

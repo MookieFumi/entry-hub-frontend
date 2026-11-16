@@ -385,6 +385,17 @@ export const useWebhooks = () =>
     queryFn: () => unwrap(api.GET('/api/v1/webhooks')),
   })
 
+export type CreateWebhookRequest = components['schemas']['CreateWebhookRequest']
+export type WebhookCreated = components['schemas']['WebhookCreatedResponse']
+
+export function useCreateWebhook() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (body: CreateWebhookRequest) => unwrap(api.POST('/api/v1/webhooks', { body })),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: keys.webhooks }),
+  })
+}
+
 export function useSetWebhookEnabled() {
   const qc = useQueryClient()
   return useMutation({

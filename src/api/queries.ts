@@ -476,3 +476,41 @@ export function useDeleteTenantData() {
     onSuccess: () => void qc.invalidateQueries(),
   })
 }
+
+export type RoomBlock = components['schemas']['RoomBlockResponse']
+export type CreateBlockRequest = components['schemas']['CreateBlockRequest']
+
+export const useRoomBlocks = (roomId: string) =>
+  useQuery({
+    queryKey: ['blocks', roomId] as const,
+    queryFn: () =>
+      unwrap(api.GET('/api/v1/rooms/{roomId}/blocks', { params: { path: { roomId } } })),
+  })
+
+function invalidateBlocks(qc: ReturnType<typeof useQueryClient>, roomId: string) {
+  void qc.invalidateQueries({ queryKey: ['blocks', roomId] })
+  void qc.invalidateQueries({ queryKey: ['schedule'] })
+  void qc.invalidateQueries({ queryKey: ['availability'] })
+}
+
+export function useCreateBlock(roomId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (body: CreateBlockRequest) =>
+      unwrap(api.POST('/api/v1/rooms/{roomId}/blocks', { params: { path: { roomId } }, body })),
+    onSuccess: () => invalidateBlocks(qc, roomId),
+  })
+}
+
+export function useDeleteBlock(roomId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (blockId: string) =>
+      unwrap(
+        api.DELETE('/api/v1/rooms/{roomId}/blocks/{blockId}', {
+          params: { path: { roomId, blockId } },
+        }),
+      ),
+    onSuccess: () => invalidateBlocks(qc, roomId),
+  })
+}

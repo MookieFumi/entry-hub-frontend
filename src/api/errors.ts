@@ -25,6 +25,8 @@ export class ApiError extends Error {
   readonly status: number
   readonly violations: RuleViolation[]
   readonly fieldErrors: Record<string, string[]>
+  /** Bookings that stop the operation (the `bookingIds` extension of some 409 answers). */
+  readonly bookingIds: string[]
 
   constructor(init: {
     kind: ApiErrorKind
@@ -32,6 +34,7 @@ export class ApiError extends Error {
     message: string
     violations?: RuleViolation[]
     fieldErrors?: Record<string, string[]>
+    bookingIds?: string[]
   }) {
     super(init.message)
     this.name = 'ApiError'
@@ -39,6 +42,7 @@ export class ApiError extends Error {
     this.status = init.status
     this.violations = init.violations ?? []
     this.fieldErrors = init.fieldErrors ?? {}
+    this.bookingIds = init.bookingIds ?? []
   }
 }
 
@@ -72,6 +76,7 @@ export function toApiError(status: number, body: unknown): ApiError {
     title?: string | null
     violations?: RuleViolation[]
     errors?: Record<string, string[]>
+    bookingIds?: unknown
   }
   const violations = Array.isArray(problem.violations) ? problem.violations : []
   const message =
@@ -85,5 +90,8 @@ export function toApiError(status: number, body: unknown): ApiError {
     message,
     violations,
     fieldErrors: problem.errors ?? {},
+    bookingIds: Array.isArray(problem.bookingIds)
+      ? problem.bookingIds.filter((x): x is string => typeof x === 'string')
+      : [],
   })
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router'
 import { ApiError } from '@/api/errors'
 import { useRooms, useUpdateRoom, type Room } from '@/api/queries'
 import { RoomFormDialog } from '@/components/RoomFormDialog'
@@ -110,6 +111,9 @@ export function AdminRooms() {
                       </Badge>
                     </td>
                     <td className="flex justify-end gap-2 px-4 py-3">
+                      <Link to={`/admin/rooms/${r.id}/blocks`}>
+                        <Button variant="secondary">{t('blocks.manage')}</Button>
+                      </Link>
                       <Button variant="secondary" onClick={() => setEditing(r)}>
                         {t('admin.rooms.edit')}
                       </Button>

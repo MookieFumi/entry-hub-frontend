@@ -238,11 +238,21 @@ export function useRescheduleBooking() {
   })
 }
 
+export type CancelScope = 'occurrence' | 'series'
+export type CancelSeriesResponse = components['schemas']['CancelSeriesResponse']
+
 export function useCancelBooking() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (id: string) =>
-      unwrap(api.POST('/api/v1/bookings/{id}/cancel', { params: { path: { id } } })),
+    /** With `scope: 'series'` the API answers with what was cancelled and what was kept. */
+    mutationFn: async ({ id, scope = 'occurrence' }: { id: string; scope?: CancelScope }) => {
+      const result = await unwrap(
+        api.POST('/api/v1/bookings/{id}/cancel', {
+          params: { path: { id }, query: scope === 'series' ? { scope } : {} },
+        }),
+      )
+      return (scope === 'series' ? result : null) as CancelSeriesResponse | null
+    },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['bookings'] })
       void qc.invalidateQueries({ queryKey: ['booking'] })

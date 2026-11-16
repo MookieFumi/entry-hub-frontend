@@ -336,4 +336,11 @@ export const en: Catalog = {
   'series.clearFilter': 'See all',
   'series.summary': '{created} of {requested} repetitions were booked.',
   'series.skipped': 'Skipped:',
+  'cancel.scopeLabel': 'What do you want to cancel?',
+  'cancel.scopeOne': 'Only this booking',
+  'cancel.scopeSeries': 'This one and the following ones in the series',
+  'cancel.seriesDone': '{count} bookings cancelled.',
+  'cancel.keptTitle': 'Some bookings were kept',
+  'cancel.keptIntro': 'These bookings of the series could not be cancelled:',
+  'cancel.close': 'Close',
 }

@@ -313,4 +313,21 @@ export const en: Catalog = {
   'checkIn.hint': 'You can check in from 15 minutes before the start.',
   'checkIn.autoRelease':
     'If nobody checks in within {minutes} minutes after the start, the booking is released.',
+  'repeat.title': 'Repeat',
+  'repeat.none': 'Does not repeat',
+  'repeat.daily': 'Daily',
+  'repeat.weekly': 'Weekly',
+  'repeat.every': 'Repeat every',
+  'repeat.unitDaily': 'days',
+  'repeat.unitWeekly': 'weeks',
+  'repeat.ends': 'Ends',
+  'repeat.endCount': 'After a number of bookings',
+  'repeat.endUntil': 'On a date',
+  'repeat.count': 'Number of bookings (including the first)',
+  'repeat.until': 'Last day',
+  'repeat.intervalInvalid': 'The interval must be between 1 and 52.',
+  'repeat.countInvalid': 'The number of bookings must be between 2 and 52.',
+  'repeat.untilInvalid': 'Pick a last day after the day of the first booking.',
+  'repeat.limitHint':
+    'Up to 52 repetitions. Those that cannot be booked are skipped and we will tell you.',
 }

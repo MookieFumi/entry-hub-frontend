@@ -4,6 +4,7 @@ import { DateTile } from '@/components/DateTile'
 import { DayTimeline } from '@/components/DayTimeline'
 import { ScheduleList } from '@/components/ScheduleList'
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher'
+import { AppVersion } from '@/components/AppVersion'
 import { Badge } from '@/components/ui/Badge'
 import { Wordmark } from '@/components/ui/icons'
 import studioOnDark from '@/assets/brand/wordmark-horizontal-on-dark.svg'
@@ -543,6 +544,7 @@ export function Landing() {
         </div>
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-5 py-6 text-sm sm:px-8">
           <p>{t('landing.footer')}</p>
+          <AppVersion className="text-brand-100/70" />
         </div>
       </footer>
     </div>

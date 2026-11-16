@@ -297,4 +297,15 @@ export const es = {
   'booking.decidedAt': 'Decisión:',
   'booking.decisionReason': 'Motivo:',
   'admin.bookings.pending': 'Pendientes de aprobación',
+  'decide.approve': 'Aprobar',
+  'decide.reject': 'Rechazar',
+  'decide.approved': 'Reserva aprobada.',
+  'decide.rejected': 'Reserva rechazada.',
+  'decide.rejectTitle': 'Rechazar la reserva',
+  'decide.rejectIntro':
+    'La reserva se cancelará y la sala quedará libre. La persona que la pidió verá el motivo.',
+  'decide.reason': 'Motivo (opcional)',
+  'decide.reasonHint': 'Máximo 500 caracteres.',
+  'decide.alreadyDecided': 'Esta reserva ya no está pendiente: alguien la ha resuelto antes.',
+  'decide.failed': 'No se ha podido guardar la decisión.',
 } as const

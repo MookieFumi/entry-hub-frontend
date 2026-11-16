@@ -1,6 +1,16 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
-import { json, meEmployee, mockApi, page, renderApp, room, rules } from '@/test/server'
+import {
+  json,
+  meEmployee,
+  meFacilities,
+  mockApi,
+  page,
+  renderApp,
+  room,
+  rules,
+} from '@/test/server'
 
 vi.mock('@/hooks/useRoomOccupancy', () => ({
   useRoomOccupancy: () => ({ occupancy: null, connected: false }),
@@ -62,5 +72,55 @@ describe('pending approval', () => {
     expect(await screen.findByText('Cancelada')).toBeInTheDocument()
     expect(screen.getByText('Room reserved for the board')).toBeInTheDocument()
     expect(screen.getByText(/Ana Facilities/)).toBeInTheDocument()
+  })
+
+  it('lets Facilities approve a pending booking', async () => {
+    const { calls } = mockApi({
+      ...base(booking()),
+      'GET /api/v1/me': () => json(meFacilities),
+      'POST /api/v1/bookings/b1/approve': () => json(booking({ status: 'Confirmed' })),
+    })
+    renderApp('/bookings/b1')
+    await userEvent.click(await screen.findByRole('button', { name: 'Aprobar' }))
+    await waitFor(() =>
+      expect(calls.some((c) => c.key === 'POST /api/v1/bookings/b1/approve')).toBe(true),
+    )
+    expect(await screen.findByText('Reserva aprobada.')).toBeInTheDocument()
+  })
+
+  it('rejects with an optional reason', async () => {
+    const { calls } = mockApi({
+      ...base(booking()),
+      'GET /api/v1/me': () => json(meFacilities),
+      'POST /api/v1/bookings/b1/reject': () => json(booking({ status: 'Cancelled' })),
+    })
+    renderApp('/bookings/b1')
+    await userEvent.click(await screen.findByRole('button', { name: 'Rechazar' }))
+    await userEvent.type(await screen.findByLabelText('Motivo (opcional)'), 'Room needed')
+    await userEvent.click(screen.getAllByRole('button', { name: 'Rechazar' }).at(-1)!)
+    await waitFor(() =>
+      expect(calls.find((c) => c.key === 'POST /api/v1/bookings/b1/reject')?.body).toEqual({
+        reason: 'Room needed',
+      }),
+    )
+  })
+
+  it('explains that a booking was already decided (409)', async () => {
+    mockApi({
+      ...base(booking()),
+      'GET /api/v1/me': () => json(meFacilities),
+      'POST /api/v1/bookings/b1/approve': () => json({ title: 'Conflict' }, 409),
+    })
+    renderApp('/bookings/b1')
+    await userEvent.click(await screen.findByRole('button', { name: 'Aprobar' }))
+    expect(await screen.findByText(/ya no está pendiente/)).toBeInTheDocument()
+  })
+
+  it('does not offer the decision to employees', async () => {
+    mockApi(base(booking()))
+    renderApp('/bookings/b1')
+    await screen.findByText('Pendiente de aprobación')
+    expect(screen.queryByRole('button', { name: 'Aprobar' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Rechazar' })).not.toBeInTheDocument()
   })
 })

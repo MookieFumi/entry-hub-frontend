@@ -252,6 +252,36 @@ export function useCancelBooking() {
   })
 }
 
+function invalidateBookings(qc: ReturnType<typeof useQueryClient>) {
+  void qc.invalidateQueries({ queryKey: ['bookings'] })
+  void qc.invalidateQueries({ queryKey: ['booking'] })
+  void qc.invalidateQueries({ queryKey: ['schedule'] })
+  void qc.invalidateQueries({ queryKey: ['availability'] })
+}
+
+export function useApproveBooking() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) =>
+      unwrap(api.POST('/api/v1/bookings/{id}/approve', { params: { path: { id } } })),
+    onSuccess: () => invalidateBookings(qc),
+  })
+}
+
+export function useRejectBooking() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason: string | null }) =>
+      unwrap(
+        api.POST('/api/v1/bookings/{id}/reject', {
+          params: { path: { id } },
+          body: { reason },
+        }),
+      ),
+    onSuccess: () => invalidateBookings(qc),
+  })
+}
+
 export function useCreateRoom() {
   const qc = useQueryClient()
   return useMutation({

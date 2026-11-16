@@ -11,7 +11,6 @@ import { describeRules } from '@/lib/rules-text'
 import type { Rules, ScheduleEntry } from '@/lib/slots'
 import { formatLocale, useLocale, useT, type MessageKey } from '@/i18n'
 
-
 /** Demonstration data for the page: not real rooms, bookings or rules of any customer. */
 const DEMO_RULES = {
   minDurationMinutes: 15,

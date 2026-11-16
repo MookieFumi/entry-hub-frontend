@@ -140,3 +140,96 @@ describe('webhooks admin: create a subscription', () => {
     expect(await screen.findByText('The host is not public.')).toBeInTheDocument()
   })
 })
+
+describe('webhooks admin: delivery log', () => {
+  const delivery = (extra = {}) => ({
+    id: 'd1',
+    eventId: 'e1',
+    eventType: 'booking.created',
+    status: 'Succeeded',
+    attempts: 1,
+    nextAttemptAt: null,
+    lastAttemptAt: '2030-01-02T10:00:00Z',
+    lastStatusCode: 200,
+    lastError: null,
+    createdAt: '2030-01-02T10:00:00Z',
+    completedAt: '2030-01-02T10:00:01Z',
+    ...extra,
+  })
+  const pageOf = (items: object[], totalCount = items.length) => ({
+    items,
+    page: 1,
+    pageSize: 20,
+    totalCount,
+  })
+
+  it('opens the log from the list and shows each delivery', async () => {
+    mockApi(
+      routes({
+        'GET /api/v1/webhooks/w1/deliveries': () =>
+          json(
+            pageOf([
+              delivery(),
+              delivery({
+                id: 'd2',
+                eventType: 'booking.cancelled',
+                status: 'Failed',
+                attempts: 5,
+                lastStatusCode: 500,
+                lastError: 'Server error',
+              }),
+              delivery({
+                id: 'd3',
+                status: 'Pending',
+                lastStatusCode: null,
+                nextAttemptAt: '2030-01-02T11:00:00Z',
+              }),
+            ]),
+          ),
+      }),
+    )
+    renderApp('/admin/webhooks')
+    await userEvent.click(await screen.findByRole('button', { name: 'Entregas' }))
+    expect(await screen.findByText('Correcta')).toBeInTheDocument()
+    expect(screen.getByText('Fallida')).toBeInTheDocument()
+    expect(screen.getByText('Pendiente')).toBeInTheDocument()
+    expect(screen.getByText('HTTP 500')).toBeInTheDocument()
+    expect(screen.getByText('Server error')).toBeInTheDocument()
+    expect(screen.getByText('https://hooks.example.com/entry')).toBeInTheDocument()
+  })
+
+  it('filters by status and pages through the results', async () => {
+    const { calls } = mockApi(
+      routes({
+        'GET /api/v1/webhooks/w1/deliveries': () => json(pageOf([delivery()], 45)),
+      }),
+    )
+    renderApp('/admin/webhooks/w1/deliveries')
+    await userEvent.selectOptions(await screen.findByLabelText('Estado'), 'Failed')
+    await waitFor(() =>
+      expect(
+        calls.some((c) => c.key.endsWith('/deliveries') && c.search.includes('Status=Failed')),
+      ).toBe(true),
+    )
+    await userEvent.click(await screen.findByRole('button', { name: 'Siguiente' }))
+    await waitFor(() =>
+      expect(
+        calls.some((c) => c.search.includes('Page=2') && c.search.includes('Status=Failed')),
+      ).toBe(true),
+    )
+  })
+
+  it('shows an empty state and a missing subscription', async () => {
+    mockApi(
+      routes({
+        'GET /api/v1/webhooks/w1/deliveries': () => json(pageOf([])),
+        'GET /api/v1/webhooks/nope/deliveries': () => json({ title: 'Not found' }, 404),
+      }),
+    )
+    const { unmount } = renderApp('/admin/webhooks/w1/deliveries')
+    expect(await screen.findByText('No hay entregas con estos filtros.')).toBeInTheDocument()
+    unmount()
+    renderApp('/admin/webhooks/nope/deliveries')
+    expect(await screen.findByText('No existe esta suscripción.')).toBeInTheDocument()
+  })
+})

@@ -13,6 +13,7 @@ import { buildSlots, endOptions, isBookableDay, toIso } from '@/lib/slots'
 import { addDays, dateInZone, zonedToUtc } from '@/lib/tz'
 import { dayName } from '@/lib/rules-text'
 import { ClosedDaysNotice } from '@/components/ClosedDaysNotice'
+import { DayTimeline } from '@/components/DayTimeline'
 import { useClosedDays } from '@/hooks/useClosedDays'
 import { Button } from '@/components/ui/Button'
 import { SelectField, TextField } from '@/components/ui/Field'
@@ -56,7 +57,7 @@ export function RescheduleForm({ booking }: { booking: Booking }) {
   )
   const endValue = ends.includes(end) ? end : ''
 
-  if (rules.isPending) return <p className="text-sm text-gray-500">{t('common.rulesLoading')}</p>
+  if (rules.isPending) return <p className="text-sm text-gray-600">{t('common.rulesLoading')}</p>
   if (rules.error || !rules.data) return <Alert tone="error">{t('common.rulesFailed')}</Alert>
   const r = rules.data
   const openWeekday = isBookableDay(date, r)
@@ -136,6 +137,12 @@ export function RescheduleForm({ booking }: { booking: Booking }) {
         </Alert>
       )}
       <ClosedDaysNotice holidays={closedDays.data ?? []} date={date} />
+      {schedule.data && (
+        <div>
+          <p className="mb-1.5 text-sm font-semibold text-gray-800">{t('room.daySchedule')}</p>
+          <DayTimeline entries={schedule.data} rules={r} label={t('room.daySchedule')} />
+        </div>
+      )}
       <div className="grid gap-4 sm:grid-cols-2">
         <SelectField
           label={t('form.newStart')}

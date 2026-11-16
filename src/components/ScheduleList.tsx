@@ -14,17 +14,23 @@ export function ScheduleList({
   const t = useT()
   if (entries.length === 0) return <p className="text-sm text-gray-600">{t('schedule.none')}</p>
   return (
-    <ul className="flex flex-col gap-2">
+    <ul className="flex flex-col divide-y divide-gray-200 rounded-lg border border-gray-200">
       {entries.map((s, i) => (
         <li
           key={s.bookingId ?? i}
-          className="flex items-center justify-between gap-2 rounded-lg bg-gray-50 px-3 py-2 text-sm"
+          className={`flex items-center justify-between gap-2 px-3 py-2 text-sm first:rounded-t-lg last:rounded-b-lg ${
+            s.isMine ? 'bg-mine-200/60' : 'bg-white'
+          }`}
         >
-          <span>
+          <span className="nums flex items-center gap-2 text-gray-900">
+            <span
+              aria-hidden="true"
+              className={`size-2 shrink-0 rounded-full ${s.isMine ? 'bg-brand-950' : 'bg-error-500'}`}
+            />
             {formatOfficeTime(s.startAt, timeZone)} – {formatOfficeTime(s.endAt, timeZone)}
             {s.title ? ` · ${s.title}` : ''}
           </span>
-          {s.isMine && <Badge tone="brand">{t('schedule.mine')}</Badge>}
+          {s.isMine && <Badge tone="mine">{t('schedule.mine')}</Badge>}
         </li>
       ))}
     </ul>

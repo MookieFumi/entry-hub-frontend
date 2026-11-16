@@ -4,6 +4,7 @@ import { useMe } from '@/api/queries'
 import { Button } from '@/components/ui/Button'
 import { Alert, Spinner } from '@/components/ui/Feedback'
 import { ApiError } from '@/api/errors'
+import { Landing } from '@/pages/Landing'
 import { useT } from '@/i18n'
 
 function Centered({ children }: { children: React.ReactNode }) {
@@ -27,6 +28,8 @@ export function RequireAuth() {
         <Spinner />
       </Centered>
     )
+  // Visitors without a session land on the public page; any other address asks them to sign in.
+  if (status === 'signed-out' && location.pathname === '/') return <Landing />
   if (status === 'signed-out')
     return <Navigate to="/login" replace state={{ from: location.pathname + location.search }} />
   if (me.isPending)

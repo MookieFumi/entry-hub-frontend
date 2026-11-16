@@ -31,7 +31,7 @@ export function Rooms() {
     <>
       <PageHeader title={t('rooms.title')} description={t('rooms.description')} />
       <form
-        className="mb-6 grid gap-4 sm:grid-cols-2"
+        className="mb-8 grid grid-cols-2 items-start gap-4 rounded-xl border border-gray-200 bg-white p-4 sm:p-5 lg:grid-cols-[9rem_9rem_minmax(0,1fr)]"
         role="search"
         onSubmit={(e) => e.preventDefault()}
       >
@@ -51,7 +51,7 @@ export function Rooms() {
           value={minCapacity ?? ''}
           onChange={(e) => update('minCapacity', e.target.value)}
         />
-        <div className="sm:col-span-2">
+        <div className="col-span-2 lg:col-span-1">
           <FeatureChecklist
             selected={features}
             valueOf={(f) => f.code}
@@ -62,7 +62,7 @@ export function Rooms() {
       {rooms.isPending && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[0, 1, 2].map((i) => (
-            <Skeleton key={i} className="h-28" />
+            <Skeleton key={i} className="h-24" />
           ))}
         </div>
       )}

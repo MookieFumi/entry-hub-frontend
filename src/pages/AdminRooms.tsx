@@ -57,9 +57,9 @@ export function AdminRooms() {
       )}
       {rooms.data && rooms.data.items.length > 0 && (
         <>
-          <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-gray-50 text-gray-600">
+          <div className="overflow-x-auto rounded-xl border border-gray-300 bg-white">
+            <table className="nums w-full text-left text-sm">
+              <thead className="bg-brand-50 text-xs font-semibold tracking-wider text-brand-900 uppercase">
                 <tr>
                   <th scope="col" className="px-4 py-3">
                     {t('admin.rooms.name')}
@@ -86,8 +86,11 @@ export function AdminRooms() {
               </thead>
               <tbody>
                 {rooms.data.items.map((r) => (
-                  <tr key={r.id} className="border-t border-gray-200">
-                    <th scope="row" className="px-4 py-3 font-medium text-gray-900">
+                  <tr
+                    key={r.id}
+                    className="border-t border-gray-200 transition-colors duration-150 hover:bg-gray-25"
+                  >
+                    <th scope="row" className="px-4 py-3 font-semibold text-gray-900">
                       {r.name}
                     </th>
                     <td className="px-4 py-3">{r.floor}</td>

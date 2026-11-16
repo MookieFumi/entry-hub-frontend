@@ -112,8 +112,9 @@ export const useRoom = (id: string) =>
     queryFn: () => unwrap(api.GET('/api/v1/rooms/{id}', { params: { path: { id } } })),
   })
 
-export const useSchedule = (id: string, from: string, to: string) =>
+export const useSchedule = (id: string, from: string, to: string, enabled = true) =>
   useQuery({
+    enabled,
     queryKey: keys.schedule(id, from, to),
     queryFn: () =>
       unwrap(

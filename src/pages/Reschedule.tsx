@@ -19,7 +19,10 @@ export function Reschedule() {
       <EmptyState
         title={t('reschedule.cannotTitle')}
         action={
-          <Link className="text-brand-700 underline" to="/bookings">
+          <Link
+            className="font-semibold text-brand-700 underline hover:text-brand-900"
+            to="/bookings"
+          >
             {t('nav.myBookings')}
           </Link>
         }
@@ -28,7 +31,12 @@ export function Reschedule() {
       </EmptyState>
     )
   if (booking.error)
-    return <ErrorState message={booking.error.message} onRetry={() => void booking.refetch()} />
+    return (
+      <>
+        <PageHeader title={t('nav.myBookings')} />
+        <ErrorState message={booking.error.message} onRetry={() => void booking.refetch()} />
+      </>
+    )
   const b = booking.data
   const editable = b.status === 'Confirmed' && new Date(b.startAt) > new Date()
 
@@ -42,7 +50,10 @@ export function Reschedule() {
         <EmptyState
           title={t('reschedule.notEditableTitle')}
           action={
-            <Link className="text-brand-700 underline" to={`/bookings/${b.id}`}>
+            <Link
+              className="font-semibold text-brand-700 underline hover:text-brand-900"
+              to={`/bookings/${b.id}`}
+            >
               {t('reschedule.backToBooking')}
             </Link>
           }
@@ -51,7 +62,7 @@ export function Reschedule() {
         </EmptyState>
       ) : (
         <Card className="flex max-w-xl flex-col gap-4">
-          <p className="text-sm text-gray-600">
+          <p className="nums w-fit rounded bg-mine-200/70 px-2 py-1 text-sm font-medium text-brand-950">
             {t('reschedule.current', {
               range: `${formatOfficeDateTime(b.startAt, tz)} – ${formatOfficeTime(b.endAt, tz)}`,
             })}

@@ -4,9 +4,11 @@ import {
   useContext,
   useLayoutEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { setTokenProvider } from '@/api/client'
 import { supabase } from './supabase'
 import { useT } from '@/i18n'
@@ -36,6 +38,8 @@ function readDevToken(): string | null {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const t = useT()
+  const qc = useQueryClient()
+  const userId = useRef<string | null>(null)
   const [sbStatus, setSbStatus] = useState<Status>('loading')
   const [sbLabel, setSbLabel] = useState<string | null>(null)
   const [devToken, setDevToken] = useState<string | null>(() => (supabase ? null : readDevToken()))
@@ -55,15 +59,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       async () => (await supabase!.auth.getSession()).data.session?.access_token ?? null,
     )
     void supabase.auth.getSession().then(({ data }) => {
+      userId.current = data.session?.user.id ?? null
       setSbStatus(data.session ? 'signed-in' : 'signed-out')
       setSbLabel(data.session?.user.email ?? null)
     })
     const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      // Cached answers (/me, bookings...) belong to the previous user: never show them to the next one.
+      const next = session?.user.id ?? null
+      if (next !== userId.current) {
+        userId.current = next
+        qc.clear()
+      }
       setSbStatus(session ? 'signed-in' : 'signed-out')
       setSbLabel(session?.user.email ?? null)
     })
     return () => data.subscription.unsubscribe()
-  }, [devToken])
+  }, [devToken, qc])
 
   const signIn = useCallback(
     async (email: string, password: string) => {
@@ -80,8 +91,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch {
       /* sin almacenamiento: el token vive solo en memoria */
     }
+    qc.clear()
     setDevToken(token)
-  }, [])
+  }, [qc])
 
   const signOut = useCallback(async () => {
     if (supabase) await supabase.auth.signOut()
@@ -90,9 +102,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch {
       /* nada que limpiar */
     }
+    qc.clear()
+    userId.current = null
     setDevToken(null)
     setSbStatus('signed-out')
-  }, [])
+  }, [qc])
 
   const value = useMemo(
     () => ({ status, label, signIn, signInWithToken, signOut }),

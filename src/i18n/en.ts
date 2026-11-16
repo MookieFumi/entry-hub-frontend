@@ -68,7 +68,7 @@ export const en: Catalog = {
   'login.failed': 'Could not sign in.',
   'login.submitting': 'Signing in…',
   'login.submit': 'Sign in',
-  'home.greeting': 'Hello, {tenant}',
+  'home.greeting': 'Hello, {name}',
   'home.description': 'Book a room or check your upcoming meetings.',
   'home.findRoom': 'Find a free room',
   'home.viewRooms': 'View rooms',

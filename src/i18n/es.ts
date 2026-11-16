@@ -70,7 +70,7 @@ export const es = {
   'login.failed': 'No se pudo iniciar sesión.',
   'login.submitting': 'Entrando…',
   'login.submit': 'Entrar',
-  'home.greeting': 'Hola, {tenant}',
+  'home.greeting': 'Hola, {name}',
   'home.description': 'Reserva una sala o consulta tus próximas reuniones.',
   'home.findRoom': 'Buscar sala libre',
   'home.viewRooms': 'Ver salas',

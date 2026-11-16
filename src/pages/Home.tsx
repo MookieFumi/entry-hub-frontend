@@ -1,5 +1,6 @@
 import { Link } from 'react-router'
-import { useMe, useMyBookings, useOfficeZone, useRules, type Booking } from '@/api/queries'
+import { useMyBookings, useOfficeZone, useRules, type Booking } from '@/api/queries'
+import { useAuth } from '@/auth/AuthProvider'
 import { CheckInBooking } from '@/components/CheckInBooking'
 import { BookingRow } from '@/components/BookingRow'
 import { buttonClass } from '@/components/ui/Button'
@@ -93,7 +94,7 @@ function WeekStrip({ bookings }: { bookings: Booking[] }) {
 
 export function Home() {
   const t = useT()
-  const me = useMe()
+  const { label } = useAuth()
   const bookings = useMyBookings({ page: 1, pageSize: 50 })
   const confirmed = (bookings.data?.items ?? []).filter((b) => b.status === 'Confirmed')
   const upcoming = (bookings.data?.items ?? [])
@@ -106,7 +107,7 @@ export function Home() {
   return (
     <>
       <PageHeader
-        title={me.data ? t('home.greeting', { tenant: me.data.tenantName }) : t('nav.home')}
+        title={label ? t('home.greeting', { name: label }) : t('nav.home')}
         description={t('home.description')}
         actions={
           <div className="flex flex-wrap gap-2">

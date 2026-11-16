@@ -433,3 +433,33 @@ export function useDeleteWebhook() {
     onSuccess: () => void qc.invalidateQueries({ queryKey: keys.webhooks }),
   })
 }
+
+export type AuditParams = {
+  entityType?: string
+  actorId?: string
+  from?: string
+  to?: string
+  page?: number
+  pageSize?: number
+}
+
+export const useAudit = (p: AuditParams) =>
+  useQuery({
+    queryKey: ['audit', p] as const,
+    queryFn: () =>
+      unwrap(
+        api.GET('/api/v1/audit', {
+          params: {
+            query: {
+              EntityType: p.entityType,
+              ActorId: p.actorId,
+              From: p.from,
+              To: p.to,
+              Page: p.page,
+              PageSize: p.pageSize,
+            },
+          },
+        }),
+      ),
+    placeholderData: keepPreviousData,
+  })

@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router'
-import { useBooking, useOfficeZone, useRoom } from '@/api/queries'
+import { useBooking, useOfficeZone, useRoom, useRules } from '@/api/queries'
 import { ApiError } from '@/api/errors'
+import { CheckInBooking } from '@/components/CheckInBooking'
 import { DecideBooking } from '@/components/DecideBooking'
 import { CancelBooking } from '@/components/CancelBooking'
 import { BookingStatusBadge } from '@/components/BookingStatusBadge'
@@ -31,6 +32,7 @@ export function BookingDetail() {
   const tz = useOfficeZone()
   const booking = useBooking(id)
   const room = useRoom(booking.data?.roomId ?? '')
+  const rules = useRules()
 
   if (booking.isPending) return <Skeleton className="h-40" />
   if (booking.error instanceof ApiError && booking.error.kind === 'forbidden') {
@@ -58,6 +60,7 @@ export function BookingDetail() {
         title={b.title}
         actions={
           <div className="flex gap-2">
+            <CheckInBooking booking={b} />
             <DecideBooking booking={b} />
             <RescheduleLink booking={b} />
             <CancelBooking booking={b} />
@@ -90,6 +93,20 @@ export function BookingDetail() {
             {formatOfficeDateTime(b.rescheduledAt, tz)}
           </p>
         )}
+        {b.checkedInAt && (
+          <p>
+            <span className="font-medium">{t('checkIn.at')}</span>{' '}
+            {formatOfficeDateTime(b.checkedInAt, tz)}
+          </p>
+        )}
+        {b.status === 'Confirmed' &&
+          !b.checkedInAt &&
+          Number(rules.data?.autoReleaseMinutes) > 0 && (
+            <p className="text-gray-600">
+              {t('checkIn.hint')}{' '}
+              {t('checkIn.autoRelease', { minutes: Number(rules.data?.autoReleaseMinutes) })}
+            </p>
+          )}
         {b.decidedAt && (
           <p>
             <span className="font-medium">{t('booking.decidedAt')}</span>{' '}

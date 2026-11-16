@@ -306,4 +306,11 @@ export const en: Catalog = {
   'decide.reasonHint': 'At most 500 characters.',
   'decide.alreadyDecided': 'This booking is no longer pending: someone has already decided it.',
   'decide.failed': 'The decision could not be saved.',
+  'checkIn.button': 'Check in',
+  'checkIn.done': 'Checked in.',
+  'checkIn.failed': 'The check-in could not be saved.',
+  'checkIn.at': 'Checked in:',
+  'checkIn.hint': 'You can check in from 15 minutes before the start.',
+  'checkIn.autoRelease':
+    'If nobody checks in within {minutes} minutes after the start, the booking is released.',
 }

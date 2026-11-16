@@ -304,4 +304,16 @@ describe('demo status', () => {
     renderApp('/status')
     expect(await screen.findByText('Todo en marcha')).toBeInTheDocument()
   })
+
+  it('shows the version of the build in the menu and on the page', async () => {
+    mockApi({
+      ...baseRoutes(),
+      'GET /api/v1/health': () => json({ status: 'Healthy', database: 'Healthy' }),
+    })
+    renderApp('/status')
+    await screen.findByText('Todo en marcha')
+    const versions = screen.getAllByTestId('app-version')
+    expect(versions).toHaveLength(2)
+    for (const el of versions) expect(el).toHaveTextContent(`Versión ${__APP_VERSION__}`)
+  })
 })

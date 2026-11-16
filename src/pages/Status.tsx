@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { api, unwrap } from '@/api/client'
 import { Alert, PageHeader, Spinner } from '@/components/ui/Feedback'
 import { Button } from '@/components/ui/Button'
+import { AppVersion } from '@/components/AppVersion'
 import { useT } from '@/i18n'
 
 export function Status() {
@@ -30,6 +31,7 @@ export function Status() {
           </div>
         </div>
       )}
+      <AppVersion className="mt-6 text-gray-600" />
     </>
   )
 }

@@ -120,6 +120,7 @@ export const en: Catalog = {
   'status.title': 'Demo status',
   'status.description':
     'The free server goes to sleep after a while without use; the first request may take a few seconds.',
+  'app.version': 'Version {version}',
   'status.waking': 'Waking up the server',
   'status.okTitle': 'Everything is running',
   'status.okBody': 'API: {api} · Database: {database}',

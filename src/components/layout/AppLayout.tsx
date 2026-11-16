@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/icons'
 import { LanguageSwitcher } from './LanguageSwitcher'
 import studioOnInk from '@/assets/brand/wordmark-horizontal-on-red.svg'
+import { AppVersion } from '@/components/AppVersion'
 import { useT } from '@/i18n'
 
 /** The current place is a white cell on the ink rail; yellow is kept for "yours". */
@@ -99,6 +100,7 @@ export function AppLayout() {
             className="-ml-1 h-auto w-full"
           />
         </a>
+        <AppVersion className="mt-4 px-1 text-brand-100" />
       </aside>
       <div className="flex min-w-0 flex-col">
         <header className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-gray-200 bg-white px-4 py-2.5 sm:px-6">
@@ -130,6 +132,7 @@ export function AppLayout() {
         {open && (
           <div id="menu-movil" className="bg-brand-700 p-4 lg:hidden">
             {nav}
+            <AppVersion className="mt-4 px-1 text-brand-100" />
           </div>
         )}
         <main id="contenido" className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-8 sm:py-10">

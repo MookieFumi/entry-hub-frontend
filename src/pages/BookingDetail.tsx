@@ -1,6 +1,8 @@
-import { Link, useParams } from 'react-router'
+import { Link, useLocation, useParams } from 'react-router'
 import { useBooking, useOfficeZone, useRoom, useRules } from '@/api/queries'
 import { ApiError } from '@/api/errors'
+import { SeriesSummary } from '@/components/SeriesSummary'
+import type { components } from '@/api/schema'
 import { CheckInBooking } from '@/components/CheckInBooking'
 import { DecideBooking } from '@/components/DecideBooking'
 import { CancelBooking } from '@/components/CancelBooking'
@@ -26,6 +28,8 @@ function RescheduleLink({
   )
 }
 
+type SeriesOutcome = components['schemas']['SeriesOutcome']
+
 export function BookingDetail() {
   const t = useT()
   const { id = '' } = useParams()
@@ -33,6 +37,7 @@ export function BookingDetail() {
   const booking = useBooking(id)
   const room = useRoom(booking.data?.roomId ?? '')
   const rules = useRules()
+  const series = (useLocation().state as { series?: SeriesOutcome | null } | null)?.series
 
   if (booking.isPending) return <Skeleton className="h-40" />
   if (booking.error instanceof ApiError && booking.error.kind === 'forbidden') {
@@ -67,6 +72,11 @@ export function BookingDetail() {
           </div>
         }
       />
+      {series && (
+        <div className="mb-4">
+          <SeriesSummary series={series} />
+        </div>
+      )}
       <Card className="flex flex-col gap-3 text-sm">
         <div className="flex items-center gap-2">
           <BookingStatusBadge status={b.status} />
@@ -91,6 +101,14 @@ export function BookingDetail() {
           <p>
             <span className="font-medium">{t('booking.rescheduled')}</span>{' '}
             {formatOfficeDateTime(b.rescheduledAt, tz)}
+          </p>
+        )}
+        {b.seriesId && (
+          <p>
+            {t('series.position', { position: Number(b.seriesPosition ?? 1) })}{' '}
+            <Link to={`/bookings?series=${b.seriesId}`} className="text-brand-700 underline">
+              {t('series.viewAll')}
+            </Link>
           </p>
         )}
         {b.checkedInAt && (

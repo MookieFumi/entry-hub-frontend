@@ -332,4 +332,10 @@ export const es = {
   'repeat.untilInvalid': 'Elige un último día posterior al de la primera reserva.',
   'repeat.limitHint':
     'Hasta 52 repeticiones. Las que no se puedan reservar se omiten y te lo diremos.',
+  'series.position': 'Repetición {position} de una serie.',
+  'series.viewAll': 'Ver las reservas de la serie',
+  'series.filtered': 'Mostrando solo las reservas de una serie.',
+  'series.clearFilter': 'Ver todas',
+  'series.summary': 'Se han reservado {created} de {requested} repeticiones.',
+  'series.skipped': 'Omitidas:',
 } as const

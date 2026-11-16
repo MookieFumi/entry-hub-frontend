@@ -330,4 +330,10 @@ export const en: Catalog = {
   'repeat.untilInvalid': 'Pick a last day after the day of the first booking.',
   'repeat.limitHint':
     'Up to 52 repetitions. Those that cannot be booked are skipped and we will tell you.',
+  'series.position': 'Occurrence {position} of a series.',
+  'series.viewAll': 'See the bookings of the series',
+  'series.filtered': 'Showing only the bookings of one series.',
+  'series.clearFilter': 'See all',
+  'series.summary': '{created} of {requested} repetitions were booked.',
+  'series.skipped': 'Skipped:',
 }

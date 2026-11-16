@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { json, meEmployee, mockApi, renderApp, room, rules } from '@/test/server'
+import { json, meEmployee, mockApi, page, renderApp, room, rules } from '@/test/server'
 
 vi.mock('@/hooks/useRoomOccupancy', () => ({
   useRoomOccupancy: () => ({ occupancy: null, connected: false }),
@@ -93,5 +93,67 @@ describe('repeat a booking', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Reservar' }))
     const messages = await screen.findAllByText(/La repetición no es válida/)
     expect(messages.length).toBeGreaterThan(0)
+  })
+})
+
+describe('series of bookings', () => {
+  const outcome = {
+    id: 's1',
+    requested: 3,
+    created: 2,
+    occurrences: [
+      {
+        position: 1,
+        startAt: '2030-01-14T09:00:00Z',
+        endAt: '2030-01-14T10:00:00Z',
+        bookingId: 'b1',
+        violations: [],
+      },
+      {
+        position: 2,
+        startAt: '2030-01-21T09:00:00Z',
+        endAt: '2030-01-21T10:00:00Z',
+        bookingId: null,
+        violations: [{ code: 'SiteClosed', message: 'x' }],
+      },
+      {
+        position: 3,
+        startAt: '2030-01-28T09:00:00Z',
+        endAt: '2030-01-28T10:00:00Z',
+        bookingId: 'b3',
+        violations: [],
+      },
+    ],
+  }
+
+  it('summarizes the outcome after creating a series', async () => {
+    mockApi(
+      base({
+        'POST /api/v1/bookings': () =>
+          json({ ...created, seriesId: 's1', seriesPosition: 1, series: outcome }, 201),
+      }),
+    )
+    renderApp(`/rooms/${room.id}?date=2030-01-14`)
+    await fillBasics()
+    await userEvent.selectOptions(screen.getByLabelText('Repetir'), 'Weekly')
+    await userEvent.click(screen.getByRole('button', { name: 'Reservar' }))
+    expect(await screen.findByText('Se han reservado 2 de 3 repeticiones.')).toBeInTheDocument()
+    expect(screen.getByText(/La sede está cerrada ese día/)).toBeInTheDocument()
+  })
+
+  it('shows the position in the series and filters My bookings by series', async () => {
+    const inSeries = { ...created, seriesId: 's1', seriesPosition: 2 }
+    const other = { ...created, id: 'b9', title: 'Other thing' }
+    mockApi(
+      base({
+        'GET /api/v1/bookings/b1': () => json(inSeries),
+        'GET /api/v1/bookings/mine': () => json(page([inSeries, other])),
+      }),
+    )
+    renderApp('/bookings/b1')
+    expect(await screen.findByText(/Repetición 2 de una serie/)).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('link', { name: 'Ver las reservas de la serie' }))
+    expect(await screen.findByText('Mostrando solo las reservas de una serie.')).toBeInTheDocument()
+    expect(screen.queryByText('Other thing')).not.toBeInTheDocument()
   })
 })

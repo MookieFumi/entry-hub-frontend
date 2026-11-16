@@ -73,6 +73,7 @@ export function AdminBookings() {
           onChange={(e) => set('status', e.target.value)}
         >
           <option value="">{t('admin.bookings.allStates')}</option>
+          <option value="Pending">{t('admin.bookings.pending')}</option>
           <option value="Confirmed">{t('admin.bookings.confirmed')}</option>
           <option value="Cancelled">{t('admin.bookings.cancelled')}</option>
         </SelectField>

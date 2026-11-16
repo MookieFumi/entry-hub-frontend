@@ -289,4 +289,10 @@ export const en: Catalog = {
   'rule.InvalidRecurrence': 'The repetition is not valid: check the frequency and the end.',
   'rule.NonexistentLocalTime':
     'That time does not exist on that day because of the clock change. Pick another.',
+  'booking.statusPending': 'Pending approval',
+  'booking.pendingHint': 'Facilities has to approve this booking before it is confirmed.',
+  'booking.decidedBy': 'Decided by:',
+  'booking.decidedAt': 'Decision:',
+  'booking.decisionReason': 'Reason:',
+  'admin.bookings.pending': 'Pending approval',
 }

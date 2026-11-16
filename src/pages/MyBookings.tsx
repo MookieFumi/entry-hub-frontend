@@ -18,7 +18,11 @@ export function MyBookings() {
     const byStart = (a: Booking, b: Booking) => a.startAt.localeCompare(b.startAt)
     return {
       upcoming: items
-        .filter((b) => b.status === 'Confirmed' && new Date(b.endAt).getTime() > now)
+        .filter(
+          (b) =>
+            (b.status === 'Confirmed' || b.status === 'Pending') &&
+            new Date(b.endAt).getTime() > now,
+        )
         .sort(byStart),
       past: items
         .filter((b) => b.status === 'Confirmed' && new Date(b.endAt).getTime() <= now)

@@ -10,7 +10,9 @@ export function Home() {
   const me = useMe()
   const bookings = useMyBookings({ page: 1, pageSize: 50 })
   const upcoming = (bookings.data?.items ?? [])
-    .filter((b) => b.status === 'Confirmed' && new Date(b.endAt) > new Date())
+    .filter(
+      (b) => (b.status === 'Confirmed' || b.status === 'Pending') && new Date(b.endAt) > new Date(),
+    )
     .sort((a, b) => a.startAt.localeCompare(b.startAt))
     .slice(0, 3)
 

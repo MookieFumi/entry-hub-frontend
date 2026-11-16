@@ -27,6 +27,7 @@ export const rules = {
   maxAdvanceDays: 90,
   cancellationNoticeMinutes: 15,
   maxActiveBookings: 5,
+  autoReleaseMinutes: 0,
 }
 
 export const features = [

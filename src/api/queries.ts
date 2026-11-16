@@ -4,12 +4,14 @@ import { api, unwrap } from './client'
 import type { components } from './schema'
 
 export type Room = components['schemas']['RoomResponse']
+// The contract declares BookingStatus as an extensible enum (no JSON type), which the
+// generator maps to `unknown` in responses, so the known values are listed here.
+export type BookingStatus = 'Confirmed' | 'Cancelled' | 'Pending'
 export type Booking = components['schemas']['BookingResponse']
 export type CreateBookingRequest = components['schemas']['CreateBookingRequest']
 export type RescheduleBookingRequest = components['schemas']['RescheduleBookingRequest']
 export type CreateRoomRequest = components['schemas']['CreateRoomRequest']
 export type UpdateRoomRequest = components['schemas']['UpdateRoomRequest']
-export type BookingStatus = components['schemas']['BookingStatus']
 export type Feature = components['schemas']['FeatureResponse']
 export type Site = components['schemas']['SiteResponse']
 export type SiteHoliday = components['schemas']['SiteHolidayResponse']

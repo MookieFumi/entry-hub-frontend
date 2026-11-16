@@ -12,6 +12,7 @@ const rules: Rules = {
   maxAdvanceDays: 90,
   cancellationNoticeMinutes: 15,
   maxActiveBookings: 5,
+  autoReleaseMinutes: 0,
 }
 const farPast = new Date('2026-01-01T00:00:00Z')
 

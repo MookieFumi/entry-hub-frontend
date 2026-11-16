@@ -14,6 +14,7 @@ const rules: Rules = {
   maxAdvanceDays: 90,
   cancellationNoticeMinutes: 60,
   maxActiveBookings: 5,
+  autoReleaseMinutes: 0,
 }
 
 describe('formatMinutes', () => {

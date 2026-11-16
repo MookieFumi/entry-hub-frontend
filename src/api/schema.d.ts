@@ -24,6 +24,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists the changes made to bookings, rooms, sites, rules, the catalog, holidays and blocks, newest first, with paging. Facilities only. */
+        get: operations["ListAudit"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me": {
         parameters: {
             query?: never;
@@ -251,6 +268,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/rooms/{roomId}/blocks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists the time ranges in which a room cannot be booked, optionally within a window. */
+        get: operations["ListRoomBlocks"];
+        put?: never;
+        /** Blocks a room for a time range, such as cleaning or repairs. Facilities only. Refused with 409 while confirmed bookings are in the range; the response lists them in 'bookingIds'. */
+        post: operations["CreateRoomBlock"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/rooms/{roomId}/blocks/{blockId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Lifts a block. Facilities only. */
+        delete: operations["DeleteRoomBlock"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/bookings": {
         parameters: {
             query?: never;
@@ -262,7 +314,7 @@ export interface paths {
         get: operations["ListBookings"];
         put?: never;
         /**
-         * Books a room, enforcing the booking rules.
+         * Books a room, enforcing the booking rules. Facilities can book for another user with onBehalfOf.
          * @description Send an optional Idempotency-Key header to retry safely: the same key with the same body returns the original booking (header Idempotent-Replayed: true) instead of creating another; the same key with a different body returns 422. Keys are private to each user and are remembered for 24 hours.
          */
         post: operations["CreateBooking"];
@@ -315,7 +367,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Cancels a booking before it starts. */
+        /**
+         * Cancels a booking before it starts.
+         * @description With scope=series (the value is not case-sensitive), the booking and all the later occurrences of its series are cancelled, the ones that the cancellation notice no longer allows are kept, and the response (200) lists both. Without it, or with scope=occurrence, only this booking is cancelled (204).
+         */
         post: operations["CancelBooking"];
         delete?: never;
         options?: never;
@@ -334,6 +389,144 @@ export interface paths {
         put?: never;
         /** Moves a booking to another time or room, keeping its id. Organizer or Facilities. */
         post: operations["RescheduleBooking"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bookings/{id}/check-in": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirms that the people of a booking showed up. Allowed from 15 minutes before the start until the end, to the organizer and to Facilities. Checking in twice keeps the first moment. */
+        post: operations["CheckInBooking"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bookings/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirms a pending booking. Facilities only. Anything but a pending booking gets 409. */
+        post: operations["ApproveBooking"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bookings/{id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Rejects a pending booking: it is cancelled and the room is free again. The body with a reason is optional. Facilities only. */
+        post: operations["RejectBooking"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tenant/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Downloads everything the tenant has stored as one JSON document: sites, holidays, catalog, rooms, blocks, rules, bookings and the audit trail. The export is itself recorded in the audit trail. Facilities only. */
+        get: operations["ExportTenantData"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tenant/data": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Permanently deletes everything the tenant has stored: bookings, rooms, sites, holidays, catalog, blocks, rules and the audit trail. It all happens in one transaction. The tenant itself and one audit entry about the deletion stay. Facilities only; the body must confirm with the name of the tenant. Export the data first. */
+        delete: operations["DeleteTenantData"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/webhooks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists the webhook subscriptions of the tenant (without their secrets). Facilities only. */
+        get: operations["ListWebhooks"];
+        put?: never;
+        /** Subscribes an https URL to booking events. The response shows the signing secret once. Facilities only. */
+        post: operations["CreateWebhook"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/webhooks/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Deletes a subscription. Facilities only. */
+        delete: operations["DeleteWebhook"];
+        options?: never;
+        head?: never;
+        /** Enables or disables a subscription. Facilities only. */
+        patch: operations["UpdateWebhook"];
+        trace?: never;
+    };
+    "/api/v1/webhooks/{id}/deliveries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists what happened when events were sent to a subscription, newest first. Facilities only. */
+        get: operations["ListWebhookDeliveries"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -378,6 +571,32 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description One change made through the API. */
+        AuditResponse: {
+            /**
+             * Format: uuid
+             * @description Identifier of the entry.
+             */
+            id: string;
+            /**
+             * Format: date-time
+             * @description When the change was saved.
+             */
+            at: string;
+            /** @description Who made it (the `sub` of the token). */
+            actorId: string;
+            /** @description `Created`, `Updated`, `Deleted`, `Cancelled` or `Rescheduled`. */
+            action: string;
+            /** @description `Booking`, `Room`, `Site`, `Rules`, `Feature`, `SiteHoliday` or `RoomBlock`. */
+            entityType: string;
+            /**
+             * Format: uuid
+             * @description The thing that changed.
+             */
+            entityId: string;
+            /** @description The name of what was created, or the fields that changed (never their values). */
+            summary: null | string;
+        };
         BookingResponse: {
             /** Format: uuid */
             id: string;
@@ -398,9 +617,41 @@ export interface components {
             cancelledAt: null | string;
             /** Format: date-time */
             rescheduledAt?: null | string;
+            createdBy?: null | string;
+            /** Format: date-time */
+            checkedInAt?: null | string;
+            decidedBy?: null | string;
+            /** Format: date-time */
+            decidedAt?: null | string;
+            decisionReason?: null | string;
+            /** Format: uuid */
+            seriesId?: null | string;
+            /** Format: int32 */
+            seriesPosition?: null | number | string;
+            series?: null | components["schemas"]["SeriesOutcome"];
         };
-        /** @enum {unknown} */
-        BookingStatus: "Confirmed" | "Cancelled";
+        BookingStatus: unknown;
+        /** @description The result of cancelling a series from one occurrence on. */
+        CancelSeriesResponse: {
+            /** @description Ids of the bookings that were cancelled (already cancelled ones are not listed). */
+            cancelled: string[];
+            /** @description Occurrences that stay booked, each with the rule that kept it (for example, the cancellation notice). */
+            kept: components["schemas"]["KeptOccurrence"][];
+        };
+        CreateBlockRequest: {
+            /**
+             * Format: date-time
+             * @description First moment of the block.
+             */
+            startAt: string;
+            /**
+             * Format: date-time
+             * @description The block ends here; must be after StartAt.
+             */
+            endAt: string;
+            /** @description Optional explanation. */
+            reason: null | string;
+        };
         /** @description The shape of the body. Rules that need data or a clock are checked later, in the handler. */
         CreateBookingRequest: {
             /** Format: uuid */
@@ -412,6 +663,8 @@ export interface components {
             endAt: string;
             /** Format: int32 */
             attendees: number | string;
+            onBehalfOf?: null | string;
+            recurrence?: null | components["schemas"]["RecurrenceRequest"];
         };
         CreateFeatureRequest: {
             /** @description Name to show; unique among the entries of the tenant, ignoring case. */
@@ -450,6 +703,23 @@ export interface components {
             siteId?: null | string;
             /** @description Ids of active entries of the catalog the room has, added to the ones named in Equipment. */
             featureIds?: null | string[];
+            /**
+             * Format: int32
+             * @description Minutes the room stays free before each booking; none when left out.
+             * @default 0
+             */
+            bufferBeforeMinutes: number | string;
+            /**
+             * Format: int32
+             * @description Minutes the room stays free after each booking; none when left out.
+             * @default 0
+             */
+            bufferAfterMinutes: number | string;
+            /**
+             * @description Bookings by Employees wait for approval; false when left out.
+             * @default false
+             */
+            requiresApproval: boolean;
         };
         CreateSiteRequest: {
             /** @description Unique among the sites of the tenant. */
@@ -463,8 +733,62 @@ export interface components {
             /** @description Monday to Friday when left out. */
             openDays: null | components["schemas"]["DayOfWeek"][];
         };
+        CreateWebhookRequest: {
+            /** @description Where to send the events: `https`, with a public host name or address. */
+            url: string;
+            /** @description What to be told about: `booking.created`, `booking.cancelled` or `booking.rescheduled`. */
+            events: string[];
+        };
         /** @enum {unknown} */
         DayOfWeek: "Sunday" | "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday";
+        /** @description Deleting everything cannot be undone, so the request must say so in words. */
+        DeleteTenantDataRequest: {
+            /** @description The text `DELETE`, a space and the exact name of the tenant, as `GET /tenant/export` shows it (for example `DELETE Acme`). */
+            confirmation: null | string;
+        };
+        /** @description What was removed. The tenant itself and one audit entry about the deletion stay. */
+        DeleteTenantDataResponse: {
+            /**
+             * Format: date-time
+             * @description When the data was removed.
+             */
+            deletedAt: string;
+            /**
+             * Format: int32
+             * @description Bookings removed.
+             */
+            bookings: number | string;
+            /**
+             * Format: int32
+             * @description Rooms removed.
+             */
+            rooms: number | string;
+            /**
+             * Format: int32
+             * @description Sites removed.
+             */
+            sites: number | string;
+            /**
+             * Format: int32
+             * @description Entries of the equipment catalog removed.
+             */
+            features: number | string;
+            /**
+             * Format: int32
+             * @description Maintenance blocks removed.
+             */
+            blocks: number | string;
+            /**
+             * Format: int32
+             * @description Closed days removed.
+             */
+            holidays: number | string;
+            /**
+             * Format: int32
+             * @description Entries of the audit trail removed.
+             */
+            auditEntries: number | string;
+        };
         /** @enum {unknown} */
         FeatureKind: "Equipment" | "Accessibility";
         /** @description An entry of the catalog of the tenant. */
@@ -498,6 +822,20 @@ export interface components {
                 [key: string]: string[];
             };
         };
+        KeptOccurrence: {
+            /**
+             * Format: uuid
+             * @description The booking that was not cancelled.
+             */
+            bookingId: string;
+            /**
+             * Format: date-time
+             * @description When it starts.
+             */
+            startAt: string;
+            /** @description Why it was kept. */
+            violation: components["schemas"]["RuleViolation"];
+        };
         MeResponse: {
             /** @description The `sub` claim of the token; the same value as `organizerId` on the bookings of this person. */
             userId: string;
@@ -510,6 +848,15 @@ export interface components {
             tenantId: string;
             /** @description The display name of that customer. */
             tenantName: string;
+        };
+        PagedResponseOfAuditResponse: {
+            items: components["schemas"]["AuditResponse"][];
+            /** Format: int32 */
+            page: number | string;
+            /** Format: int32 */
+            pageSize: number | string;
+            /** Format: int32 */
+            totalCount: number | string;
         };
         PagedResponseOfBookingResponse: {
             items: components["schemas"]["BookingResponse"][];
@@ -529,6 +876,15 @@ export interface components {
             /** Format: int32 */
             totalCount: number | string;
         };
+        PagedResponseOfWebhookDeliveryResponse: {
+            items: components["schemas"]["WebhookDeliveryResponse"][];
+            /** Format: int32 */
+            page: number | string;
+            /** Format: int32 */
+            pageSize: number | string;
+            /** Format: int32 */
+            totalCount: number | string;
+        };
         ProblemDetails: {
             type?: null | string;
             title?: null | string;
@@ -536,6 +892,34 @@ export interface components {
             status?: null | number | string;
             detail?: null | string;
             instance?: null | string;
+        };
+        /** @enum {unknown} */
+        RecurrenceFrequency: "Daily" | "Weekly";
+        /** @description Makes the booking repeat. Send exactly one of Count and Until. */
+        RecurrenceRequest: {
+            /** @description Daily or Weekly. */
+            frequency: components["schemas"]["RecurrenceFrequency"];
+            /**
+             * Format: int32
+             * @description Every how many days or weeks, from 1 to 52.
+             * @default 1
+             */
+            interval: number | string;
+            /**
+             * Format: int32
+             * @description How many occurrences to create, including the first one (up to 52).
+             */
+            count?: null | number | string;
+            /**
+             * Format: date
+             * @description Last day, in the time zone of the site, on which an occurrence may start.
+             */
+            until?: null | string;
+        };
+        /** @description Optional body of a rejection. */
+        RejectBookingRequest: {
+            /** @description Why the booking is rejected, shown to whoever reads the booking. */
+            reason: null | string;
         };
         /**
          * @description Moves a booking to another time and, optionally, another room. The booking keeps its id, title, organizer and
@@ -557,6 +941,36 @@ export interface components {
              * @description New room; the current one when left out.
              */
             roomId?: null | string;
+        };
+        /** @description A time range in which a room cannot be booked. */
+        RoomBlockResponse: {
+            /**
+             * Format: uuid
+             * @description Identifier of the block.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description The blocked room.
+             */
+            roomId: string;
+            /**
+             * Format: date-time
+             * @description First moment of the block.
+             */
+            startAt: string;
+            /**
+             * Format: date-time
+             * @description The block ends here; this moment is free again.
+             */
+            endAt: string;
+            /** @description Why the room is blocked, such as "Cleaning". */
+            reason: null | string;
+            /**
+             * Format: date-time
+             * @description When the block was created.
+             */
+            createdAt: string;
         };
         RoomOccupancy: {
             /**
@@ -604,6 +1018,18 @@ export interface components {
             equipment: string[];
             /** @description What the room has, from the catalog of the tenant. */
             features: components["schemas"]["FeatureResponse"][];
+            /**
+             * Format: int32
+             * @description Minutes the room stays free before each booking.
+             */
+            bufferBeforeMinutes: number | string;
+            /**
+             * Format: int32
+             * @description Minutes the room stays free after each booking.
+             */
+            bufferAfterMinutes: number | string;
+            /** @description A booking of this room made by an Employee waits for approval by Facilities. */
+            requiresApproval: boolean;
             /** @description A deactivated room is not listed and cannot be booked. */
             isActive: boolean;
             /**
@@ -702,12 +1128,56 @@ export interface components {
              * @description Active bookings the caller can hold; `null` when there is no limit.
              */
             maxActiveBookings: null | number | string;
+            /**
+             * Format: int32
+             * @description Minutes after the start that a confirmed booking nobody checked in to is cancelled by the system; 0 when the release is off.
+             * @default 0
+             */
+            autoReleaseMinutes: number | string;
         };
         RuleViolation: {
             /** @description Stable identifier that clients can switch on. */
             code: string;
             /** @description Explanation for a person. */
             message: string;
+        };
+        /**
+         * @description One occurrence of a series: booked when BookingId is set, otherwise skipped for the rules in
+         *     Violations.
+         */
+        SeriesOccurrence: {
+            /** Format: int32 */
+            position: number | string;
+            /** Format: date-time */
+            startAt: string;
+            /** Format: date-time */
+            endAt: string;
+            /** Format: uuid */
+            bookingId: null | string;
+            violations: components["schemas"]["RuleViolation"][];
+        };
+        /**
+         * @description What a recurring request produced: one entry for each occurrence it asked for. Only the response that creates the
+         *     series has it.
+         */
+        SeriesOutcome: {
+            /**
+             * Format: uuid
+             * @description Identifier of the series, also in `seriesId` of each created booking.
+             */
+            id: string;
+            /**
+             * Format: int32
+             * @description How many occurrences the recurrence asked for.
+             */
+            requested: number | string;
+            /**
+             * Format: int32
+             * @description How many of them were booked.
+             */
+            created: number | string;
+            /** @description Every requested occurrence, booked or skipped. */
+            occurrences: components["schemas"]["SeriesOccurrence"][];
         };
         /** @description A day on which a site is closed. */
         SiteHolidayResponse: {
@@ -760,6 +1230,55 @@ export interface components {
             eventId?: null | string;
             reconnectionInterval?: null | string;
         };
+        /** @description Everything stored for the tenant of the token, in the same shapes the API returns elsewhere. */
+        TenantExportResponse: {
+            /**
+             * Format: uuid
+             * @description The tenant.
+             */
+            tenantId: string;
+            /** @description Name of the tenant. */
+            tenantName: string;
+            /**
+             * Format: date-time
+             * @description When the document was made.
+             */
+            exportedAt: string;
+            rules: null | components["schemas"]["TenantRulesExport"];
+            /** @description All sites, active or not. */
+            sites: components["schemas"]["SiteResponse"][];
+            /** @description All closed days of the sites. */
+            holidays: components["schemas"]["SiteHolidayResponse"][];
+            /** @description The whole catalog, active or not. */
+            features: components["schemas"]["FeatureResponse"][];
+            /** @description All rooms, active or not, with what they have. */
+            rooms: components["schemas"]["RoomResponse"][];
+            /** @description All maintenance blocks. */
+            blocks: components["schemas"]["RoomBlockResponse"][];
+            /** @description All bookings, whatever their status. */
+            bookings: components["schemas"]["BookingResponse"][];
+            /** @description The audit trail, oldest first. */
+            audit: components["schemas"]["AuditResponse"][];
+        };
+        /** @description The booking rules the tenant stored. */
+        TenantRulesExport: {
+            /** Format: int32 */
+            minDurationMinutes: number | string;
+            /** Format: int32 */
+            maxDurationMinutes: number | string;
+            /** Format: int32 */
+            slotMinutes: number | string;
+            /** Format: int32 */
+            minLeadTimeMinutes: number | string;
+            /** Format: int32 */
+            maxAdvanceDays: number | string;
+            /** Format: int32 */
+            cancellationNoticeMinutes: number | string;
+            /** Format: int32 */
+            maxActiveBookingsPerEmployee: number | string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
         /**
          * @description Fields left out are not changed. The code never changes, and an entry is never deleted: a room may use it, so the
          *     only way to retire it is IsActive = `false`.
@@ -796,6 +1315,18 @@ export interface components {
             siteId?: null | string;
             /** @description Ids of active entries of the catalog the room has. */
             featureIds?: null | string[];
+            /**
+             * Format: int32
+             * @description New minutes the room stays free before each booking; applies to bookings made or moved from now on.
+             */
+            bufferBeforeMinutes?: null | number | string;
+            /**
+             * Format: int32
+             * @description New minutes the room stays free after each booking; applies to bookings made or moved from now on.
+             */
+            bufferAfterMinutes?: null | number | string;
+            /** @description Whether bookings by Employees wait for approval; applies to bookings made from now on. */
+            requiresApproval?: null | boolean;
         };
         /**
          * @description The rules of the tenant. All fields are required: the tenant keeps exactly what is sent. Opening hours, days and
@@ -837,6 +1368,12 @@ export interface components {
              * @description Active bookings an Employee can hold.
              */
             maxActiveBookings: number | string;
+            /**
+             * Format: int32
+             * @description Minutes after the start that a confirmed booking nobody checked in to is cancelled by the system; 0 (also when left out) turns it off.
+             * @default 0
+             */
+            autoReleaseMinutes: number | string;
         };
         /** @description Fields left out are not changed. OpenDays replaces the whole list when it is sent. */
         UpdateSiteRequest: {
@@ -852,6 +1389,100 @@ export interface components {
             openDays: null | components["schemas"]["DayOfWeek"][];
             /** @description `false` takes the site and its rooms out of the listings and out of new bookings; the bookings they already have stay. */
             isActive: null | boolean;
+        };
+        UpdateWebhookRequest: {
+            /** @description False pauses the subscription without deleting it. */
+            isEnabled: boolean;
+        };
+        WebhookCreatedResponse: {
+            /**
+             * Format: uuid
+             * @description Identifier of the subscription.
+             */
+            id: string;
+            /** @description Where the events are sent. */
+            url: string;
+            /** @description The events it receives. */
+            events: string[];
+            /** @description Whether it is receiving events. */
+            isEnabled: boolean;
+            /**
+             * Format: date-time
+             * @description When it was created.
+             */
+            createdAt: string;
+            /** @description Signs every delivery with HMAC-SHA256. Store it now: it is not shown again. */
+            secret: string;
+        };
+        /** @description What happened when an event was sent to a subscription. The body is not included. */
+        WebhookDeliveryResponse: {
+            /**
+             * Format: uuid
+             * @description Identifier of the delivery.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description Identifier of the event, also in the body that was sent.
+             */
+            eventId: string;
+            /** @description The event, such as `booking.created`. */
+            eventType: string;
+            /** @description Pending while attempts remain, then Succeeded or Failed. */
+            status: components["schemas"]["WebhookDeliveryStatus"];
+            /**
+             * Format: int32
+             * @description How many times it was sent.
+             */
+            attempts: number | string;
+            /**
+             * Format: date-time
+             * @description When the next attempt is due, while it is pending.
+             */
+            nextAttemptAt: null | string;
+            /**
+             * Format: date-time
+             * @description When it was last sent.
+             */
+            lastAttemptAt: null | string;
+            /**
+             * Format: int32
+             * @description HTTP status of the last attempt, when the receiver answered.
+             */
+            lastStatusCode: null | number | string;
+            /** @description Why the last attempt failed. */
+            lastError: null | string;
+            /**
+             * Format: date-time
+             * @description When the event happened.
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description When it succeeded or was given up.
+             */
+            completedAt: null | string;
+        };
+        /** @enum {unknown} */
+        WebhookDeliveryStatus: "Pending" | "Succeeded" | "Failed";
+        /** @description A webhook subscription. The signing secret is only in the response that creates it. */
+        WebhookResponse: {
+            /**
+             * Format: uuid
+             * @description Identifier of the subscription.
+             */
+            id: string;
+            /** @description Where the events are sent. */
+            url: string;
+            /** @description The events it receives. */
+            events: string[];
+            /** @description Whether it is receiving events. */
+            isEnabled: boolean;
+            /**
+             * Format: date-time
+             * @description When it was created.
+             */
+            createdAt: string;
         };
     };
     responses: never;
@@ -878,6 +1509,50 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GetHealthResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ListAudit: {
+        parameters: {
+            query?: {
+                /** @description Only changes to this type of thing. */
+                EntityType?: string;
+                /** @description Only changes to this thing. */
+                EntityId?: string;
+                /** @description Only changes made by this person. */
+                ActorId?: string;
+                /** @description Only changes at or after this moment. */
+                From?: string;
+                /** @description Only changes before this moment. */
+                To?: string;
+                /** @description One-based page number; defaults to 1. */
+                Page?: number | string;
+                /** @description Items per page; defaults to 20 and is capped at 100. */
+                PageSize?: number | string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedResponseOfAuditResponse"];
                 };
             };
             /** @description Too Many Requests */
@@ -1774,6 +2449,152 @@ export interface operations {
             };
         };
     };
+    ListRoomBlocks: {
+        parameters: {
+            query?: {
+                /** @description Only blocks that end after this moment. */
+                From?: string;
+                /** @description Only blocks that start before this moment. */
+                To?: string;
+            };
+            header?: never;
+            path: {
+                roomId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoomBlockResponse"][];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    CreateRoomBlock: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                roomId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateBlockRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoomBlockResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    DeleteRoomBlock: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                roomId: string;
+                blockId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
     ListBookings: {
         parameters: {
             query?: {
@@ -1784,7 +2605,7 @@ export interface operations {
                 /** @description Only bookings that start before this moment. */
                 To?: string;
                 /** @description Only bookings in this status; every status when omitted. */
-                Status?: components["schemas"]["BookingStatus"];
+                Status?: "Confirmed" | "Cancelled" | "Pending";
                 /** @description One-based page number; defaults to 1. */
                 Page?: number | string;
                 /** @description Items per page; defaults to 20 and is capped at 100. */
@@ -1850,6 +2671,13 @@ export interface operations {
                 content: {
                     "application/problem+json": components["schemas"]["ProblemDetails"];
                 };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Conflict */
             409: {
@@ -1963,7 +2791,9 @@ export interface operations {
     };
     CancelBooking: {
         parameters: {
-            query?: never;
+            query?: {
+                scope?: string;
+            };
             header?: never;
             path: {
                 id: string;
@@ -1972,12 +2802,30 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CancelSeriesResponse"];
+                };
+            };
             /** @description No Content */
             204: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
             };
             /** @description Forbidden */
             403: {
@@ -2076,6 +2924,488 @@ export interface operations {
                 };
                 content: {
                     "application/problem+json": components["schemas"]["RulesBrokenProblem"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    CheckInBooking: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["RulesBrokenProblem"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ApproveBooking: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["RulesBrokenProblem"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    RejectBooking: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": null | components["schemas"]["RejectBookingRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ExportTenantData: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantExportResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    DeleteTenantData: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeleteTenantDataRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeleteTenantDataResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ListWebhooks: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhookResponse"][];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    CreateWebhook: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateWebhookRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhookCreatedResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    DeleteWebhook: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    UpdateWebhook: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateWebhookRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhookResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ListWebhookDeliveries: {
+        parameters: {
+            query?: {
+                /** @description Only deliveries in this state (`Pending`, `Succeeded` or `Failed`). */
+                Status?: components["schemas"]["WebhookDeliveryStatus"];
+                /** @description Page number, from 1. */
+                Page?: number | string;
+                /** @description Items per page. */
+                PageSize?: number | string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedResponseOfWebhookDeliveryResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
                 };
             };
             /** @description Too Many Requests */

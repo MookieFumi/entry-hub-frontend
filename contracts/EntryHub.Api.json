@@ -46,6 +46,113 @@
         }
       }
     },
+    "/api/v1/audit": {
+      "get": {
+        "tags": [
+          "Audit"
+        ],
+        "summary": "Lists the changes made to bookings, rooms, sites, rules, the catalog, holidays and blocks, newest first, with paging. Facilities only.",
+        "operationId": "ListAudit",
+        "parameters": [
+          {
+            "name": "EntityType",
+            "in": "query",
+            "description": "Only changes to this type of thing.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "EntityId",
+            "in": "query",
+            "description": "Only changes to this thing.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "ActorId",
+            "in": "query",
+            "description": "Only changes made by this person.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "From",
+            "in": "query",
+            "description": "Only changes at or after this moment.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "To",
+            "in": "query",
+            "description": "Only changes before this moment.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Page",
+            "in": "query",
+            "description": "One-based page number; defaults to 1.",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "description": "Items per page; defaults to 20 and is capped at 100.",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResponseOfAuditResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
     "/api/v1/me": {
       "get": {
         "tags": [
@@ -1374,12 +1481,234 @@
         ]
       }
     },
+    "/api/v1/rooms/{roomId}/blocks": {
+      "get": {
+        "tags": [
+          "Rooms"
+        ],
+        "summary": "Lists the time ranges in which a room cannot be booked, optionally within a window.",
+        "operationId": "ListRoomBlocks",
+        "parameters": [
+          {
+            "name": "roomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "From",
+            "in": "query",
+            "description": "Only blocks that end after this moment.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "To",
+            "in": "query",
+            "description": "Only blocks that start before this moment.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RoomBlockResponse"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Rooms"
+        ],
+        "summary": "Blocks a room for a time range, such as cleaning or repairs. Facilities only. Refused with 409 while confirmed bookings are in the range; the response lists them in 'bookingIds'.",
+        "operationId": "CreateRoomBlock",
+        "parameters": [
+          {
+            "name": "roomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBlockRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoomBlockResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/rooms/{roomId}/blocks/{blockId}": {
+      "delete": {
+        "tags": [
+          "Rooms"
+        ],
+        "summary": "Lifts a block. Facilities only.",
+        "operationId": "DeleteRoomBlock",
+        "parameters": [
+          {
+            "name": "roomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "blockId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
     "/api/v1/bookings": {
       "post": {
         "tags": [
           "Bookings"
         ],
-        "summary": "Books a room, enforcing the booking rules.",
+        "summary": "Books a room, enforcing the booking rules. Facilities can book for another user with onBehalfOf.",
         "description": "Send an optional Idempotency-Key header to retry safely: the same key with the same body returns the original booking (header Idempotent-Replayed: true) instead of creating another; the same key with a different body returns 422. Keys are private to each user and are remembered for 24 hours.",
         "operationId": "CreateBooking",
         "parameters": [
@@ -1421,6 +1750,9 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "400": {
             "description": "Bad Request",
@@ -1498,7 +1830,11 @@
             "in": "query",
             "description": "Only bookings in this status; every status when omitted.",
             "schema": {
-              "$ref": "#/components/schemas/BookingStatus"
+              "enum": [
+                "Confirmed",
+                "Cancelled",
+                "Pending"
+              ]
             }
           },
           {
@@ -1697,6 +2033,7 @@
           "Bookings"
         ],
         "summary": "Cancels a booking before it starts.",
+        "description": "With scope=series (the value is not case-sensitive), the booking and all the later occurrences of its series are cancelled, the ones that the cancellation notice no longer allows are kept, and the response (200) lists both. Without it, or with scope=occurrence, only this booking is cancelled (204).",
         "operationId": "CancelBooking",
         "parameters": [
           {
@@ -1706,6 +2043,13 @@
             "schema": {
               "type": "string",
               "format": "uuid"
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -1723,8 +2067,28 @@
           "204": {
             "description": "No Content"
           },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CancelSeriesResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Not Found"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           },
           "403": {
             "description": "Forbidden"
@@ -1840,6 +2204,652 @@
         ]
       }
     },
+    "/api/v1/bookings/{id}/check-in": {
+      "post": {
+        "tags": [
+          "Bookings"
+        ],
+        "summary": "Confirms that the people of a booking showed up. Allowed from 15 minutes before the start until the end, to the organizer and to Facilities. Checking in twice keeps the first moment.",
+        "operationId": "CheckInBooking",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RulesBrokenProblem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/bookings/{id}/approve": {
+      "post": {
+        "tags": [
+          "Bookings"
+        ],
+        "summary": "Confirms a pending booking. Facilities only. Anything but a pending booking gets 409.",
+        "operationId": "ApproveBooking",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RulesBrokenProblem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/bookings/{id}/reject": {
+      "post": {
+        "tags": [
+          "Bookings"
+        ],
+        "summary": "Rejects a pending booking: it is cancelled and the room is free again. The body with a reason is optional. Facilities only.",
+        "operationId": "RejectBooking",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/RejectBookingRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/tenant/export": {
+      "get": {
+        "tags": [
+          "Tenant"
+        ],
+        "summary": "Downloads everything the tenant has stored as one JSON document: sites, holidays, catalog, rooms, blocks, rules, bookings and the audit trail. The export is itself recorded in the audit trail. Facilities only.",
+        "operationId": "ExportTenantData",
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantExportResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/tenant/data": {
+      "delete": {
+        "tags": [
+          "Tenant"
+        ],
+        "summary": "Permanently deletes everything the tenant has stored: bookings, rooms, sites, holidays, catalog, blocks, rules and the audit trail. It all happens in one transaction. The tenant itself and one audit entry about the deletion stay. Facilities only; the body must confirm with the name of the tenant. Export the data first.",
+        "operationId": "DeleteTenantData",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteTenantDataRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteTenantDataResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/webhooks": {
+      "get": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Lists the webhook subscriptions of the tenant (without their secrets). Facilities only.",
+        "operationId": "ListWebhooks",
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WebhookResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Subscribes an https URL to booking events. The response shows the signing secret once. Facilities only.",
+        "operationId": "CreateWebhook",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWebhookRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookCreatedResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/webhooks/{id}": {
+      "patch": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Enables or disables a subscription. Facilities only.",
+        "operationId": "UpdateWebhook",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateWebhookRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Deletes a subscription. Facilities only.",
+        "operationId": "DeleteWebhook",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/webhooks/{id}/deliveries": {
+      "get": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Lists what happened when events were sent to a subscription, newest first. Facilities only.",
+        "operationId": "ListWebhookDeliveries",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "description": "Only deliveries in this state (`Pending`, `Succeeded` or `Failed`).",
+            "schema": {
+              "$ref": "#/components/schemas/WebhookDeliveryStatus"
+            }
+          },
+          {
+            "name": "Page",
+            "in": "query",
+            "description": "Page number, from 1.",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "description": "Items per page.",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResponseOfWebhookDeliveryResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
     "/health": {
       "get": {
         "tags": [
@@ -1905,6 +2915,55 @@
   },
   "components": {
     "schemas": {
+      "AuditResponse": {
+        "required": [
+          "id",
+          "at",
+          "actorId",
+          "action",
+          "entityType",
+          "entityId",
+          "summary"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifier of the entry.",
+            "format": "uuid"
+          },
+          "at": {
+            "type": "string",
+            "description": "When the change was saved.",
+            "format": "date-time"
+          },
+          "actorId": {
+            "type": "string",
+            "description": "Who made it (the `sub` of the token)."
+          },
+          "action": {
+            "type": "string",
+            "description": "`Created`, `Updated`, `Deleted`, `Cancelled` or `Rescheduled`."
+          },
+          "entityType": {
+            "type": "string",
+            "description": "`Booking`, `Room`, `Site`, `Rules`, `Feature`, `SiteHoliday` or `RoomBlock`."
+          },
+          "entityId": {
+            "type": "string",
+            "description": "The thing that changed.",
+            "format": "uuid"
+          },
+          "summary": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The name of what was created, or the fields that changed (never their values)."
+          }
+        },
+        "description": "One change made through the API."
+      },
       "BookingResponse": {
         "required": [
           "id",
@@ -1970,14 +3029,127 @@
               "string"
             ],
             "format": "date-time"
+          },
+          "createdBy": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "checkedInAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "decidedBy": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "decidedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "decisionReason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "seriesId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "seriesPosition": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "series": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SeriesOutcome"
+              }
+            ]
           }
         }
       },
       "BookingStatus": {
-        "enum": [
+        "x-extensible-enum": [
           "Confirmed",
-          "Cancelled"
+          "Cancelled",
+          "Pending"
         ]
+      },
+      "CancelSeriesResponse": {
+        "required": [
+          "cancelled",
+          "kept"
+        ],
+        "type": "object",
+        "properties": {
+          "cancelled": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Ids of the bookings that were cancelled (already cancelled ones are not listed)."
+          },
+          "kept": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/KeptOccurrence"
+            },
+            "description": "Occurrences that stay booked, each with the rule that kept it (for example, the cancellation notice)."
+          }
+        },
+        "description": "The result of cancelling a series from one occurrence on."
+      },
+      "CreateBlockRequest": {
+        "required": [
+          "startAt",
+          "endAt",
+          "reason"
+        ],
+        "type": "object",
+        "properties": {
+          "startAt": {
+            "type": "string",
+            "description": "First moment of the block.",
+            "format": "date-time"
+          },
+          "endAt": {
+            "type": "string",
+            "description": "The block ends here; must be after StartAt.",
+            "format": "date-time"
+          },
+          "reason": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Optional explanation."
+          }
+        }
       },
       "CreateBookingRequest": {
         "required": [
@@ -2015,6 +3187,24 @@
               "string"
             ],
             "format": "int32"
+          },
+          "onBehalfOf": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "recurrence": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RecurrenceRequest"
+              }
+            ]
           }
         },
         "description": "The shape of the body. Rules that need data or a clock are checked later, in the handler."
@@ -2126,6 +3316,35 @@
               "format": "uuid"
             },
             "description": "Ids of active entries of the catalog the room has, added to the ones named in Equipment."
+          },
+          "bufferBeforeMinutes": {
+            "maximum": 240,
+            "minimum": 0,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Minutes the room stays free before each booking; none when left out.",
+            "format": "int32",
+            "default": 0
+          },
+          "bufferAfterMinutes": {
+            "maximum": 240,
+            "minimum": 0,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Minutes the room stays free after each booking; none when left out.",
+            "format": "int32",
+            "default": 0
+          },
+          "requiresApproval": {
+            "type": "boolean",
+            "description": "Bookings by Employees wait for approval; false when left out.",
+            "default": false
           }
         }
       },
@@ -2177,6 +3396,30 @@
           }
         }
       },
+      "CreateWebhookRequest": {
+        "required": [
+          "url",
+          "events"
+        ],
+        "type": "object",
+        "properties": {
+          "url": {
+            "maxLength": 2048,
+            "minLength": 0,
+            "type": "string",
+            "description": "Where to send the events: `https`, with a public host name or address."
+          },
+          "events": {
+            "maxItems": 3,
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "What to be told about: `booking.created`, `booking.cancelled` or `booking.rescheduled`."
+          }
+        }
+      },
       "DayOfWeek": {
         "enum": [
           "Sunday",
@@ -2187,6 +3430,106 @@
           "Friday",
           "Saturday"
         ]
+      },
+      "DeleteTenantDataRequest": {
+        "required": [
+          "confirmation"
+        ],
+        "type": "object",
+        "properties": {
+          "confirmation": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "The text `DELETE`, a space and the exact name of the tenant, as `GET /tenant/export` shows it (for example `DELETE Acme`)."
+          }
+        },
+        "description": "Deleting everything cannot be undone, so the request must say so in words."
+      },
+      "DeleteTenantDataResponse": {
+        "required": [
+          "deletedAt",
+          "bookings",
+          "rooms",
+          "sites",
+          "features",
+          "blocks",
+          "holidays",
+          "auditEntries"
+        ],
+        "type": "object",
+        "properties": {
+          "deletedAt": {
+            "type": "string",
+            "description": "When the data was removed.",
+            "format": "date-time"
+          },
+          "bookings": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Bookings removed.",
+            "format": "int32"
+          },
+          "rooms": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Rooms removed.",
+            "format": "int32"
+          },
+          "sites": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Sites removed.",
+            "format": "int32"
+          },
+          "features": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Entries of the equipment catalog removed.",
+            "format": "int32"
+          },
+          "blocks": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Maintenance blocks removed.",
+            "format": "int32"
+          },
+          "holidays": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Closed days removed.",
+            "format": "int32"
+          },
+          "auditEntries": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Entries of the audit trail removed.",
+            "format": "int32"
+          }
+        },
+        "description": "What was removed. The tenant itself and one audit entry about the deletion stay."
       },
       "FeatureKind": {
         "enum": [
@@ -2290,6 +3633,30 @@
           }
         }
       },
+      "KeptOccurrence": {
+        "required": [
+          "bookingId",
+          "startAt",
+          "violation"
+        ],
+        "type": "object",
+        "properties": {
+          "bookingId": {
+            "type": "string",
+            "description": "The booking that was not cancelled.",
+            "format": "uuid"
+          },
+          "startAt": {
+            "type": "string",
+            "description": "When it starts.",
+            "format": "date-time"
+          },
+          "violation": {
+            "description": "Why it was kept.",
+            "$ref": "#/components/schemas/RuleViolation"
+          }
+        }
+      },
       "MeResponse": {
         "required": [
           "userId",
@@ -2315,6 +3682,47 @@
           "tenantName": {
             "type": "string",
             "description": "The display name of that customer."
+          }
+        }
+      },
+      "PagedResponseOfAuditResponse": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "totalCount"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuditResponse"
+            }
+          },
+          "page": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "pageSize": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "totalCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
           }
         }
       },
@@ -2400,6 +3808,47 @@
           }
         }
       },
+      "PagedResponseOfWebhookDeliveryResponse": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "totalCount"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebhookDeliveryResponse"
+            }
+          },
+          "page": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "pageSize": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "totalCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
+      },
       "ProblemDetails": {
         "type": "object",
         "properties": {
@@ -2438,6 +3887,75 @@
           }
         }
       },
+      "RecurrenceFrequency": {
+        "enum": [
+          "Daily",
+          "Weekly"
+        ]
+      },
+      "RecurrenceRequest": {
+        "required": [
+          "frequency"
+        ],
+        "type": "object",
+        "properties": {
+          "frequency": {
+            "description": "Daily or Weekly.",
+            "$ref": "#/components/schemas/RecurrenceFrequency"
+          },
+          "interval": {
+            "maximum": 52,
+            "minimum": 1,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Every how many days or weeks, from 1 to 52.",
+            "format": "int32",
+            "default": 1
+          },
+          "count": {
+            "maximum": 52,
+            "minimum": 1,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "How many occurrences to create, including the first one (up to 52).",
+            "format": "int32"
+          },
+          "until": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Last day, in the time zone of the site, on which an occurrence may start.",
+            "format": "date"
+          }
+        },
+        "description": "Makes the booking repeat. Send exactly one of Count and Until."
+      },
+      "RejectBookingRequest": {
+        "required": [
+          "reason"
+        ],
+        "type": "object",
+        "properties": {
+          "reason": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Why the booking is rejected, shown to whoever reads the booking."
+          }
+        },
+        "description": "Optional body of a rejection."
+      },
       "RescheduleBookingRequest": {
         "required": [
           "startAt",
@@ -2465,6 +3983,52 @@
           }
         },
         "description": "Moves a booking to another time and, optionally, another room. The booking keeps its id, title, organizer and\nattendees. The new time must pass the same rules as a new booking."
+      },
+      "RoomBlockResponse": {
+        "required": [
+          "id",
+          "roomId",
+          "startAt",
+          "endAt",
+          "reason",
+          "createdAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifier of the block.",
+            "format": "uuid"
+          },
+          "roomId": {
+            "type": "string",
+            "description": "The blocked room.",
+            "format": "uuid"
+          },
+          "startAt": {
+            "type": "string",
+            "description": "First moment of the block.",
+            "format": "date-time"
+          },
+          "endAt": {
+            "type": "string",
+            "description": "The block ends here; this moment is free again.",
+            "format": "date-time"
+          },
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Why the room is blocked, such as \"Cleaning\"."
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "When the block was created.",
+            "format": "date-time"
+          }
+        },
+        "description": "A time range in which a room cannot be booked."
       },
       "RoomOccupancy": {
         "required": [
@@ -2508,6 +4072,9 @@
           "capacity",
           "equipment",
           "features",
+          "bufferBeforeMinutes",
+          "bufferAfterMinutes",
+          "requiresApproval",
           "isActive",
           "createdAt"
         ],
@@ -2558,6 +4125,28 @@
               "$ref": "#/components/schemas/FeatureResponse"
             },
             "description": "What the room has, from the catalog of the tenant."
+          },
+          "bufferBeforeMinutes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Minutes the room stays free before each booking.",
+            "format": "int32"
+          },
+          "bufferAfterMinutes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Minutes the room stays free after each booking.",
+            "format": "int32"
+          },
+          "requiresApproval": {
+            "type": "boolean",
+            "description": "A booking of this room made by an Employee waits for approval by Facilities."
           },
           "isActive": {
             "type": "boolean",
@@ -2765,6 +4354,16 @@
             ],
             "description": "Active bookings the caller can hold; `null` when there is no limit.",
             "format": "int32"
+          },
+          "autoReleaseMinutes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Minutes after the start that a confirmed booking nobody checked in to is cancelled by the system; 0 when the release is off.",
+            "format": "int32",
+            "default": 0
           }
         },
         "description": "The booking rules of the tenant of the token, the ones a client can show or check before it sends a booking. The server still decides: a booking that\nbreaks a rule gets a 422 with the code of the rule."
@@ -2785,6 +4384,90 @@
             "description": "Explanation for a person."
           }
         }
+      },
+      "SeriesOccurrence": {
+        "required": [
+          "position",
+          "startAt",
+          "endAt",
+          "bookingId",
+          "violations"
+        ],
+        "type": "object",
+        "properties": {
+          "position": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "startAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "bookingId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "violations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleViolation"
+            }
+          }
+        },
+        "description": "One occurrence of a series: booked when BookingId is set, otherwise skipped for the rules in\nViolations."
+      },
+      "SeriesOutcome": {
+        "required": [
+          "id",
+          "requested",
+          "created",
+          "occurrences"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifier of the series, also in `seriesId` of each created booking.",
+            "format": "uuid"
+          },
+          "requested": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "How many occurrences the recurrence asked for.",
+            "format": "int32"
+          },
+          "created": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "How many of them were booked.",
+            "format": "int32"
+          },
+          "occurrences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SeriesOccurrence"
+            },
+            "description": "Every requested occurrence, booked or skipped."
+          }
+        },
+        "description": "What a recurring request produced: one entry for each occurrence it asked for. Only the response that creates the\nseries has it."
       },
       "SiteHolidayResponse": {
         "required": [
@@ -2899,6 +4582,175 @@
             ]
           }
         }
+      },
+      "TenantExportResponse": {
+        "required": [
+          "tenantId",
+          "tenantName",
+          "exportedAt",
+          "rules",
+          "sites",
+          "holidays",
+          "features",
+          "rooms",
+          "blocks",
+          "bookings",
+          "audit"
+        ],
+        "type": "object",
+        "properties": {
+          "tenantId": {
+            "type": "string",
+            "description": "The tenant.",
+            "format": "uuid"
+          },
+          "tenantName": {
+            "type": "string",
+            "description": "Name of the tenant."
+          },
+          "exportedAt": {
+            "type": "string",
+            "description": "When the document was made.",
+            "format": "date-time"
+          },
+          "rules": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "The rules the tenant stored; `null` when it uses the defaults of the platform.",
+                "$ref": "#/components/schemas/TenantRulesExport"
+              }
+            ]
+          },
+          "sites": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SiteResponse"
+            },
+            "description": "All sites, active or not."
+          },
+          "holidays": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SiteHolidayResponse"
+            },
+            "description": "All closed days of the sites."
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FeatureResponse"
+            },
+            "description": "The whole catalog, active or not."
+          },
+          "rooms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RoomResponse"
+            },
+            "description": "All rooms, active or not, with what they have."
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RoomBlockResponse"
+            },
+            "description": "All maintenance blocks."
+          },
+          "bookings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BookingResponse"
+            },
+            "description": "All bookings, whatever their status."
+          },
+          "audit": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuditResponse"
+            },
+            "description": "The audit trail, oldest first."
+          }
+        },
+        "description": "Everything stored for the tenant of the token, in the same shapes the API returns elsewhere."
+      },
+      "TenantRulesExport": {
+        "required": [
+          "minDurationMinutes",
+          "maxDurationMinutes",
+          "slotMinutes",
+          "minLeadTimeMinutes",
+          "maxAdvanceDays",
+          "cancellationNoticeMinutes",
+          "maxActiveBookingsPerEmployee",
+          "updatedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "minDurationMinutes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "maxDurationMinutes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "slotMinutes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "minLeadTimeMinutes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "maxAdvanceDays": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "cancellationNoticeMinutes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "maxActiveBookingsPerEmployee": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "description": "The booking rules the tenant stored."
       },
       "UpdateFeatureRequest": {
         "required": [
@@ -3016,6 +4868,37 @@
               "format": "uuid"
             },
             "description": "Ids of active entries of the catalog the room has."
+          },
+          "bufferBeforeMinutes": {
+            "maximum": 240,
+            "minimum": 0,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "New minutes the room stays free before each booking; applies to bookings made or moved from now on.",
+            "format": "int32"
+          },
+          "bufferAfterMinutes": {
+            "maximum": 240,
+            "minimum": 0,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "New minutes the room stays free after each booking; applies to bookings made or moved from now on.",
+            "format": "int32"
+          },
+          "requiresApproval": {
+            "type": [
+              "null",
+              "boolean"
+            ],
+            "description": "Whether bookings by Employees wait for approval; applies to bookings made from now on."
           }
         },
         "description": "Fields left out are not changed. When Equipment or FeatureIds is sent, what the room has is replaced by both together."
@@ -3108,6 +4991,18 @@
             ],
             "description": "Active bookings an Employee can hold.",
             "format": "int32"
+          },
+          "autoReleaseMinutes": {
+            "maximum": 240,
+            "minimum": 0,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Minutes after the start that a confirmed booking nobody checked in to is cancelled by the system; 0 (also when left out) turns it off.",
+            "format": "int32",
+            "default": 0
           }
         },
         "description": "The rules of the tenant. All fields are required: the tenant keeps exactly what is sent. Opening hours, days and\ntime zone belong to each site, see `PATCH /sites/{id}`."
@@ -3174,6 +5069,197 @@
           }
         },
         "description": "Fields left out are not changed. OpenDays replaces the whole list when it is sent."
+      },
+      "UpdateWebhookRequest": {
+        "required": [
+          "isEnabled"
+        ],
+        "type": "object",
+        "properties": {
+          "isEnabled": {
+            "type": "boolean",
+            "description": "False pauses the subscription without deleting it."
+          }
+        }
+      },
+      "WebhookCreatedResponse": {
+        "required": [
+          "id",
+          "url",
+          "events",
+          "isEnabled",
+          "createdAt",
+          "secret"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifier of the subscription.",
+            "format": "uuid"
+          },
+          "url": {
+            "type": "string",
+            "description": "Where the events are sent."
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The events it receives."
+          },
+          "isEnabled": {
+            "type": "boolean",
+            "description": "Whether it is receiving events."
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "When it was created.",
+            "format": "date-time"
+          },
+          "secret": {
+            "type": "string",
+            "description": "Signs every delivery with HMAC-SHA256. Store it now: it is not shown again."
+          }
+        }
+      },
+      "WebhookDeliveryResponse": {
+        "required": [
+          "id",
+          "eventId",
+          "eventType",
+          "status",
+          "attempts",
+          "nextAttemptAt",
+          "lastAttemptAt",
+          "lastStatusCode",
+          "lastError",
+          "createdAt",
+          "completedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifier of the delivery.",
+            "format": "uuid"
+          },
+          "eventId": {
+            "type": "string",
+            "description": "Identifier of the event, also in the body that was sent.",
+            "format": "uuid"
+          },
+          "eventType": {
+            "type": "string",
+            "description": "The event, such as `booking.created`."
+          },
+          "status": {
+            "description": "Pending while attempts remain, then Succeeded or Failed.",
+            "$ref": "#/components/schemas/WebhookDeliveryStatus"
+          },
+          "attempts": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "How many times it was sent.",
+            "format": "int32"
+          },
+          "nextAttemptAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "When the next attempt is due, while it is pending.",
+            "format": "date-time"
+          },
+          "lastAttemptAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "When it was last sent.",
+            "format": "date-time"
+          },
+          "lastStatusCode": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "HTTP status of the last attempt, when the receiver answered.",
+            "format": "int32"
+          },
+          "lastError": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Why the last attempt failed."
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "When the event happened.",
+            "format": "date-time"
+          },
+          "completedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "When it succeeded or was given up.",
+            "format": "date-time"
+          }
+        },
+        "description": "What happened when an event was sent to a subscription. The body is not included."
+      },
+      "WebhookDeliveryStatus": {
+        "enum": [
+          "Pending",
+          "Succeeded",
+          "Failed"
+        ]
+      },
+      "WebhookResponse": {
+        "required": [
+          "id",
+          "url",
+          "events",
+          "isEnabled",
+          "createdAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifier of the subscription.",
+            "format": "uuid"
+          },
+          "url": {
+            "type": "string",
+            "description": "Where the events are sent."
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The events it receives."
+          },
+          "isEnabled": {
+            "type": "boolean",
+            "description": "Whether it is receiving events."
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "When it was created.",
+            "format": "date-time"
+          }
+        },
+        "description": "A webhook subscription. The signing secret is only in the response that creates it."
       }
     },
     "securitySchemes": {
@@ -3188,6 +5274,9 @@
   "tags": [
     {
       "name": "Health"
+    },
+    {
+      "name": "Audit"
     },
     {
       "name": "Me"
@@ -3206,6 +5295,12 @@
     },
     {
       "name": "Bookings"
+    },
+    {
+      "name": "Tenant"
+    },
+    {
+      "name": "Webhooks"
     },
     {
       "name": "Probes",

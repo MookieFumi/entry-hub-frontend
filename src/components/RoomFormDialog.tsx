@@ -62,7 +62,16 @@ export function RoomFormDialog({
             featureIds: changed ? featureIds : null,
           },
         })
-      else await create.mutateAsync({ ...body, equipment: [], siteId: null, featureIds })
+      else
+        await create.mutateAsync({
+          ...body,
+          equipment: [],
+          siteId: null,
+          featureIds,
+          bufferBeforeMinutes: 0,
+          bufferAfterMinutes: 0,
+          requiresApproval: false,
+        })
       notify('success', room ? t('roomForm.updated') : t('roomForm.created'))
       onOpenChange(false)
     } catch (err) {

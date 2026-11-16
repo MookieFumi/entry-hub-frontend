@@ -480,4 +480,14 @@ export const es = {
   'audit.entity.Feature': 'Equipamiento',
   'audit.entity.SiteHoliday': 'Día cerrado',
   'audit.entity.RoomBlock': 'Bloqueo de sala',
+  'nav.data': 'Datos',
+  'data.title': 'Datos del cliente',
+  'data.description': 'Descarga todo lo que está guardado de tu organización.',
+  'data.exportTitle': 'Descargar todos los datos',
+  'data.exportBody':
+    'Un único archivo JSON con sedes, días cerrados, catálogo, salas, bloqueos, reglas, reservas y auditoría. La descarga queda registrada en la auditoría.',
+  'data.exportButton': 'Descargar JSON',
+  'data.exporting': 'Preparando…',
+  'data.exported': 'Datos descargados.',
+  'data.exportFailed': 'No se han podido descargar los datos.',
 } as const

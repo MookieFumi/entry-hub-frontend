@@ -315,4 +315,21 @@ export const es = {
   'checkIn.hint': 'Puedes registrar la llegada desde 15 minutos antes del inicio.',
   'checkIn.autoRelease':
     'Si nadie registra la llegada en los {minutes} minutos siguientes al inicio, la reserva se libera.',
+  'repeat.title': 'Repetir',
+  'repeat.none': 'No se repite',
+  'repeat.daily': 'Cada día',
+  'repeat.weekly': 'Cada semana',
+  'repeat.every': 'Repetir cada',
+  'repeat.unitDaily': 'días',
+  'repeat.unitWeekly': 'semanas',
+  'repeat.ends': 'Termina',
+  'repeat.endCount': 'Tras un número de reservas',
+  'repeat.endUntil': 'El día',
+  'repeat.count': 'Número de reservas (con la primera)',
+  'repeat.until': 'Último día',
+  'repeat.intervalInvalid': 'El intervalo debe estar entre 1 y 52.',
+  'repeat.countInvalid': 'El número de reservas debe estar entre 2 y 52.',
+  'repeat.untilInvalid': 'Elige un último día posterior al de la primera reserva.',
+  'repeat.limitHint':
+    'Hasta 52 repeticiones. Las que no se puedan reservar se omiten y te lo diremos.',
 } as const

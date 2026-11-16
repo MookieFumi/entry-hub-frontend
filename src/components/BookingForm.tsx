@@ -4,6 +4,8 @@ import { useCreateBooking, useRules, type Room } from '@/api/queries'
 import { ApiError } from '@/api/errors'
 import { describeRules, dayName } from '@/lib/rules-text'
 import { buildSlots, endOptions, isBookableDay, toIso, type ScheduleEntry } from '@/lib/slots'
+import { RepeatSection } from '@/components/RepeatSection'
+import { buildRecurrence, noRepeat, type RepeatErrors, type RepeatValue } from '@/lib/recurrence'
 import { ClosedDaysNotice } from '@/components/ClosedDaysNotice'
 import { useClosedDays } from '@/hooks/useClosedDays'
 import { useIdempotencyKey } from '@/hooks/useIdempotencyKey'
@@ -45,6 +47,8 @@ export function BookingForm({
   const [attendees, setAttendees] = useState('1')
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [formError, setFormError] = useState<string | null>(null)
+  const [repeat, setRepeat] = useState<RepeatValue>(noRepeat)
+  const [repeatErrors, setRepeatErrors] = useState<RepeatErrors>({})
 
   const slots = useMemo(
     () => (rules.data ? buildSlots(date, rules.data, busy) : []),
@@ -77,7 +81,10 @@ export function BookingForm({
     if (!title.trim()) errors.title = t('form.titleRequired')
     if (title.length > 120) errors.title = t('form.titleTooLong')
     if (!Number.isInteger(n) || n < 1 || n > 500) errors.attendees = t('form.attendeesRange')
-    if (Object.keys(errors).length > 0) return setFieldErrors(errors)
+    const built = buildRecurrence(repeat, date)
+    setRepeatErrors(built.errors)
+    if (Object.keys(errors).length > 0 || Object.keys(built.errors).length > 0)
+      return setFieldErrors(errors)
 
     try {
       const body = {
@@ -86,16 +93,18 @@ export function BookingForm({
         startAt: toIso(date, startValue, r),
         endAt: toIso(date, endValue, r),
         attendees: n,
+        ...(built.recurrence ? { recurrence: built.recurrence } : {}),
       }
       const booking = await create.mutateAsync({ body, idempotencyKey: idempotencyKey(body) })
       notify('success', t('form.bookedToast'))
-      void navigate(`/bookings/${booking.id}`)
+      void navigate(`/bookings/${booking.id}`, { state: { series: booking.series ?? null } })
     } catch (err) {
       if (!(err instanceof ApiError)) return setFormError(t('common.unexpected'))
       if (err.kind === 'rules-broken') {
         const next: Record<string, string> = {}
         for (const v of err.violations) {
           if (v.code === 'ExceedsCapacity') next.attendees = err.message
+          else if (v.code === 'InvalidRecurrence') next.repeat = err.message
           else if (v.code === 'RoomUnavailable' || v.code === 'RoomAlreadyBooked') onConflict?.()
           else if (
             [
@@ -186,6 +195,12 @@ export function BookingForm({
         hint={t('form.roomCapacity', { capacity: room.capacity })}
         error={fieldErrors.attendees}
         onChange={(e) => setAttendees(e.target.value)}
+      />
+      <RepeatSection
+        value={repeat}
+        onChange={setRepeat}
+        errors={repeatErrors}
+        serverError={fieldErrors.repeat}
       />
       <details className="rounded-lg bg-gray-50 p-3 text-xs text-gray-600">
         <summary className="cursor-pointer font-medium text-gray-700">

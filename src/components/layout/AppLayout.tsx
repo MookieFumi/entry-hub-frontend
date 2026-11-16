@@ -48,6 +48,9 @@ export function AppLayout() {
           <NavLink to="/admin/rules" className={linkClass} onClick={() => setOpen(false)}>
             {t('nav.rules')}
           </NavLink>
+          <NavLink to="/admin/webhooks" className={linkClass} onClick={() => setOpen(false)}>
+            {t('nav.webhooks')}
+          </NavLink>
         </>
       )}
       <NavLink to="/status" className={linkClass} onClick={() => setOpen(false)}>

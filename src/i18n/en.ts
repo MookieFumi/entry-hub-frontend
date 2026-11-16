@@ -444,4 +444,9 @@ export const en: Catalog = {
   'deliveries.httpStatus': 'HTTP {code}',
   'deliveries.noAnswer': 'No answer',
   'deliveries.notFound': 'This subscription does not exist.',
+  'form.onBehalf': 'Book on behalf of (optional)',
+  'form.onBehalfHint': 'Identifier of the person (max 200 characters). Facilities only.',
+  'form.onBehalfTooLong': 'At most 200 characters.',
+  'booking.createdBy': 'Booked by:',
+  'booking.organizer': 'Organizer:',
 }

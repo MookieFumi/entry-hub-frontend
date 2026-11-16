@@ -17,6 +17,8 @@ export type Site = components['schemas']['SiteResponse']
 export type SiteHoliday = components['schemas']['SiteHolidayResponse']
 export type CreateHolidayRequest = components['schemas']['CreateHolidayRequest']
 
+export type Webhook = components['schemas']['WebhookResponse']
+
 export const keys = {
   me: ['me'] as const,
   rules: ['rules'] as const,
@@ -31,6 +33,7 @@ export const keys = {
   sites: (includeInactive: boolean) => ['sites', includeInactive] as const,
   holidays: (siteId: string, from?: string, to?: string) =>
     ['holidays', siteId, from ?? '', to ?? ''] as const,
+  webhooks: ['webhooks'] as const,
 }
 
 export const useMe = (enabled = true) =>
@@ -373,5 +376,29 @@ export function useDeleteHoliday(siteId: string) {
         }),
       ),
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['holidays', siteId] }),
+  })
+}
+
+export const useWebhooks = () =>
+  useQuery({
+    queryKey: keys.webhooks,
+    queryFn: () => unwrap(api.GET('/api/v1/webhooks')),
+  })
+
+export function useSetWebhookEnabled() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, isEnabled }: { id: string; isEnabled: boolean }) =>
+      unwrap(api.PATCH('/api/v1/webhooks/{id}', { params: { path: { id } }, body: { isEnabled } })),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: keys.webhooks }),
+  })
+}
+
+export function useDeleteWebhook() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) =>
+      unwrap(api.DELETE('/api/v1/webhooks/{id}', { params: { path: { id } } })),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: keys.webhooks }),
   })
 }

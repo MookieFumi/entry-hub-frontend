@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Navigate, useLocation } from 'react-router'
 import { useAuth } from '@/auth/AuthProvider'
 import { hasSupabase } from '@/auth/supabase'
+import { AppVersion } from '@/components/AppVersion'
 import { Button } from '@/components/ui/Button'
 import { TextField } from '@/components/ui/Field'
 import { Alert } from '@/components/ui/Feedback'
@@ -84,6 +85,7 @@ export function Login() {
             {busy ? t('login.submitting') : t('login.submit')}
           </Button>
         </form>
+        <AppVersion className="text-gray-500" />
       </main>
     </div>
   )

@@ -30,6 +30,19 @@ describe('access and guards', () => {
     expect(await screen.findByRole('heading', { name: 'Iniciar sesión' })).toBeInTheDocument()
   })
 
+  it('shows the version on the login screen', async () => {
+    mockApi({})
+    renderApp('/login', { signedIn: false })
+    await screen.findByRole('heading', { name: 'Iniciar sesión' })
+    expect(screen.getByTestId('app-version')).toHaveTextContent(`Versión ${__APP_VERSION__}`)
+  })
+
+  it('shows the version in the landing footer', async () => {
+    mockApi({})
+    renderApp('/', { signedIn: false })
+    expect(await screen.findByTestId('app-version')).toHaveTextContent(`Versión ${__APP_VERSION__}`)
+  })
+
   it('a 403 from /me explains the account has no customer', async () => {
     mockApi({ 'GET /api/v1/me': () => json({ title: 'Forbidden' }, 403) })
     renderApp('/')

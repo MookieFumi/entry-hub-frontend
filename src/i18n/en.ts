@@ -545,7 +545,6 @@ export const en: Catalog = {
   'landing.nav.rules': 'Rules',
   'landing.nav.facilities': 'Facilities',
   'landing.cta': 'Try the demo',
-  'landing.github': 'View on GitHub',
   'landing.hero.title': 'Rooms booked in a minute.',
   'landing.hero.mark': 'in a minute.',
   'landing.hero.body':
@@ -585,5 +584,5 @@ export const en: Catalog = {
     'Interactive demonstration. In the app you book with a form, on this same planner strip.',
   'landing.board.scroll': 'Swipe the planner to see the whole day.',
   'landing.find.day': "Today's occupancy",
-  'landing.madeBy': 'A product by',
+  'landing.madeBy': 'A product of',
 }

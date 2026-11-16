@@ -549,7 +549,6 @@ export const es = {
   'landing.nav.rules': 'Normas',
   'landing.nav.facilities': 'Facilities',
   'landing.cta': 'Probar la demo',
-  'landing.github': 'Ver en GitHub',
   'landing.hero.title': 'Salas reservadas en un minuto.',
   'landing.hero.mark': 'en un minuto.',
   'landing.hero.body':

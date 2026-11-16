@@ -11,6 +11,7 @@ export function ConfirmDialog({
   confirmLabel,
   destructive,
   busy,
+  confirmDisabled,
   onConfirm,
 }: {
   open: boolean
@@ -20,6 +21,8 @@ export function ConfirmDialog({
   confirmLabel: string
   destructive?: boolean
   busy?: boolean
+  /** Keeps the confirm button disabled without showing the busy label. */
+  confirmDisabled?: boolean
   onConfirm: () => void
 }) {
   const t = useT()
@@ -36,7 +39,7 @@ export function ConfirmDialog({
             <Dialog.Close render={<Button variant="secondary" />}>{t('common.back')}</Dialog.Close>
             <Button
               variant={destructive ? 'destructive' : 'primary'}
-              disabled={busy}
+              disabled={busy || confirmDisabled}
               onClick={onConfirm}
             >
               {busy ? t('common.processing') : confirmLabel}

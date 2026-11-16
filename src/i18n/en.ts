@@ -486,4 +486,17 @@ export const en: Catalog = {
   'data.exporting': 'Preparing…',
   'data.exported': 'Data downloaded.',
   'data.exportFailed': 'The data could not be downloaded.',
+  'data.dangerTitle': 'Danger zone',
+  'data.deleteTitle': 'Delete all data',
+  'data.deleteBody':
+    'Bookings, rooms, sites, closed days, catalog, blocks, rules and the audit trail are deleted permanently. The tenant and one audit entry about the deletion stay. It cannot be undone: download the data first.',
+  'data.deleteButton': 'Delete all data…',
+  'data.deleteConfirmTitle': 'Delete all data?',
+  'data.deleteConfirmLabel': 'Type "{phrase}" to confirm',
+  'data.deleteConfirm': 'Delete permanently',
+  'data.deleted': 'Data deleted.',
+  'data.deleteFailed': 'The data could not be deleted.',
+  'data.deleteResult':
+    'Deleted {bookings} bookings, {rooms} rooms, {sites} sites, {features} catalog entries, {blocks} blocks, {holidays} closed days and {auditEntries} audit entries.',
+  'data.deleteMismatch': 'The text does not match.',
 }

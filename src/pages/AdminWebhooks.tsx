@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { EmptyState, ErrorState, PageHeader, Skeleton } from '@/components/ui/Feedback'
 import { useToast } from '@/components/ui/Toasts'
+import { WebhookFormDialog } from '@/components/WebhookFormDialog'
 import { useEventName } from '@/hooks/useEventName'
 import { useT } from '@/i18n'
 
@@ -18,6 +19,7 @@ export function AdminWebhooks() {
   const toggle = useSetWebhookEnabled()
   const remove = useDeleteWebhook()
   const [deleting, setDeleting] = useState<Webhook | null>(null)
+  const [creating, setCreating] = useState(false)
 
   async function setEnabled(w: Webhook, isEnabled: boolean) {
     try {
@@ -40,7 +42,12 @@ export function AdminWebhooks() {
 
   return (
     <>
-      <PageHeader title={t('webhooks.title')} description={t('webhooks.description')} />
+      <PageHeader
+        title={t('webhooks.title')}
+        description={t('webhooks.description')}
+        actions={<Button onClick={() => setCreating(true)}>{t('webhooks.new')}</Button>}
+      />
+      <WebhookFormDialog open={creating} onOpenChange={setCreating} />
       {webhooks.isPending && <Skeleton className="h-40" />}
       {webhooks.error && (
         <ErrorState message={webhooks.error.message} onRetry={() => void webhooks.refetch()} />

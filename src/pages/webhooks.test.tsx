@@ -73,3 +73,70 @@ describe('webhooks admin: list, pause and delete', () => {
     expect(await screen.findByText(/permiso/i)).toBeInTheDocument()
   })
 })
+
+describe('webhooks admin: create a subscription', () => {
+  const created = { ...hook, id: 'w2', secret: 'whsec_super_secret' }
+
+  it('creates a subscription and shows the secret once', async () => {
+    const { calls } = mockApi(routes({ 'POST /api/v1/webhooks': () => json(created, 201) }))
+    renderApp('/admin/webhooks')
+    await userEvent.click(await screen.findByRole('button', { name: 'Nueva suscripción' }))
+    await userEvent.type(
+      await screen.findByLabelText('URL de destino'),
+      'https://hooks.example.com/new',
+    )
+    await userEvent.click(screen.getByLabelText('Reserva reprogramada'))
+    await userEvent.click(screen.getByRole('button', { name: 'Crear suscripción' }))
+    await waitFor(() =>
+      expect(calls.find((c) => c.key === 'POST /api/v1/webhooks')?.body).toEqual({
+        url: 'https://hooks.example.com/new',
+        events: ['booking.created', 'booking.cancelled'],
+      }),
+    )
+    expect(await screen.findByDisplayValue('whsec_super_secret')).toBeInTheDocument()
+    expect(screen.getByText(/única vez que se muestra/)).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Ya lo he guardado' }))
+    await waitFor(() =>
+      expect(screen.queryByDisplayValue('whsec_super_secret')).not.toBeInTheDocument(),
+    )
+  })
+
+  it('requires an https URL and at least one event', async () => {
+    const { calls } = mockApi(routes())
+    renderApp('/admin/webhooks')
+    await userEvent.click(await screen.findByRole('button', { name: 'Nueva suscripción' }))
+    await userEvent.type(
+      await screen.findByLabelText('URL de destino'),
+      'http://insecure.example.com',
+    )
+    for (const name of ['Reserva creada', 'Reserva cancelada', 'Reserva reprogramada'])
+      await userEvent.click(screen.getByLabelText(name))
+    await userEvent.click(screen.getByRole('button', { name: 'Crear suscripción' }))
+    expect(await screen.findByText('Indica una URL https válida.')).toBeInTheDocument()
+    expect(screen.getByText('Elige al menos un evento.')).toBeInTheDocument()
+    expect(calls.some((c) => c.key === 'POST /api/v1/webhooks')).toBe(false)
+  })
+
+  it('explains a duplicate URL (409) and API field errors (400)', async () => {
+    let status = 409
+    mockApi(
+      routes({
+        'POST /api/v1/webhooks': () =>
+          status === 409
+            ? json({ title: 'Conflict' }, 409)
+            : json({ title: 'Bad', errors: { Url: ['The host is not public.'] } }, 400),
+      }),
+    )
+    renderApp('/admin/webhooks')
+    await userEvent.click(await screen.findByRole('button', { name: 'Nueva suscripción' }))
+    await userEvent.type(
+      await screen.findByLabelText('URL de destino'),
+      'https://hooks.example.com/entry',
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Crear suscripción' }))
+    expect(await screen.findByText('Ya hay una suscripción con esa URL.')).toBeInTheDocument()
+    status = 400
+    await userEvent.click(screen.getByRole('button', { name: 'Crear suscripción' }))
+    expect(await screen.findByText('The host is not public.')).toBeInTheDocument()
+  })
+})

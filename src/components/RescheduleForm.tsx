@@ -88,7 +88,8 @@ export function RescheduleForm({ booking }: { booking: Booking }) {
       if (err.kind === 'rules-broken') {
         const next: Record<string, string> = {}
         for (const v of err.violations) {
-          if (v.code === 'RoomUnavailable') void schedule.refetch()
+          if (v.code === 'RoomUnavailable' || v.code === 'RoomAlreadyBooked')
+            void schedule.refetch()
           else if (
             [
               'TooSoon',
@@ -97,6 +98,8 @@ export function RescheduleForm({ booking }: { booking: Booking }) {
               'NotOnSlotBoundary',
               'TooLateToReschedule',
               'SiteClosed',
+              'RoomBlocked',
+              'NonexistentLocalTime',
             ].includes(v.code)
           )
             next.start = err.message

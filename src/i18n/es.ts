@@ -284,4 +284,10 @@ export const es = {
   'closed.dayClosed': 'La sede está cerrada ese día: no se puede reservar.',
   'closed.dayClosedNamed': 'La sede está cerrada ese día ({name}): no se puede reservar.',
   'closed.upcoming': 'Próximos días cerrados: {days}.',
+  'rule.TooEarlyToCheckIn':
+    'Todavía es pronto para registrar la llegada: se puede desde 15 minutos antes del inicio.',
+  'rule.RoomBlocked': 'La sala está bloqueada en esa franja (por ejemplo, por mantenimiento).',
+  'rule.RoomAlreadyBooked': 'La sala ya está reservada en esa franja.',
+  'rule.InvalidRecurrence': 'La repetición no es válida: revisa la frecuencia y el final.',
+  'rule.NonexistentLocalTime': 'Esa hora no existe ese día por el cambio de hora. Elige otra.',
 } as const

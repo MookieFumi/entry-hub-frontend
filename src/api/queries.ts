@@ -49,6 +49,16 @@ export const useRules = (enabled = true) =>
     staleTime: 10 * 60_000,
   })
 
+export type UpdateRulesRequest = components['schemas']['UpdateRulesRequest']
+
+export function useUpdateRules() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (body: UpdateRulesRequest) => unwrap(api.PUT('/api/v1/rules', { body })),
+    onSuccess: (data) => qc.setQueryData(keys.rules, data),
+  })
+}
+
 /** Office time zone from the rules (with a provisional value while they load). */
 export const useOfficeZone = () => useRules().data?.timeZone ?? FALLBACK_TIME_ZONE
 

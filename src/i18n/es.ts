@@ -362,4 +362,25 @@ export const es = {
     'Esta sala requiere aprobación: tu reserva quedará pendiente hasta que Facility Management la apruebe.',
   'room.buffersNotice':
     'Entre reservas la sala queda libre {before} min antes y {after} min después.',
+  'nav.rules': 'Reglas de reserva',
+  'adminRules.title': 'Reglas de reserva',
+  'adminRules.description':
+    'Los cambios se aplican a las reservas nuevas. Las ya hechas no se tocan.',
+  'adminRules.minDurationMinutes': 'Duración mínima (minutos)',
+  'adminRules.maxDurationMinutes': 'Duración máxima (minutos)',
+  'adminRules.slotMinutes': 'Tramo (minutos)',
+  'adminRules.slotMinutesHint': 'Debe dividir una hora (1, 5, 10, 15, 20, 30 o 60).',
+  'adminRules.minLeadTimeMinutes': 'Antelación mínima (minutos)',
+  'adminRules.maxAdvanceDays': 'Antelación máxima (días)',
+  'adminRules.cancellationNoticeMinutes': 'Aviso para cancelar (minutos)',
+  'adminRules.maxActiveBookings': 'Reservas activas por empleado',
+  'adminRules.maxActiveBookingsHint':
+    'Hoy no hay límite si el campo está vacío al cargar; indica un valor para fijarlo.',
+  'adminRules.autoReleaseMinutes': 'Liberación automática (minutos)',
+  'adminRules.autoReleaseHint':
+    'Minutos tras el inicio en los que, si nadie registra la llegada, se cancela la reserva. 0 lo desactiva.',
+  'adminRules.range': 'Debe ser un número entero entre {min} y {max}.',
+  'adminRules.order': 'La duración máxima no puede ser menor que la mínima.',
+  'adminRules.saved': 'Reglas guardadas.',
+  'adminRules.failed': 'No se han podido guardar las reglas.',
 } as const

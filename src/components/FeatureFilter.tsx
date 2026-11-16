@@ -1,4 +1,5 @@
 import { useFeatures, type Feature } from '@/api/queries'
+import { featureLabel } from '@/lib/featureLabel'
 import { useT, type MessageKey } from '@/i18n'
 
 const KINDS: { kind: Feature['kind']; legend: MessageKey }[] = [
@@ -53,7 +54,7 @@ export function FeatureChecklist({
                       disabled={!f.isActive && !checked}
                       onChange={(e) => toggle(value, e.target.checked)}
                     />
-                    {f.name}
+                    {featureLabel(f, t)}
                     {!f.isActive && (
                       <span className="text-xs text-gray-600">{t('features.inactive')}</span>
                     )}

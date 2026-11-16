@@ -5,6 +5,7 @@ import { AdminBookings } from '@/pages/AdminBookings'
 import { WebhookDeliveries } from '@/pages/WebhookDeliveries'
 import { AdminWebhooks } from '@/pages/AdminWebhooks'
 import { AdminRules } from '@/pages/AdminRules'
+import { AdminAudit } from '@/pages/AdminAudit'
 import { AdminClosedDays } from '@/pages/AdminClosedDays'
 import { AdminRooms } from '@/pages/AdminRooms'
 import { BookingDetail } from '@/pages/BookingDetail'
@@ -44,6 +45,7 @@ export const routes: RouteObject[] = [
               { path: 'bookings', element: <AdminBookings /> },
               { path: 'closed-days', element: <AdminClosedDays /> },
               { path: 'rules', element: <AdminRules /> },
+              { path: 'audit', element: <AdminAudit /> },
               { path: 'webhooks', element: <AdminWebhooks /> },
               { path: 'webhooks/:id/deliveries', element: <WebhookDeliveries /> },
             ],

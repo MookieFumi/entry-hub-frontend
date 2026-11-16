@@ -103,6 +103,12 @@ export function BookingDetail() {
             {formatOfficeDateTime(b.rescheduledAt, tz)}
           </p>
         )}
+        {b.createdBy && b.createdBy !== b.organizerId && (
+          <p>
+            <span className="font-medium">{t('booking.organizer')}</span> {b.organizerId} ·{' '}
+            <span className="font-medium">{t('booking.createdBy')}</span> {b.createdBy}
+          </p>
+        )}
         {b.seriesId && (
           <p>
             {t('series.position', { position: Number(b.seriesPosition ?? 1) })}{' '}

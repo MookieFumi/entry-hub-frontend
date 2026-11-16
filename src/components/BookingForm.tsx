@@ -48,6 +48,7 @@ export function BookingForm({
   const [attendees, setAttendees] = useState('1')
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [formError, setFormError] = useState<string | null>(null)
+  const [onBehalf, setOnBehalf] = useState('')
   const [repeat, setRepeat] = useState<RepeatValue>(noRepeat)
   const [repeatErrors, setRepeatErrors] = useState<RepeatErrors>({})
 
@@ -70,6 +71,7 @@ export function BookingForm({
   const openWeekday = isBookableDay(date, r)
   const closedToday = closedDays.data?.some((h) => h.date === date) ?? false
   const bookableDay = openWeekday && !closedToday
+  const isFacilities = me.data?.role === 'Facilities'
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
@@ -82,6 +84,7 @@ export function BookingForm({
     if (!title.trim()) errors.title = t('form.titleRequired')
     if (title.length > 120) errors.title = t('form.titleTooLong')
     if (!Number.isInteger(n) || n < 1 || n > 500) errors.attendees = t('form.attendeesRange')
+    if (onBehalf.trim().length > 200) errors.onBehalf = t('form.onBehalfTooLong')
     const built = buildRecurrence(repeat, date)
     setRepeatErrors(built.errors)
     if (Object.keys(errors).length > 0 || Object.keys(built.errors).length > 0)
@@ -95,6 +98,7 @@ export function BookingForm({
         endAt: toIso(date, endValue, r),
         attendees: n,
         ...(built.recurrence ? { recurrence: built.recurrence } : {}),
+        ...(isFacilities && onBehalf.trim() ? { onBehalfOf: onBehalf.trim() } : {}),
       }
       const booking = await create.mutateAsync({ body, idempotencyKey: idempotencyKey(body) })
       notify('success', t('form.bookedToast'))
@@ -208,6 +212,15 @@ export function BookingForm({
         error={fieldErrors.attendees}
         onChange={(e) => setAttendees(e.target.value)}
       />
+      {isFacilities && (
+        <TextField
+          label={t('form.onBehalf')}
+          value={onBehalf}
+          hint={t('form.onBehalfHint')}
+          error={fieldErrors.onBehalf}
+          onChange={(e) => setOnBehalf(e.target.value)}
+        />
+      )}
       <RepeatSection
         value={repeat}
         onChange={setRepeat}

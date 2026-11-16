@@ -447,4 +447,10 @@ export const es = {
   'deliveries.httpStatus': 'HTTP {code}',
   'deliveries.noAnswer': 'Sin respuesta',
   'deliveries.notFound': 'No existe esta suscripción.',
+  'form.onBehalf': 'Reservar en nombre de (opcional)',
+  'form.onBehalfHint':
+    'Identificador de la persona (máx. 200 caracteres). Solo Facility Management.',
+  'form.onBehalfTooLong': 'Máximo 200 caracteres.',
+  'booking.createdBy': 'Reservada por:',
+  'booking.organizer': 'Organizador:',
 } as const

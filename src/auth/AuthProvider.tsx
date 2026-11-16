@@ -85,15 +85,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [t],
   )
 
-  const signInWithToken = useCallback((token: string) => {
-    try {
-      sessionStorage.setItem(DEV_TOKEN_KEY, token)
-    } catch {
-      /* sin almacenamiento: el token vive solo en memoria */
-    }
-    qc.clear()
-    setDevToken(token)
-  }, [qc])
+  const signInWithToken = useCallback(
+    (token: string) => {
+      try {
+        sessionStorage.setItem(DEV_TOKEN_KEY, token)
+      } catch {
+        /* sin almacenamiento: el token vive solo en memoria */
+      }
+      qc.clear()
+      setDevToken(token)
+    },
+    [qc],
+  )
 
   const signOut = useCallback(async () => {
     if (supabase) await supabase.auth.signOut()

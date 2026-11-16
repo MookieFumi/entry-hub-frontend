@@ -122,6 +122,7 @@ export const es = {
   'status.title': 'Estado de la demo',
   'status.description':
     'El servidor gratuito se duerme tras un rato sin uso; la primera petición puede tardar unos segundos.',
+  'app.version': 'Versión {version}',
   'status.waking': 'Despertando el servidor',
   'status.okTitle': 'Todo en marcha',
   'status.okBody': 'API: {api} · Base de datos: {database}',

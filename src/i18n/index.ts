@@ -8,7 +8,7 @@ export type Catalog = Record<MessageKey, string>
 export type Params = Record<string, string | number>
 
 export const LOCALES: readonly Locale[] = ['es', 'en']
-export const DEFAULT_LOCALE: Locale = 'es'
+export const DEFAULT_LOCALE: Locale = 'en'
 
 const catalogs: Record<Locale, Catalog> = { es, en }
 
@@ -50,7 +50,7 @@ export function setLocale(locale: Locale): void {
   listeners.forEach((listener) => listener())
 }
 
-/** Language to start with: the saved choice, then the browser language, then Spanish. */
+/** Language to start with: the saved choice, then the browser language (Spanish or English), then English. */
 export function detectLocale(): Locale {
   try {
     const saved = localStorage.getItem(STORAGE_KEY)

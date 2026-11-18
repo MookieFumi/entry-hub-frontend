@@ -22,10 +22,21 @@ describe('language choice', () => {
     expect(getLocale()).toBe('en')
   })
 
-  it('guesses from the browser language and falls back to Spanish', () => {
-    vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['fr-FR', 'en-US'])
-    expect(detectLocale()).toBe('en')
+  it('guesses from the browser language and falls back to English', () => {
+    vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['fr-FR', 'es-MX'])
+    expect(detectLocale()).toBe('es')
     vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['fr-FR'])
+    expect(detectLocale()).toBe('en')
+    vi.spyOn(navigator, 'languages', 'get').mockReturnValue([])
+    expect(detectLocale()).toBe('en')
+  })
+
+  it('lets the saved choice win over the browser language', () => {
+    vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['es-ES'])
+    localStorage.setItem('entryhub.locale', 'en')
+    expect(detectLocale()).toBe('en')
+    localStorage.setItem('entryhub.locale', 'es')
+    vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['en-US'])
     expect(detectLocale()).toBe('es')
   })
 })

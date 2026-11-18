@@ -66,7 +66,7 @@ When both support TypeScript 7, remove the alias and move `typescript` to 7.
 
 ## Languages
 
-The UI is available in Spanish (default) and English. The language is chosen with the selector in the header; the choice is saved in `localStorage` (`entryhub.locale`), the first visit follows the browser language, and `<html lang>` and the page title follow it. Dates use the language's format but always show the office time zone.
+The UI is available in English (default) and Spanish. The language is chosen with the selector in the header; the choice is saved in `localStorage` (`entryhub.locale`) and always wins; without a saved choice the first visit follows the browser language (Spanish if it is preferred, English otherwise), and `<html lang>` and the page title follow it. Dates use the language's format but always show the office time zone.
 
 Messages live in `src/i18n/es.ts` (the source of truth for the keys) and `src/i18n/en.ts`. Use `useT()` in components and `t()` elsewhere; placeholders look like `{name}`. A test fails when the catalogs have different keys or placeholders.
 
